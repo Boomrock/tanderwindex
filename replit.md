@@ -1,8 +1,8 @@
-# Windex-строй - Construction Tenders and Marketplace Platform
+# СтройТендер - Construction Tenders and Marketplace Platform
 
 ## Overview
 
-Windex-строй is a comprehensive construction platform that combines tender management with a marketplace for construction materials and equipment. The platform enables construction companies, contractors, and individual specialists to find projects, participate in tenders, and trade construction-related goods and services.
+СтройТендер is a comprehensive construction platform that combines tender management with a marketplace for construction materials and equipment. The platform enables construction companies, contractors, and individual specialists to find projects, participate in tenders, and trade construction-related goods and services.
 
 ## System Architecture
 
@@ -133,11 +133,6 @@ The platform uses PostgreSQL with the following key entities:
   - Added automatic chat creation between customer and contractor when bid is submitted
   - Updated API endpoint security with authentication requirements for bid access
   - Modified frontend to handle new privacy restrictions with appropriate user messaging
-- June 22, 2025. Platform rebranding and header optimization:
-  - Changed platform name from "СтройТендер" to "Windex-строй"
-  - Cleaned up header navigation by removing unused menu items
-  - Streamlined dropdown menus to show only essential functions
-  - Updated page titles and meta descriptions to reflect new branding
 
 ## User Preferences
 
