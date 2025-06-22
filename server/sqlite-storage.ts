@@ -551,19 +551,36 @@ export class SQLiteStorage implements IStorage {
   async createMessage(message: InsertMessage): Promise<Message> {
     console.log('Original message data:', message);
     
-    // Убеждаемся, что все значения правильного типа для SQLite
-    const sanitizedMessage = {
-      senderId: Number(message.senderId),
-      receiverId: Number(message.receiverId),
-      content: String(message.content),
-      isRead: Boolean(message.isRead || false),
-      createdAt: new Date().toISOString()
-    };
+    // Используем прямой SQLite запрос чтобы избежать проблемы с типами PostgreSQL
+    const now = new Date().toISOString();
     
-    console.log('Sanitized message data:', sanitizedMessage);
-    
-    const [newMessage] = await db.insert(messages).values(sanitizedMessage).returning();
-    return newMessage;
+    try {
+      const stmt = sqliteDb.prepare(`
+        INSERT INTO messages (sender_id, receiver_id, content, is_read, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+      
+      const result = stmt.run(
+        message.senderId,
+        message.receiverId, 
+        message.content,
+        false,
+        now
+      );
+      
+      console.log('SQLite insert result:', result);
+      
+      // Получаем созданное сообщение
+      const getStmt = sqliteDb.prepare(`SELECT * FROM messages WHERE id = ?`);
+      const newMessage = getStmt.get(result.lastInsertRowid) as Message;
+      
+      console.log('Retrieved message:', newMessage);
+      return newMessage;
+      
+    } catch (error) {
+      console.error('SQLite insert error:', error);
+      throw error;
+    }
   }
   
   async markMessageAsRead(id: number): Promise<Message | undefined> {
