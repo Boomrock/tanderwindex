@@ -549,10 +549,10 @@ export class SQLiteStorage implements IStorage {
   }
   
   async createMessage(message: InsertMessage): Promise<Message> {
-    // Добавляем временную метку для SQLite
+    // Добавляем временную метку для SQLite в виде ISO строки
     const messageWithTimestamp = {
       ...message,
-      createdAt: new Date()
+      createdAt: new Date().toISOString()
     };
     const [newMessage] = await db.insert(messages).values(messageWithTimestamp).returning();
     return newMessage;
@@ -654,8 +654,8 @@ export class SQLiteStorage implements IStorage {
     // Добавляем временные метки для SQLite
     const orderWithTimestamps = {
       ...order,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
     const [newOrder] = await db.insert(deliveryOrders).values(orderWithTimestamps).returning();
     return newOrder;
