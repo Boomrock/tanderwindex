@@ -37,7 +37,6 @@ const Header = () => {
     { href: "/tenders", label: "Тендеры" },
     { href: "/marketplace", label: "Маркетплейс" },
     { href: "/top-specialists", label: "Лучшие специалисты" },
-    { href: "/guarantees", label: "Банковские гарантии" },
   ];
 
   const toggleMobileMenu = () => {
@@ -134,19 +133,7 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/guarantees/my">
-                        <ShieldCheck className="mr-2 h-4 w-4" />
-                        Мои гарантии
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/guarantees/create">
-                        <ShieldCheck className="mr-2 h-4 w-4" />
-                        Оформить гарантию
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+
                     <DropdownMenuItem asChild>
                       <Link href="/tenders/create">
                         <PlusCircle className="mr-2 h-4 w-4" />
@@ -257,20 +244,7 @@ const Header = () => {
                   </Badge>
                 )}
               </Link>
-              <Link
-                href="/guarantees/my"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Мои гарантии
-              </Link>
-              <Link
-                href="/guarantees/create"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Оформить гарантию
-              </Link>
+
               <Link
                 href="/tenders/create"
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"

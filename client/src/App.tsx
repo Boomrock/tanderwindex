@@ -17,9 +17,7 @@ import Login from "@/pages/Login";
 import TopSpecialists from "@/pages/TopSpecialists";
 import HowItWorks from "@/pages/HowItWorks";
 import Help from "@/pages/Help";
-import Guarantees from "@/pages/Guarantees";
-import GuaranteeCreate from "@/pages/GuaranteeCreate";
-import GuaranteeDetail from "@/pages/GuaranteeDetail";
+
 import Wallet from "@/pages/Wallet";
 import Admin from "@/pages/Admin";
 import Header from "@/components/layout/Header";
@@ -47,10 +45,7 @@ function Router() {
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login} />
           <Route path="/top-specialists" component={TopSpecialists} />
-          <Route path="/guarantees" component={Guarantees} />
-          <Route path="/guarantees/create" component={GuaranteeCreate} />
-          <Route path="/guarantees/:id" component={GuaranteeDetail} />
-          <Route path="/guarantees/my" component={Guarantees} />
+
           <Route path="/how-it-works" component={HowItWorks} />
           <Route path="/help" component={Help} />
           <Route path="/admin" component={Admin} />
