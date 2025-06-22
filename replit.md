@@ -128,6 +128,11 @@ The platform uses PostgreSQL with the following key entities:
   - Consolidated to single storage implementation (sqlite-storage-simple.ts)
   - Fixed seed-specialists.ts to match current database schema
   - Removed SearchFilters component and related imports
+- June 22, 2025. Enhanced tender bid privacy and communication system:
+  - Implemented restricted bid visibility: only tender owners and bid authors can see bids
+  - Added automatic chat creation between customer and contractor when bid is submitted
+  - Updated API endpoint security with authentication requirements for bid access
+  - Modified frontend to handle new privacy restrictions with appropriate user messaging
 
 ## User Preferences
 

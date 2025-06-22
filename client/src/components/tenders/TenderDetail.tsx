@@ -459,7 +459,9 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                   ))}
                 </div>
               ) : (
-                <p className="text-center text-gray-500">Пока нет заявок на участие в тендере.</p>
+                <p className="text-center text-gray-500">
+                  {!isAuthenticated ? "Войдите в систему, чтобы видеть заявки на участие" : "Пока нет заявок на участие в тендере."}
+                </p>
               )}
               
               {isAuthenticated && !isOwner && tender.status === 'open' && !userHasBid && (
