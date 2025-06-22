@@ -8,7 +8,7 @@ export async function addCompletedProjectsColumn() {
   
   try {
     // Получаем прямой доступ к SQLite для выполнения SQL-запросов
-    // Лучше получить его из db-sqlite.ts, но для простоты создаем новое подключение
+    // Лучше получить его из db-simple.ts, но для простоты создаем новое подключение
     const dataDir = join(process.cwd(), 'data');
     const sqlite = new Database(join(dataDir, 'construction-platform.db'));
     

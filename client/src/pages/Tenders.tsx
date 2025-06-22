@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TenderCard from '@/components/tenders/TenderCard';
-import SearchFilters from '@/components/search/SearchFilters';
+
 import { Tender } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/authContext';

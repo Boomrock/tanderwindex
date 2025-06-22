@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MarketplaceItemCard from '@/components/marketplace/MarketplaceItemCard';
-import SearchFilters from '@/components/search/SearchFilters';
+
 import { MarketplaceListing } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/authContext';

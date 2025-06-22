@@ -1,5 +1,5 @@
-import { db } from '../db-sqlite';
-import { sqliteDb } from '../db-sqlite';
+import { db } from '../db-simple';
+import { sqliteDb } from '../db-simple';
 import { sql } from 'drizzle-orm';
 import Database from 'better-sqlite3';
 import { join } from 'path';

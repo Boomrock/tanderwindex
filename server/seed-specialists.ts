@@ -21,7 +21,7 @@ export async function seedTopSpecialists() {
     // Подготавливаем запрос на вставку пользователя
     const insertUserStmt = sqliteDb.prepare(`
       INSERT INTO users (
-        username, password, email, full_name, user_type, location, bio,
+        username, password, email, fullName, user_type, location, bio,
         rating, completed_projects, is_verified, inn, website, wallet_balance
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
