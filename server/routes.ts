@@ -853,7 +853,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Разрешаем обновлять только определенные поля через админку
-      const { isAdmin, isVerified, walletBalance } = req.body;
+      const { isAdmin, isVerified, walletBalance, isTopSpecialist } = req.body;
       
       // Создаем объект с данными для обновления
       const updateData: Partial<User> = {};
@@ -868,6 +868,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (walletBalance !== undefined) {
         updateData.walletBalance = walletBalance;
+      }
+      
+      if (isTopSpecialist !== undefined) {
+        updateData.isTopSpecialist = isTopSpecialist;
       }
       
       const updatedUser = await storage.updateUser(userId, updateData);

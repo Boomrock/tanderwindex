@@ -11,6 +11,7 @@ export interface AuthUser {
   rating: number;
   isVerified: boolean;
   isAdmin?: boolean; // Права администратора
+  isTopSpecialist?: boolean; // Статус лучшего специалиста
   completedProjects: number;
   inn?: string;  // ИНН для юр. лиц и подрядчиков
   website?: string; // Сайт компании или подрядчика

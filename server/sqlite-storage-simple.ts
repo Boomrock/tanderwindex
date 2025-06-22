@@ -422,10 +422,34 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   // Placeholder methods for interface compliance
-  async getTopSpecialists(): Promise<User[]> {
-    return await db.select().from(users)
-      .where(eq(users.userType, 'contractor'))
+  async getTopSpecialists(userType?: string): Promise<User[]> {
+    let query = db.select().from(users)
+      .where(eq(users.isTopSpecialist, true))
+      .orderBy(users.rating, users.completedProjects)
       .limit(10);
+    
+    // Если указан тип пользователя, добавляем фильтр
+    if (userType) {
+      if (userType === 'legal') {
+        query = db.select().from(users)
+          .where(and(
+            eq(users.isTopSpecialist, true),
+            or(eq(users.userType, 'company'), eq(users.userType, 'contractor'))
+          ))
+          .orderBy(users.rating, users.completedProjects)
+          .limit(10);
+      } else if (userType === 'individual') {
+        query = db.select().from(users)
+          .where(and(
+            eq(users.isTopSpecialist, true),
+            eq(users.userType, 'individual')
+          ))
+          .orderBy(users.rating, users.completedProjects)
+          .limit(10);
+      }
+    }
+    
+    return await query;
   }
 
   // Add minimal implementations for other required methods

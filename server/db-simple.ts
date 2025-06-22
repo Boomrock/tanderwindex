@@ -188,6 +188,16 @@ export function addModerationFields() {
     console.log('Moderation comment column already exists in marketplace_listings table');
   }
 
+  // Добавляем поле isTopSpecialist в таблицу users
+  try {
+    sqlite.exec(`
+      ALTER TABLE users ADD COLUMN is_top_specialist INTEGER DEFAULT 0;
+    `);
+    console.log('isTopSpecialist column added to users table');
+  } catch (error) {
+    console.log('isTopSpecialist column already exists in users table');
+  }
+
   console.log('Moderation fields migration completed');
 }
 
