@@ -159,8 +159,14 @@ export class SimpleSQLiteStorage implements IStorage {
       updatedAt: new Date().toISOString(),
     };
 
+    // Обрабатываем изображения
     if (updateData.images && Array.isArray(updateData.images)) {
       updateData.images = JSON.stringify(updateData.images);
+    }
+
+    // Обрабатываем дату крайнего срока
+    if (updateData.deadline) {
+      updateData.deadline = ensureDateString(updateData.deadline);
     }
 
     const [tender] = await db.update(tenders).set(updateData).where(eq(tenders.id, id)).returning();
