@@ -24,82 +24,46 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const processedMessageIds = useRef<Set<number>>(new Set());
 
   // Fetch user details
   const { data: otherUser, isLoading: isUserLoading } = useQuery<User>({
     queryKey: [`/api/users/${userId}`],
   });
 
-  // Fetch conversation
-  const { 
-    data: messages, 
-    isLoading: isMessagesLoading,
-    refetch: refetchMessages
-  } = useQuery<Message[]>({
+  // Fetch messages for conversation
+  const { data: messages, isLoading: isMessagesLoading } = useQuery<Message[]>({
     queryKey: [`/api/messages/${userId}`],
-    refetchInterval: 10000, // 10 seconds
-  });
-
-  // Mark messages as read mutation
-  const markAsReadMutation = useMutation({
-    mutationFn: async (messageId: number) => {
-      return apiRequest('PUT', `/api/messages/${messageId}/read`, {});
-    },
-    onSuccess: () => {
-      // Invalidate messages cache to update unread count in the list
-      queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
-    },
   });
 
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
-      return apiRequest('POST', '/api/messages', {
+      const response = await apiRequest('POST', '/api/messages', {
         receiverId: userId,
         content,
       });
+      return response.json();
     },
     onSuccess: () => {
-      setMessage('');
-      refetchMessages();
+      queryClient.invalidateQueries({ queryKey: [`/api/messages/${userId}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
+      setMessage('');
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
-        title: 'Ошибка отправки',
-        description: error.message || 'Не удалось отправить сообщение',
-        variant: 'destructive',
+        title: "Ошибка",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
 
-  // Scroll to bottom when messages change
+  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
-
-  // Mark unread messages as read (only once when messages load)
-  useEffect(() => {
-    if (!messages || !user || markAsReadMutation.isPending) return;
-    
-    // Find unread messages sent to current user that haven't been processed yet
-    const unreadMessages = messages.filter(
-      msg => msg.receiverId === user.id && !msg.isRead && !processedMessageIds.has(msg.id)
-    );
-    
-    // Mark each unread message as read (only if there are any)
-    if (unreadMessages.length > 0) {
-      const newProcessedIds = new Set(processedMessageIds);
-      unreadMessages.forEach(msg => {
-        newProcessedIds.add(msg.id);
-        markAsReadMutation.mutate(msg.id);
-      });
-      setProcessedMessageIds(newProcessedIds);
-    }
-  }, [messages, user?.id, markAsReadMutation.isPending, processedMessageIds]);
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
@@ -117,39 +81,40 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
   if (isUserLoading || isMessagesLoading) {
     return (
       <div className="h-full flex flex-col">
-        <div className="px-4 py-3 border-b flex items-center">
-          {isMobile && (
-            <Button variant="ghost" size="icon" className="mr-2" disabled>
-              <ArrowLeft className="h-5 w-5" />
+        <div className="p-4 border-b border-border bg-background/50 backdrop-blur-sm flex items-center gap-3">
+          {isMobile && onBack && (
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="h-4 w-4" />
             </Button>
           )}
-          <Skeleton className="h-10 w-10 rounded-full mr-3" />
-          <Skeleton className="h-5 w-40" />
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-4 w-32 mb-1" />
+            <Skeleton className="h-3 w-20" />
+          </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {[1, 2, 3, 4].map(i => (
-            <div key={i} className={`flex ${i % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] ${i % 2 === 0 ? 'bg-primary text-white' : 'bg-gray-100'} rounded-lg p-3`}>
-                <Skeleton className={`h-12 w-48 ${i % 2 === 0 ? 'bg-primary-dark' : 'bg-gray-200'}`} />
-              </div>
+        <div className="flex-1 p-4 space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+              <Skeleton className={`h-12 ${i % 2 === 0 ? 'w-48' : 'w-32'} rounded-lg`} />
             </div>
           ))}
-        </div>
-        <div className="border-t p-3">
-          <Skeleton className="h-24 w-full" />
         </div>
       </div>
     );
   }
 
-  // User not found
   if (!otherUser) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-4">
-        <p className="mb-4 text-gray-500">Пользователь не найден</p>
-        <Button onClick={onBack} variant="outline">
-          Назад к списку сообщений
-        </Button>
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Пользователь не найден</p>
+          {isMobile && onBack && (
+            <Button variant="outline" className="mt-4" onClick={onBack}>
+              Назад
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -157,73 +122,84 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b flex items-center">
-        {isMobile && (
-          <Button variant="ghost" size="icon" className="mr-2" onClick={onBack}>
-            <ArrowLeft className="h-5 w-5" />
+      <div className="p-4 border-b border-border bg-background/50 backdrop-blur-sm flex items-center gap-3">
+        {isMobile && onBack && (
+          <Button variant="ghost" size="sm" onClick={onBack}>
+            <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
-        <Avatar className="h-10 w-10 mr-3">
-          <AvatarImage src={otherUser.avatar} alt={otherUser.fullName} />
-          <AvatarFallback>{getUserInitials(otherUser.fullName)}</AvatarFallback>
+        <Avatar>
+          <AvatarImage src={otherUser.avatar || undefined} />
+          <AvatarFallback>{getUserInitials(otherUser.fullName || otherUser.username)}</AvatarFallback>
         </Avatar>
-        <div>
-          <Link href={`/profile/${otherUser.id}`} className="font-semibold hover:text-primary">
-            {otherUser.fullName}
+        <div className="flex-1">
+          <Link to={`/profile/${otherUser.id}`}>
+            <h3 className="font-medium text-foreground hover:text-primary transition-colors">
+              {otherUser.fullName || otherUser.username}
+            </h3>
           </Link>
-          <div className="text-xs text-gray-500">
-            {otherUser.userType === 'individual' ? 'Физическое лицо' : 
-             otherUser.userType === 'contractor' ? 'Подрядчик' : 'Компания'}
-          </div>
+          <p className="text-sm text-muted-foreground">
+            {otherUser.profession || 'Пользователь'}
+          </p>
         </div>
       </div>
-      
+
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages && messages.length > 0 ? (
-          <>
-            {messages.map((msg) => {
-              const isOwnMessage = msg.senderId === user?.id;
-              return (
-                <div key={msg.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] ${
-                    isOwnMessage 
-                      ? 'bg-primary text-white rounded-tl-lg rounded-tr-lg rounded-bl-lg' 
-                      : 'bg-gray-100 text-gray-800 rounded-tl-lg rounded-tr-lg rounded-br-lg'
-                  } p-3`}>
-                    <p className="whitespace-pre-wrap">{msg.content}</p>
-                    <div className={`text-xs mt-1 ${isOwnMessage ? 'text-blue-100' : 'text-gray-500'}`}>
-                      {formatDate(msg.createdAt, 'HH:mm')}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </>
-        ) : (
-          <div className="h-full flex items-center justify-center text-gray-500">
-            Начните диалог, отправив сообщение
+        {!messages || messages.length === 0 ? (
+          <div className="text-center text-muted-foreground py-8">
+            <p>Нет сообщений</p>
+            <p className="text-sm mt-1">Начните разговор!</p>
           </div>
+        ) : (
+          messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                  msg.senderId === user?.id
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                <p className={`text-xs mt-1 ${
+                  msg.senderId === user?.id 
+                    ? 'text-primary-foreground/70' 
+                    : 'text-muted-foreground/70'
+                }`}>
+                  {formatDate(msg.createdAt)}
+                  {msg.senderId !== user?.id && !msg.isRead && (
+                    <span className="ml-2 text-xs">●</span>
+                  )}
+                </p>
+              </div>
+            </div>
+          ))
         )}
+        <div ref={messagesEndRef} />
       </div>
-      
+
       {/* Message input */}
-      <div className="border-t p-3">
-        <div className="flex space-x-2">
+      <div className="p-4 border-t border-border bg-background/50 backdrop-blur-sm">
+        <div className="flex gap-2">
           <Textarea
-            placeholder="Введите сообщение..."
-            className="min-h-[80px] resize-none"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
+            placeholder="Введите сообщение..."
+            className="min-h-[44px] max-h-32 resize-none"
+            disabled={sendMessageMutation.isPending}
           />
-          <Button 
-            className="self-end"
+          <Button
             onClick={handleSendMessage}
             disabled={!message.trim() || sendMessageMutation.isPending}
+            size="icon"
+            className="h-[44px] w-[44px] shrink-0"
           >
-            <Send className="h-5 w-5" />
+            <Send className="h-4 w-4" />
           </Button>
         </div>
       </div>
