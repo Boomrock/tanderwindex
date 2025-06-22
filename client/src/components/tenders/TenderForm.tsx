@@ -94,6 +94,25 @@ export default function TenderForm({ tender, isEditMode = false }: TenderFormPro
     },
   });
 
+  // Заполняем форму данными тендера при редактировании
+  useEffect(() => {
+    if (tender && isEditMode) {
+      form.reset({
+        title: tender.title || '',
+        description: tender.description || '',
+        category: tender.category || '',
+        subcategory: tender.subcategory || '',
+        budget: tender.budget || undefined,
+        location: tender.location || '',
+        deadline: tender.deadline ? new Date(tender.deadline) : undefined,
+        personType: tender.personType || 'individual',
+        images: tender.images || [],
+      });
+      setSelectedCategory(tender.category || '');
+      setUploadedImages(tender.images || []);
+    }
+  }, [tender, isEditMode, form]);
+
   // Функция для конвертации файла в base64
   const convertToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -488,7 +507,7 @@ export default function TenderForm({ tender, isEditMode = false }: TenderFormPro
             Отмена
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Сохранение...' : isEditing ? 'Обновить тендер' : 'Создать тендер'}
+            {isSubmitting ? 'Сохранение...' : isEditMode ? 'Обновить тендер' : 'Создать тендер'}
           </Button>
         </div>
       </form>
