@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import { TENDER_CATEGORIES, SUBCATEGORIES, PERSON_TYPES } from '@/lib/constants';
 import { TenderFormData } from '@/lib/types';
 
@@ -105,14 +105,13 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
 
     setIsSubmitting(true);
     try {
-      // Форматируем данные для API
-      const tenderData: TenderFormData = {
+      // Форматируем данные для API (userId автоматически добавляется сервером)
+      const tenderData = {
         ...data,
         budget: data.budget || undefined,
         deadline: data.deadline.toISOString(),
         personType: data.personType,
-        userId: user.id, // Добавляем userId из контекста аутентификации
-        // Если есть ID в initialData, используем его для обновления
+        // Для редактирования добавляем ID
         ...(isEditing && initialData?.id && { id: initialData.id }),
       };
 
@@ -122,12 +121,16 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
           title: 'Тендер обновлен',
           description: 'Ваш тендер был успешно обновлен',
         });
+        // Инвалидируем кэш для обновления списка тендеров
+        queryClient.invalidateQueries({ queryKey: ['/api/tenders'] });
       } else {
         await apiRequest('POST', '/api/tenders', tenderData);
         toast({
           title: 'Тендер создан',
           description: 'Ваш тендер был успешно создан',
         });
+        // Инвалидируем кэш для обновления списка тендеров
+        queryClient.invalidateQueries({ queryKey: ['/api/tenders'] });
       }
       
       navigate('/tenders');

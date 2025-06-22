@@ -22,7 +22,7 @@ export default function Tenders() {
 
   // Fetch tenders with filters
   const { data: tenders, isLoading, error } = useQuery<Tender[]>({
-    queryKey: [`/api/tenders${queryString ? `?${queryString}` : ''}`],
+    queryKey: ['/api/tenders', queryString],
   });
 
   const handleSearch = (newFilters: Record<string, any>) => {
