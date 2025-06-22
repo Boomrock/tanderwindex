@@ -8,8 +8,14 @@ import { addUserFieldsAndGuarantees } from "./migrations/add-user-fields-and-gua
 import { addAdminField } from "./migrations/add-admin-field";
 
 const app = express();
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+
+// Increase HTTP header limits to handle large base64 images
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Headers', '*');
+  next();
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -90,4 +96,9 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
+
+  // Set server options for large payloads
+  server.maxHeadersCount = 0;
+  server.headersTimeout = 120000;
+  server.requestTimeout = 120000;
 })();

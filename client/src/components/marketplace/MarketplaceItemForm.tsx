@@ -137,11 +137,36 @@ export default function MarketplaceItemForm({ initialData, isEditing = false }: 
       }
       
       try {
-        // Convert file to base64
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const base64 = reader.result as string;
-          const base64Data = base64.split(',')[1]; // Remove data:image/...;base64, prefix
+        // Create canvas for image compression
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = async () => {
+          // Set smaller max dimensions to reduce file size
+          const maxWidth = 600;
+          const maxHeight = 400;
+          let { width, height } = img;
+          
+          // Calculate new dimensions maintaining aspect ratio
+          const aspectRatio = width / height;
+          if (width > maxWidth || height > maxHeight) {
+            if (aspectRatio > 1) {
+              width = maxWidth;
+              height = maxWidth / aspectRatio;
+            } else {
+              height = maxHeight;
+              width = maxHeight * aspectRatio;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          // Draw and compress with higher compression
+          ctx?.drawImage(img, 0, 0, width, height);
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.5);
+          const base64Data = compressedBase64.split(',')[1];
           
           try {
             const response = await apiRequest('POST', '/api/upload', {
@@ -167,7 +192,12 @@ export default function MarketplaceItemForm({ initialData, isEditing = false }: 
           }
         };
         
-        reader.readAsDataURL(file);
+        // Load image from file
+        const fileReader = new FileReader();
+        fileReader.onload = (e) => {
+          img.src = e.target?.result as string;
+        };
+        fileReader.readAsDataURL(file);
       } catch (error) {
         toast({
           title: 'Ошибка',
