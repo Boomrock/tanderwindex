@@ -56,11 +56,11 @@ const tenderFormSchema = z.object({
 type TenderFormValues = z.infer<typeof tenderFormSchema>;
 
 interface TenderFormProps {
-  initialData?: TenderFormData;
-  isEditing?: boolean;
+  tender?: any;
+  isEditMode?: boolean;
 }
 
-export default function TenderForm({ initialData, isEditing = false }: TenderFormProps) {
+export default function TenderForm({ tender, isEditMode = false }: TenderFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
@@ -71,9 +71,16 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
   // Инициализируем форму
   const form = useForm<TenderFormValues>({
     resolver: zodResolver(tenderFormSchema),
-    defaultValues: initialData ? {
-      ...initialData,
-      deadline: initialData.deadline ? new Date(initialData.deadline) : undefined,
+    defaultValues: tender ? {
+      title: tender.title || '',
+      description: tender.description || '',
+      category: tender.category || '',
+      subcategory: tender.subcategory || '',
+      budget: tender.budget || undefined,
+      location: tender.location || '',
+      deadline: tender.deadline ? new Date(tender.deadline) : undefined,
+      personType: tender.personType || 'individual',
+      images: tender.images || [],
     } : {
       title: '',
       description: '',
@@ -156,11 +163,11 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
         deadline: data.deadline.toISOString(),
         personType: data.personType,
         // Для редактирования добавляем ID
-        ...(isEditing && initialData?.id && { id: initialData.id }),
+        ...(isEditMode && tender?.id && { id: tender.id }),
       };
 
-      if (isEditing && initialData?.id) {
-        await apiRequest('PUT', `/api/tenders/${initialData.id}`, tenderData);
+      if (isEditMode && tender?.id) {
+        await apiRequest('PUT', `/api/tenders/${tender.id}`, tenderData);
         toast({
           title: 'Тендер обновлен',
           description: 'Ваш тендер был успешно обновлен',

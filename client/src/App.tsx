@@ -33,6 +33,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/tenders" component={Tenders} />
           <Route path="/tenders/create" component={TenderCreate} />
+          <Route path="/tenders/:id/edit" component={TenderCreate} />
           <Route path="/tenders/:id" component={TenderDetail} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/marketplace/create" component={MarketplaceItemCreate} />
