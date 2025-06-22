@@ -77,10 +77,6 @@ const Header = () => {
           
           {/* Auth Section */}
           <div className="flex items-center space-x-4">
-            <Link href="/search" className="hidden md:inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary">
-              <Search className="h-4 w-4 mr-1" />
-              Поиск
-            </Link>
             
             {isAuthenticated ? (
               <>
