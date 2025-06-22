@@ -115,6 +115,8 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
     await deleteListingMutation.mutateAsync();
   };
 
+
+
   const getListingTypeLabel = (type: string) => {
     switch (type) {
       case 'sell': return 'Продажа';
@@ -346,12 +348,25 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
             </div>
             
             {!isOwner && (
-              <Link href={`/messages?userId=${listing.userId}`}>
-                <Button className="w-full mb-3" variant="default">
-                  <MessageCircle className="mr-2 h-4 w-4" />
-                  Написать продавцу
-                </Button>
-              </Link>
+              <Button 
+                className="w-full mb-3" 
+                variant="default"
+                onClick={() => {
+                  if (!isAuthenticated) {
+                    toast({
+                      title: 'Требуется авторизация',
+                      description: 'Войдите в систему, чтобы связаться с продавцом',
+                      variant: 'destructive',
+                    });
+                    navigate('/login');
+                    return;
+                  }
+                  navigate(`/messages?userId=${listing.userId}`);
+                }}
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Написать продавцу
+              </Button>
             )}
             
             <div className="flex gap-2">

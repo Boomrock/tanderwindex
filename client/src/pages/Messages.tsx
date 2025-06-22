@@ -91,8 +91,8 @@ export default function Messages() {
       <Helmet>
         <title>
           {selectedUser 
-            ? `Чат с ${selectedUser.fullName} | СтройТендер` 
-            : 'Сообщения | СтройТендер'}
+            ? `Чат с ${selectedUser.fullName} | Windex-Строй` 
+            : 'Сообщения | Windex-Строй'}
         </title>
         <meta name="description" content="Общайтесь с заказчиками, подрядчиками и продавцами. Обсуждайте детали тендеров и объявлений." />
       </Helmet>
