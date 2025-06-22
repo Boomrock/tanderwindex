@@ -1,4 +1,4 @@
-import { sqliteDb } from './db-sqlite';
+import { sqliteDb } from './db-simple';
 import bcrypt from 'bcryptjs';
 
 // Функция для хэширования пароля
