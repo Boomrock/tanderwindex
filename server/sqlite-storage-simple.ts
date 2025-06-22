@@ -1,5 +1,5 @@
 import { eq, and, like, or, sql, desc } from 'drizzle-orm';
-import { db } from './db-simple';
+import { db, sqliteDb } from './db-simple';
 import { IStorage } from './storage';
 import {
   users, tenders, tenderBids, marketplaceListings, messages, reviews,
@@ -93,7 +93,21 @@ export class SimpleSQLiteStorage implements IStorage {
 
     // Показываем только одобренные тендеры, если не указано showAll
     if (!filters?.showAll) {
-      query = query.where(eq(tenders.moderationStatus, 'approved'));
+      // Используем SQL запрос напрямую, так как поле moderation_status добавлено через миграцию
+      const tendersWithModeration = await sqliteDb.prepare(`
+        SELECT * FROM tenders 
+        WHERE moderation_status = 'approved'
+        ${filters?.category ? `AND category = '${filters.category}'` : ''}
+        ${filters?.status ? `AND status = '${filters.status}'` : ''}
+        ${filters?.userId ? `AND userId = ${filters.userId}` : ''}
+        ${filters?.limit ? `LIMIT ${filters.limit}` : ''}
+        ${filters?.offset ? `OFFSET ${filters.offset}` : ''}
+      `).all() as any[];
+      
+      return tendersWithModeration.map(tender => ({
+        ...tender,
+        images: tender.images ? JSON.parse(tender.images) : [],
+      }));
     }
 
     if (filters?.category) {
@@ -247,7 +261,21 @@ export class SimpleSQLiteStorage implements IStorage {
 
     // Показываем только одобренные объявления, если не указано showAll
     if (!filters?.showAll) {
-      query = query.where(eq(marketplaceListings.moderationStatus, 'approved'));
+      // Используем SQL запрос напрямую, так как поле moderation_status добавлено через миграцию
+      const listingsWithModeration = await sqliteDb.prepare(`
+        SELECT * FROM marketplace_listings 
+        WHERE moderation_status = 'approved'
+        ${filters?.category ? `AND category = '${filters.category}'` : ''}
+        ${filters?.userId ? `AND userId = ${filters.userId}` : ''}
+        ORDER BY createdAt DESC
+        ${filters?.limit ? `LIMIT ${filters.limit}` : ''}
+        ${filters?.offset ? `OFFSET ${filters.offset}` : ''}
+      `).all() as any[];
+      
+      return listingsWithModeration.map(listing => ({
+        ...listing,
+        images: this.parseImages(listing.images),
+      })) as MarketplaceListingResponse[];
     }
 
     if (filters?.category) {

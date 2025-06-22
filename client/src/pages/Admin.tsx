@@ -84,6 +84,18 @@ export default function Admin() {
     enabled: !!user?.isAdmin && activeTab === 'users',
   });
 
+  // Получение тендеров на модерацию
+  const { data: pendingTenders, isLoading: isLoadingTenders } = useQuery({
+    queryKey: ['/api/admin/moderation/tenders'],
+    enabled: !!user?.isAdmin && activeTab === 'tender-moderation',
+  });
+
+  // Получение объявлений маркетплейса на модерацию
+  const { data: pendingListings, isLoading: isLoadingListings } = useQuery({
+    queryKey: ['/api/admin/moderation/marketplace'],
+    enabled: !!user?.isAdmin && activeTab === 'marketplace-moderation',
+  });
+
   // Мутация для изменения прав администратора
   const toggleAdminMutation = useMutation({
     mutationFn: async ({ userId, isAdmin }: { userId: number, isAdmin: boolean }) => {
@@ -122,6 +134,92 @@ export default function Admin() {
     onError: (error) => {
       toast({
         title: "Ошибка обновления верификации",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Мутации для модерации тендеров
+  const approveTenderMutation = useMutation({
+    mutationFn: async ({ tenderId, comment }: { tenderId: number, comment?: string }) => {
+      const response = await apiRequest('POST', `/api/admin/moderation/tenders/${tenderId}/approve`, { comment });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/moderation/tenders'] });
+      toast({
+        title: "Тендер одобрен",
+        description: "Тендер теперь виден всем пользователям",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка одобрения тендера",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const rejectTenderMutation = useMutation({
+    mutationFn: async ({ tenderId, comment }: { tenderId: number, comment: string }) => {
+      const response = await apiRequest('POST', `/api/admin/moderation/tenders/${tenderId}/reject`, { comment });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/moderation/tenders'] });
+      toast({
+        title: "Тендер отклонен",
+        description: "Тендер скрыт от публичного просмотра",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка отклонения тендера",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Мутации для модерации маркетплейса
+  const approveListingMutation = useMutation({
+    mutationFn: async ({ listingId, comment }: { listingId: number, comment?: string }) => {
+      const response = await apiRequest('POST', `/api/admin/moderation/marketplace/${listingId}/approve`, { comment });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/moderation/marketplace'] });
+      toast({
+        title: "Объявление одобрено",
+        description: "Объявление теперь видно всем пользователям",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка одобрения объявления",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const rejectListingMutation = useMutation({
+    mutationFn: async ({ listingId, comment }: { listingId: number, comment: string }) => {
+      const response = await apiRequest('POST', `/api/admin/moderation/marketplace/${listingId}/reject`, { comment });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/moderation/marketplace'] });
+      toast({
+        title: "Объявление отклонено",
+        description: "Объявление скрыто от публичного просмотра",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка отклонения объявления",
         description: error.message,
         variant: "destructive",
       });
@@ -290,6 +388,173 @@ export default function Admin() {
                       )}
                     </TableBody>
                   </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="tender-moderation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Модерация тендеров</CardTitle>
+              <CardDescription>
+                Ожидающие модерации тендеры
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingTenders ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingTenders && pendingTenders.length > 0 ? (
+                    pendingTenders.map((tender: any) => (
+                      <Card key={tender.id} className="border-l-4 border-l-yellow-500">
+                        <CardHeader>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg">{tender.title}</CardTitle>
+                              <CardDescription>
+                                Бюджет: {tender.budget?.toLocaleString()} ₽ | 
+                                Создан: {new Date(tender.createdAt).toLocaleDateString()}
+                              </CardDescription>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => approveTenderMutation.mutate({ tenderId: tender.id })}
+                                disabled={approveTenderMutation.isPending}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                {approveTenderMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    Одобрить
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => rejectTenderMutation.mutate({ 
+                                  tenderId: tender.id, 
+                                  comment: "Нарушение правил публикации" 
+                                })}
+                                disabled={rejectTenderMutation.isPending}
+                              >
+                                {rejectTenderMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <XCircle className="h-4 w-4 mr-1" />
+                                    Отклонить
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-gray-600 mb-2">{tender.description}</p>
+                          <div className="text-xs text-gray-500">
+                            Категория: {tender.category} | Локация: {tender.location}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      Нет тендеров на модерации
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="marketplace-moderation" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Модерация маркетплейса</CardTitle>
+              <CardDescription>
+                Ожидающие модерации объявления
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingListings ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pendingListings && pendingListings.length > 0 ? (
+                    pendingListings.map((listing: any) => (
+                      <Card key={listing.id} className="border-l-4 border-l-blue-500">
+                        <CardHeader>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg">{listing.title}</CardTitle>
+                              <CardDescription>
+                                Цена: {listing.price?.toLocaleString()} ₽ | 
+                                Тип: {listing.listingType} |
+                                Создано: {new Date(listing.createdAt).toLocaleDateString()}
+                              </CardDescription>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => approveListingMutation.mutate({ listingId: listing.id })}
+                                disabled={approveListingMutation.isPending}
+                                className="bg-green-600 hover:bg-green-700"
+                              >
+                                {approveListingMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    Одобрить
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => rejectListingMutation.mutate({ 
+                                  listingId: listing.id, 
+                                  comment: "Нарушение правил публикации" 
+                                })}
+                                disabled={rejectListingMutation.isPending}
+                              >
+                                {rejectListingMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <XCircle className="h-4 w-4 mr-1" />
+                                    Отклонить
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-gray-600 mb-2">{listing.description}</p>
+                          <div className="text-xs text-gray-500">
+                            Категория: {listing.category} | Локация: {listing.location}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      Нет объявлений на модерации
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
