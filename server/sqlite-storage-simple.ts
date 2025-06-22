@@ -25,9 +25,10 @@ export class SimpleSQLiteStorage implements IStorage {
     if (!images) return [];
     if (typeof images === 'string') {
       try {
-        return JSON.parse(images);
+        const parsed = JSON.parse(images);
+        return Array.isArray(parsed) ? parsed : [images];
       } catch {
-        return [];
+        return [images];
       }
     }
     if (Array.isArray(images)) return images;
@@ -236,7 +237,7 @@ export class SimpleSQLiteStorage implements IStorage {
     return results.map(listing => ({
       ...listing,
       images: this.parseImages(listing.images),
-    }));
+    })) as MarketplaceListingResponse[];
   }
 
   async getMarketplaceListing(id: number): Promise<MarketplaceListingResponse | undefined> {
@@ -246,7 +247,7 @@ export class SimpleSQLiteStorage implements IStorage {
     return {
       ...listing,
       images: this.parseImages(listing.images),
-    };
+    } as MarketplaceListingResponse;
   }
 
   async createMarketplaceListing(insertListing: InsertMarketplaceListing): Promise<MarketplaceListingResponse> {
