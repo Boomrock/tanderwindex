@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/authContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -43,8 +44,16 @@ const Header = () => {
     setMobileMenuOpen(!mobileMenuOpen);
   };
 
-  // Unread messages count (this would be fetched from the API in a real app)
-  const unreadMessagesCount = 3;
+  // Fetch unread messages count
+  const { data: messages } = useQuery({
+    queryKey: ["/api/messages"],
+    enabled: isAuthenticated,
+  });
+
+  // Calculate unread messages count
+  const unreadMessagesCount = isAuthenticated && messages 
+    ? messages.filter((message: any) => !message.isRead && message.receiverId === user?.id).length 
+    : 0;
 
   return (
     <header className="bg-white shadow-sm">
