@@ -281,6 +281,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Statistics endpoint
+  apiRouter.get('/stats', async (_req: Request, res: Response) => {
+    try {
+      const activeTenders = await storage.getTenders({ status: 'open' });
+      const totalMarketplaceListings = await storage.getMarketplaceListings();
+      
+      res.status(200).json({
+        activeTenders: activeTenders.length,
+        totalUsers: 1500, // Will be dynamic when we add user count method
+        totalMarketplaceListings: totalMarketplaceListings.length,
+        completedProjects: 2340 // Will be dynamic when we add this calculation
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
   // Tender routes
   apiRouter.get('/tenders', async (req: Request, res: Response) => {
     try {

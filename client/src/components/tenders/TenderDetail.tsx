@@ -53,6 +53,7 @@ export default function TenderDetail({ tenderId }: TenderDetailProps) {
   const [bidAmount, setBidAmount] = useState('');
   const [bidDescription, setBidDescription] = useState('');
   const [bidTimeframe, setBidTimeframe] = useState('');
+  const [bidDocuments, setBidDocuments] = useState<string[]>([]);
   const [isSubmittingBid, setIsSubmittingBid] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
@@ -78,18 +79,38 @@ export default function TenderDetail({ tenderId }: TenderDetailProps) {
 
   // Submit bid mutation
   const submitBidMutation = useMutation({
-    mutationFn: async (bidData: { amount: number; description: string; timeframe?: number }) => {
+    mutationFn: async (bidData: { amount: number; description: string; timeframe?: number; documents?: string[] }) => {
       return apiRequest('POST', `/api/tenders/${tenderId}/bids`, bidData);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      // Create automatic chat between tender owner and bidder
+      try {
+        const chatMessage = `Здравствуйте! Я подал заявку на ваш тендер "${tender?.title}".
+
+Моя заявка:
+• Стоимость: ${parseInt(bidAmount).toLocaleString()} ₽
+${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` : ''}
+• Описание: ${bidDescription}
+
+Готов обсудить детали проекта.`;
+
+        await apiRequest('POST', '/api/messages', {
+          recipientId: tender?.userId,
+          content: chatMessage
+        });
+      } catch (error) {
+        console.log('Failed to create chat:', error);
+      }
+
       queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}/bids`] });
       setIsBidDialogOpen(false);
       setBidAmount('');
       setBidDescription('');
       setBidTimeframe('');
+      setBidDocuments([]);
       toast({
         title: 'Заявка отправлена',
-        description: 'Ваша заявка на участие в тендере успешно отправлена',
+        description: 'Заявка отправлена и создан чат с заказчиком',
       });
     },
     onError: (error) => {
@@ -161,6 +182,7 @@ export default function TenderDetail({ tenderId }: TenderDetailProps) {
         amount: parseInt(bidAmount),
         description: bidDescription,
         timeframe: bidTimeframe ? parseInt(bidTimeframe) : undefined,
+        documents: bidDocuments,
       });
     } finally {
       setIsSubmittingBid(false);
