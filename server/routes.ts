@@ -931,6 +931,140 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // API эндпоинты для модерации тендеров
+  apiRouter.get('/admin/moderation/tenders', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const stmt = sqliteDb.prepare(`
+        SELECT t.*, u.username, u.firstName, u.lastName 
+        FROM tenders t 
+        LEFT JOIN users u ON t.userId = u.id 
+        WHERE t.moderation_status = 'pending'
+        ORDER BY t.createdAt DESC
+      `);
+      const pendingTenders = stmt.all();
+      
+      res.status(200).json(pendingTenders);
+    } catch (error) {
+      console.error("Error getting pending tenders:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/tenders/:id/approve', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const tenderId = parseInt(req.params.id);
+      const { comment } = req.body;
+      const adminId = (req as any).user.id;
+      
+      const stmt = sqliteDb.prepare(`
+        UPDATE tenders 
+        SET moderation_status = 'approved', 
+            moderated_by = ?, 
+            moderated_at = ?, 
+            moderation_comment = ?
+        WHERE id = ?
+      `);
+      
+      stmt.run(adminId, new Date().toISOString(), comment || '', tenderId);
+      
+      res.status(200).json({ message: "Тендер одобрен" });
+    } catch (error) {
+      console.error("Error approving tender:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/tenders/:id/reject', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const tenderId = parseInt(req.params.id);
+      const { comment } = req.body;
+      const adminId = (req as any).user.id;
+      
+      const stmt = sqliteDb.prepare(`
+        UPDATE tenders 
+        SET moderation_status = 'rejected', 
+            moderated_by = ?, 
+            moderated_at = ?, 
+            moderation_comment = ?
+        WHERE id = ?
+      `);
+      
+      stmt.run(adminId, new Date().toISOString(), comment || '', tenderId);
+      
+      res.status(200).json({ message: "Тендер отклонен" });
+    } catch (error) {
+      console.error("Error rejecting tender:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
+  // API эндпоинты для модерации маркетплейса
+  apiRouter.get('/admin/moderation/marketplace', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const stmt = sqliteDb.prepare(`
+        SELECT ml.*, u.username, u.firstName, u.lastName 
+        FROM marketplace_listings ml 
+        LEFT JOIN users u ON ml.userId = u.id 
+        WHERE ml.moderation_status = 'pending'
+        ORDER BY ml.createdAt DESC
+      `);
+      const pendingListings = stmt.all();
+      
+      res.status(200).json(pendingListings);
+    } catch (error) {
+      console.error("Error getting pending marketplace listings:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/marketplace/:id/approve', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const listingId = parseInt(req.params.id);
+      const { comment } = req.body;
+      const adminId = (req as any).user.id;
+      
+      const stmt = sqliteDb.prepare(`
+        UPDATE marketplace_listings 
+        SET moderation_status = 'approved', 
+            moderated_by = ?, 
+            moderated_at = ?, 
+            moderation_comment = ?
+        WHERE id = ?
+      `);
+      
+      stmt.run(adminId, new Date().toISOString(), comment || '', listingId);
+      
+      res.status(200).json({ message: "Объявление одобрено" });
+    } catch (error) {
+      console.error("Error approving marketplace listing:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/marketplace/:id/reject', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const listingId = parseInt(req.params.id);
+      const { comment } = req.body;
+      const adminId = (req as any).user.id;
+      
+      const stmt = sqliteDb.prepare(`
+        UPDATE marketplace_listings 
+        SET moderation_status = 'rejected', 
+            moderated_by = ?, 
+            moderated_at = ?, 
+            moderation_comment = ?
+        WHERE id = ?
+      `);
+      
+      stmt.run(adminId, new Date().toISOString(), comment || '', listingId);
+      
+      res.status(200).json({ message: "Объявление отклонено" });
+    } catch (error) {
+      console.error("Error rejecting marketplace listing:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
   // Mount the API router
   app.use('/api', apiRouter);
 

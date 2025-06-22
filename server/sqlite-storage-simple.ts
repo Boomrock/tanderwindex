@@ -87,8 +87,14 @@ export class SimpleSQLiteStorage implements IStorage {
     userId?: number;
     limit?: number;
     offset?: number;
+    showAll?: boolean; // Для админов, чтобы видеть все тендеры
   }): Promise<Tender[]> {
     let query = db.select().from(tenders);
+
+    // Показываем только одобренные тендеры, если не указано showAll
+    if (!filters?.showAll) {
+      query = query.where(eq(tenders.moderationStatus, 'approved'));
+    }
 
     if (filters?.category) {
       query = query.where(eq(tenders.category, filters.category));
@@ -132,6 +138,7 @@ export class SimpleSQLiteStorage implements IStorage {
       deadline: ensureDateString(insertTender.deadline),
       images: JSON.stringify(insertTender.images || []),
       status: 'open' as const,
+      moderationStatus: 'pending' as const,
       createdAt: now,
       updatedAt: now,
       viewCount: 0,
@@ -234,8 +241,14 @@ export class SimpleSQLiteStorage implements IStorage {
     userId?: number;
     limit?: number;
     offset?: number;
+    showAll?: boolean; // Для админов, чтобы видеть все объявления
   }): Promise<MarketplaceListingResponse[]> {
     let query = db.select().from(marketplaceListings);
+
+    // Показываем только одобренные объявления, если не указано showAll
+    if (!filters?.showAll) {
+      query = query.where(eq(marketplaceListings.moderationStatus, 'approved'));
+    }
 
     if (filters?.category) {
       query = query.where(eq(marketplaceListings.category, filters.category));
@@ -277,6 +290,7 @@ export class SimpleSQLiteStorage implements IStorage {
       ...insertListing,
       images: JSON.stringify(insertListing.images || []),
       isActive: true,
+      moderationStatus: 'pending' as const,
       createdAt: now,
       updatedAt: now,
       viewCount: 0,

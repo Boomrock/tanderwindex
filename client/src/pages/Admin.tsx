@@ -157,6 +157,8 @@ export default function Admin() {
         <TabsList className="mb-6">
           <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
           <TabsTrigger value="users">Пользователи</TabsTrigger>
+          <TabsTrigger value="tender-moderation">Модерация тендеров</TabsTrigger>
+          <TabsTrigger value="marketplace-moderation">Модерация маркетплейса</TabsTrigger>
         </TabsList>
         
         <TabsContent value="dashboard" className="space-y-6">
