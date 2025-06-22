@@ -255,7 +255,7 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {CONSTRUCTION_CATEGORIES.map((category) => (
+                    {TENDER_CATEGORIES.map((category) => (
                       <SelectItem key={category.value} value={category.value}>
                         {category.label}
                       </SelectItem>
