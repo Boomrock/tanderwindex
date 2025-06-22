@@ -108,15 +108,7 @@ const Header = () => {
                         Профиль
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile/wallet">
-                        <Wallet className="mr-2 h-4 w-4" />
-                        Кошелек
-                        <Badge className="ml-auto bg-green-500 text-white text-xs p-1">
-                          {user?.walletBalance || 0} ₽
-                        </Badge>
-                      </Link>
-                    </DropdownMenuItem>
+
                     <DropdownMenuItem asChild>
                       <Link href="/messages">
                         <MessageCircle className="mr-2 h-4 w-4" />
@@ -218,16 +210,7 @@ const Header = () => {
               >
                 Профиль
               </Link>
-              <Link
-                href="/profile/wallet"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Кошелек
-                <Badge className="ml-2 bg-green-500 text-white">
-                  {user?.walletBalance || 0} ₽
-                </Badge>
-              </Link>
+
               <Link
                 href="/messages"
                 className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
