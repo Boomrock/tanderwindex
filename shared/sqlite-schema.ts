@@ -57,13 +57,13 @@ export const tenders = sqliteTable("tenders", {
   location: text("location").notNull(),
   deadline: text("deadline").notNull(), // ISO string
   status: text("status").notNull().default('open'), // tenderStatusValues
-  userId: integer("user_id").notNull(),
-  personType: text("person_type").notNull().default('individual'), // personTypeValues
-  requiredProfessions: text("required_professions"), // JSON string
+  userId: integer("userId").notNull(),
+  personType: text("personType").notNull().default('individual'), // personTypeValues
+  requiredProfessions: text("requiredProfessions"), // JSON string
   images: text("images"), // JSON string
-  createdAt: text("created_at"), // ISO string
-  updatedAt: text("updated_at"), // ISO string
-  viewCount: integer("view_count").default(0),
+  createdAt: text("createdAt"), // ISO string
+  updatedAt: text("updatedAt"), // ISO string
+  viewCount: integer("viewCount").default(0),
 });
 
 // Tender bids table
@@ -87,14 +87,14 @@ export const marketplaceListings = sqliteTable("marketplace_listings", {
   subcategory: text("subcategory"),
   price: integer("price").notNull(),
   location: text("location").notNull(),
-  userId: integer("user_id").notNull(),
-  listingType: text("listing_type").notNull().default('sell'), // listingTypeValues
+  userId: integer("userId").notNull(),
+  listingType: text("listingType").notNull().default('sell'), // listingTypeValues
   condition: text("condition"),
-  isActive: integer("is_active", { mode: 'boolean' }).default(true),
+  isActive: integer("isActive", { mode: 'boolean' }).default(true),
   images: text("images"), // JSON string
-  createdAt: text("created_at"), // ISO string
-  updatedAt: text("updated_at"), // ISO string
-  viewCount: integer("view_count").default(0),
+  createdAt: text("createdAt"), // ISO string
+  updatedAt: text("updatedAt"), // ISO string
+  viewCount: integer("viewCount").default(0),
 });
 
 // Messages table
