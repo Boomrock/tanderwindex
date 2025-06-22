@@ -318,10 +318,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log('After schema validation:', tenderData);
       
-      const tender = await storage.createTender({
+      // Convert images array to JSON string for database storage
+      const tenderForDB = {
         ...tenderData,
+        images: tenderData.images ? JSON.stringify(tenderData.images) : null,
         userId: req.user.id
-      });
+      };
+      
+      const tender = await storage.createTender(tenderForDB);
       
       res.status(201).json(tender);
     } catch (error) {

@@ -153,7 +153,7 @@ export const insertTenderSchema = createInsertSchema(tenders, {
   personType: z.enum(personTypeValues),
   deadline: z.string(), // Accept ISO string
   requiredProfessions: z.string().optional(),
-  images: z.string().optional(),
+  images: z.array(z.string()).optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 }).omit({
