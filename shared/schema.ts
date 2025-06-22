@@ -1,20 +1,12 @@
-import { pgTable, text, serial, integer, boolean, json, timestamp, pgEnum } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, blob, real } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Enum definitions
-export const userTypeEnum = pgEnum('user_type', [
-  'individual', // физическое лицо (заказчик)
-  'contractor', // подрядчик (бригада)
-  'company'     // юридическое лицо (поставщик)
-]);
-
-export const personTypeEnum = pgEnum('person_type', [
-  'individual', // физическое лицо
-  'legal'       // юридическое лицо
-]);
-
-export const professionEnum = pgEnum('profession', [
+// SQLite doesn't have native enums, so we'll use text fields with validation in Zod
+// Type definitions for validation
+export const userTypeValues = ['individual', 'contractor', 'company'] as const;
+export const personTypeValues = ['individual', 'legal'] as const;
+export const professionValues = [
   'carpenter',           // плотник
   'plumber',             // сантехник
   'electrician',         // электрик
@@ -39,7 +31,7 @@ export const professionEnum = pgEnum('profession', [
   'demolition_worker',   // специалист по сносу
   'glazier',             // стекольщик
   'other'                // другое
-]);
+] as const;
 
 export const tenderStatusEnum = pgEnum('tender_status', [
   'open', 'in_progress', 'completed', 'canceled'

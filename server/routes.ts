@@ -13,7 +13,7 @@ import {
   tenders,
   marketplaceListings,
   type User
-} from "@shared/schema";
+} from "@shared/sqlite-schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";

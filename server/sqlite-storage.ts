@@ -21,7 +21,7 @@ import {
   type CrewMember, type InsertCrewMember, 
   type CrewPortfolio, type InsertCrewPortfolio,
   type CrewMemberSkill, type InsertCrewMemberSkill
-} from '@shared/schema';
+} from '@shared/sqlite-schema';
 
 // Преобразование строки JSON в массив строк
 function parseJsonArray(json: string | null): string[] {
