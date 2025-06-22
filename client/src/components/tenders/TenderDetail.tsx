@@ -606,6 +606,66 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                 className="min-h-32"
               />
             </div>
+            <div className="grid gap-2">
+              <label htmlFor="bid-documents" className="text-sm font-medium">
+                Документы (необязательно)
+              </label>
+              <Input
+                id="bid-documents"
+                type="file"
+                multiple
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={async (e) => {
+                  const files = Array.from(e.target.files || []);
+                  const uploadedUrls: string[] = [];
+                  
+                  for (const file of files) {
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                      try {
+                        const response = await fetch('/api/upload', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ file: reader.result })
+                        });
+                        const result = await response.json();
+                        uploadedUrls.push(result.url);
+                        setBidDocuments([...uploadedUrls]);
+                      } catch (error) {
+                        console.error('Upload failed:', error);
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+              />
+              <p className="text-xs text-gray-500">
+                Поддерживаемые форматы: PDF, DOC, DOCX, JPG, PNG. Максимум 5 файлов.
+              </p>
+              {bidDocuments.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm font-medium mb-1">Загруженные документы:</p>
+                  <ul className="text-sm text-gray-600">
+                    {bidDocuments.map((doc, index) => (
+                      <li key={index} className="flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        <span>Документ {index + 1}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setBidDocuments(bidDocuments.filter((_, i) => i !== index))}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          Удалить
+                        </Button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button 

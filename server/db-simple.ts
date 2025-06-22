@@ -74,6 +74,7 @@ export function initializeDatabase() {
       amount INTEGER NOT NULL,
       description TEXT NOT NULL,
       timeframe INTEGER,
+      documents TEXT,
       isAccepted INTEGER DEFAULT 0,
       createdAt TEXT
     );

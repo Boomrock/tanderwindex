@@ -78,6 +78,7 @@ export const tenderBids = sqliteTable("tender_bids", {
   amount: integer("amount").notNull(),
   description: text("description").notNull(),
   timeframe: integer("timeframe"), // in days
+  documents: text("documents"), // JSON string array
   isAccepted: integer("isAccepted", { mode: 'boolean' }).default(false),
   createdAt: text("createdAt"), // ISO string
 });
@@ -176,6 +177,7 @@ export const insertTenderSchema = createInsertSchema(tenders, {
 
 export const insertTenderBidSchema = createInsertSchema(tenderBids, {
   isAccepted: z.boolean().optional(),
+  documents: z.array(z.string()).optional(),
   createdAt: z.string().optional(),
 }).omit({
   id: true,

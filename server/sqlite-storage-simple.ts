@@ -192,6 +192,7 @@ export class SimpleSQLiteStorage implements IStorage {
   async createTenderBid(insertBid: InsertTenderBid): Promise<TenderBid> {
     const bidData = {
       ...insertBid,
+      documents: insertBid.documents ? JSON.stringify(insertBid.documents) : null,
       createdAt: new Date().toISOString(),
       isAccepted: false,
     };
