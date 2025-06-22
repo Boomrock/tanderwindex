@@ -69,13 +69,13 @@ export function initializeDatabase() {
 
     CREATE TABLE IF NOT EXISTS tender_bids (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      tender_id INTEGER NOT NULL,
-      user_id INTEGER NOT NULL,
+      tenderId INTEGER NOT NULL,
+      userId INTEGER NOT NULL,
       amount INTEGER NOT NULL,
       description TEXT NOT NULL,
       timeframe INTEGER,
-      is_accepted INTEGER DEFAULT 0,
-      created_at TEXT
+      isAccepted INTEGER DEFAULT 0,
+      createdAt TEXT
     );
 
     CREATE TABLE IF NOT EXISTS marketplace_listings (
@@ -98,20 +98,20 @@ export function initializeDatabase() {
 
     CREATE TABLE IF NOT EXISTS messages (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      sender_id INTEGER NOT NULL,
-      receiver_id INTEGER NOT NULL,
+      senderId INTEGER NOT NULL,
+      receiverId INTEGER NOT NULL,
       content TEXT NOT NULL,
-      is_read INTEGER DEFAULT 0,
-      created_at TEXT
+      isRead INTEGER DEFAULT 0,
+      createdAt TEXT
     );
 
     CREATE TABLE IF NOT EXISTS reviews (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      reviewer_id INTEGER NOT NULL,
-      reviewee_id INTEGER NOT NULL,
+      reviewerId INTEGER NOT NULL,
+      revieweeId INTEGER NOT NULL,
       rating INTEGER NOT NULL,
       comment TEXT,
-      created_at TEXT
+      createdAt TEXT
     );
   `);
 
@@ -137,14 +137,14 @@ export function seedDatabaseIfEmpty() {
 
     // Create sample tenders
     sqlite.exec(`
-      INSERT INTO tenders (title, description, category, subcategory, budget, location, deadline, user_id, person_type, images, created_at, updated_at) VALUES
+      INSERT INTO tenders (title, description, category, subcategory, budget, location, deadline, userId, personType, images, createdAt, updatedAt) VALUES
       ('Разработка проекта жилого комплекса', 'Требуется разработать проект жилого комплекса на 100 квартир', 'services', 'design', 5000000, 'Москва', '${new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()}', 1, 'legal', '[]', '${now}', '${now}'),
       ('Строительство частного дома', 'Строительство двухэтажного дома 200 кв.м.', 'services', 'construction', 3000000, 'Санкт-Петербург', '${new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString()}', 1, 'individual', '[]', '${now}', '${now}');
     `);
 
     // Create sample marketplace listings
     sqlite.exec(`
-      INSERT INTO marketplace_listings (title, description, category, price, location, user_id, listing_type, images, created_at, updated_at) VALUES
+      INSERT INTO marketplace_listings (title, description, category, price, location, userId, listingType, images, createdAt, updatedAt) VALUES
       ('Продам башенный кран Liebherr', 'Башенный кран в отличном состоянии, высота подъема 50м', 'equipment', 2500000, 'Екатеринбург', 2, 'sell', '[]', '${now}', '${now}'),
       ('Аренда экскаватора JCB', 'Экскаватор-погрузчик JCB 3CX в аренду', 'equipment', 3500, 'Новосибирск', 2, 'rent', '[]', '${now}', '${now}');
     `);

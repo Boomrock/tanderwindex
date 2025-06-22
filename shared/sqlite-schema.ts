@@ -69,13 +69,13 @@ export const tenders = sqliteTable("tenders", {
 // Tender bids table
 export const tenderBids = sqliteTable("tender_bids", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  tenderId: integer("tender_id").notNull(),
-  userId: integer("user_id").notNull(),
+  tenderId: integer("tenderId").notNull(),
+  userId: integer("userId").notNull(),
   amount: integer("amount").notNull(),
   description: text("description").notNull(),
   timeframe: integer("timeframe"), // in days
-  isAccepted: integer("is_accepted", { mode: 'boolean' }).default(false),
-  createdAt: text("created_at"), // ISO string
+  isAccepted: integer("isAccepted", { mode: 'boolean' }).default(false),
+  createdAt: text("createdAt"), // ISO string
 });
 
 // Marketplace listings table
@@ -100,21 +100,21 @@ export const marketplaceListings = sqliteTable("marketplace_listings", {
 // Messages table
 export const messages = sqliteTable("messages", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  senderId: integer("sender_id").notNull(),
-  receiverId: integer("receiver_id").notNull(),
+  senderId: integer("senderId").notNull(),
+  receiverId: integer("receiverId").notNull(),
   content: text("content").notNull(),
-  isRead: integer("is_read", { mode: 'boolean' }).default(false),
-  createdAt: text("created_at"), // ISO string
+  isRead: integer("isRead", { mode: 'boolean' }).default(false),
+  createdAt: text("createdAt"), // ISO string
 });
 
 // Reviews table
 export const reviews = sqliteTable("reviews", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  reviewerId: integer("reviewer_id").notNull(),
-  revieweeId: integer("reviewee_id").notNull(),
+  reviewerId: integer("reviewerId").notNull(),
+  revieweeId: integer("revieweeId").notNull(),
   rating: integer("rating").notNull(),
   comment: text("comment"),
-  createdAt: text("created_at"), // ISO string
+  createdAt: text("createdAt"), // ISO string
 });
 
 // Type definitions
