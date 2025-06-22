@@ -1,0 +1,394 @@
+import { IStorage } from '../storage';
+import { MessageStorage } from './message-storage';
+import { UserStorage } from './user-storage';
+import type {
+  User, InsertUser,
+  Tender, InsertTender,
+  TenderBid, InsertTenderBid,
+  MarketplaceListing, InsertMarketplaceListing,
+  Message, InsertMessage,
+  Review, InsertReview,
+  UserDocument, InsertUserDocument,
+  DeliveryOption, InsertDeliveryOption,
+  DeliveryOrder, InsertDeliveryOrder,
+  Estimate, InsertEstimate,
+  EstimateItem, InsertEstimateItem,
+  DesignProject, InsertDesignProject,
+  Crew, InsertCrew,
+  CrewMember, InsertCrewMember,
+  CrewPortfolio, InsertCrewPortfolio,
+  CrewMemberSkill, InsertCrewMemberSkill,
+  BankGuarantee, InsertBankGuarantee
+} from '@shared/schema';
+
+/**
+ * Рефакторированный storage с модульной архитектурой
+ * Использует специализированные storage классы для каждой области
+ */
+export class RefactoredStorage implements IStorage {
+  private messageStorage = new MessageStorage();
+  private userStorage = new UserStorage();
+
+  // === ПОЛЬЗОВАТЕЛИ ===
+  async getUser(id: number): Promise<User | undefined> {
+    return this.userStorage.getUser(id);
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    return this.userStorage.getUserByUsername(username);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return this.userStorage.getUserByEmail(email);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    return this.userStorage.createUser(user);
+  }
+
+  async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
+    return this.userStorage.updateUser(id, userData);
+  }
+
+  // === СООБЩЕНИЯ ===
+  async getMessages(userId: number): Promise<Message[]> {
+    return this.messageStorage.getMessages(userId);
+  }
+
+  async getConversation(user1Id: number, user2Id: number): Promise<Message[]> {
+    return this.messageStorage.getConversation(user1Id, user2Id);
+  }
+
+  async createMessage(message: InsertMessage): Promise<Message> {
+    return this.messageStorage.createMessage(message);
+  }
+
+  async markMessageAsRead(id: number): Promise<Message | undefined> {
+    return this.messageStorage.markMessageAsRead(id);
+  }
+
+  // Временные заглушки для остальных методов - будут реализованы в следующих итерациях
+  async getTenders(filters?: any): Promise<Tender[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getTender(id: number): Promise<Tender | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createTender(tender: InsertTender): Promise<Tender> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateTender(id: number, tenderData: Partial<Tender>): Promise<Tender | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteTender(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async incrementTenderViews(id: number): Promise<void> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getTenderBids(tenderId: number): Promise<TenderBid[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getTenderBid(id: number): Promise<TenderBid | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createTenderBid(bid: InsertTenderBid): Promise<TenderBid> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async acceptTenderBid(bidId: number): Promise<TenderBid | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getMarketplaceListings(filters?: any): Promise<MarketplaceListing[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getMarketplaceListing(id: number): Promise<MarketplaceListing | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createMarketplaceListing(listing: InsertMarketplaceListing): Promise<MarketplaceListing> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateMarketplaceListing(id: number, listingData: Partial<MarketplaceListing>): Promise<MarketplaceListing | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteMarketplaceListing(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async incrementListingViews(id: number): Promise<void> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getUserReviews(userId: number): Promise<Review[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateUserRating(userId: number): Promise<number> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getUserDocuments(userId: number): Promise<UserDocument[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getUserDocument(id: number): Promise<UserDocument | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createUserDocument(document: InsertUserDocument): Promise<UserDocument> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateUserDocument(id: number, documentData: Partial<UserDocument>): Promise<UserDocument | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteUserDocument(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async verifyUserDocument(id: number, isVerified: boolean): Promise<UserDocument | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getDeliveryOptions(): Promise<DeliveryOption[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getDeliveryOption(id: number): Promise<DeliveryOption | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createDeliveryOption(option: InsertDeliveryOption): Promise<DeliveryOption> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateDeliveryOption(id: number, optionData: Partial<DeliveryOption>): Promise<DeliveryOption | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteDeliveryOption(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getDeliveryOrders(userId?: number): Promise<DeliveryOrder[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getDeliveryOrder(id: number): Promise<DeliveryOrder | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createDeliveryOrder(order: InsertDeliveryOrder): Promise<DeliveryOrder> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateDeliveryOrderStatus(id: number, status: string): Promise<DeliveryOrder | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateDeliveryOrderTracking(id: number, trackingCode: string): Promise<DeliveryOrder | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getEstimates(userId?: number, tenderId?: number): Promise<Estimate[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getEstimate(id: number): Promise<Estimate | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createEstimate(estimate: InsertEstimate): Promise<Estimate> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateEstimate(id: number, estimateData: Partial<Estimate>): Promise<Estimate | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteEstimate(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateEstimateStatus(id: number, status: string): Promise<Estimate | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getEstimateItems(estimateId: number): Promise<EstimateItem[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getEstimateItem(id: number): Promise<EstimateItem | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createEstimateItem(item: InsertEstimateItem): Promise<EstimateItem> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateEstimateItem(id: number, itemData: Partial<EstimateItem>): Promise<EstimateItem | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteEstimateItem(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getDesignProjects(userId?: number): Promise<DesignProject[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getDesignProject(id: number): Promise<DesignProject | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createDesignProject(project: InsertDesignProject): Promise<DesignProject> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateDesignProject(id: number, projectData: Partial<DesignProject>): Promise<DesignProject | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteDesignProject(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateDesignProjectStatus(id: number, status: string): Promise<DesignProject | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async addProjectVisualization(id: number, visualizationUrl: string): Promise<DesignProject | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async addProjectFile(id: number, fileUrl: string): Promise<DesignProject | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrews(filters?: any): Promise<Crew[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrew(id: number): Promise<Crew | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewsByOwnerId(ownerId: number): Promise<Crew[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createCrew(crew: InsertCrew): Promise<Crew> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateCrew(id: number, crewData: Partial<Crew>): Promise<Crew | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteCrew(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewMembers(crewId: number): Promise<CrewMember[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewMember(id: number): Promise<CrewMember | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createCrewMember(member: InsertCrewMember): Promise<CrewMember> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateCrewMember(id: number, memberData: Partial<CrewMember>): Promise<CrewMember | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteCrewMember(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewPortfolios(crewId: number): Promise<CrewPortfolio[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewPortfolio(id: number): Promise<CrewPortfolio | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createCrewPortfolio(portfolio: InsertCrewPortfolio): Promise<CrewPortfolio> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateCrewPortfolio(id: number, portfolioData: Partial<CrewPortfolio>): Promise<CrewPortfolio | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteCrewPortfolio(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewMemberSkills(memberId: number): Promise<CrewMemberSkill[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getCrewMemberSkill(id: number): Promise<CrewMemberSkill | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createCrewMemberSkill(skill: InsertCrewMemberSkill): Promise<CrewMemberSkill> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateCrewMemberSkill(id: number, skillData: Partial<CrewMemberSkill>): Promise<CrewMemberSkill | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async deleteCrewMemberSkill(id: number): Promise<boolean> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getTendersByPersonType(personType: string): Promise<Tender[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getTendersByRequiredProfession(profession: string): Promise<Tender[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getBankGuarantees(filters?: any): Promise<BankGuarantee[]> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async getBankGuarantee(id: number): Promise<BankGuarantee | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async createBankGuarantee(guarantee: InsertBankGuarantee): Promise<BankGuarantee> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+
+  async updateBankGuaranteeStatus(id: number, status: string): Promise<BankGuarantee | undefined> {
+    throw new Error('Not implemented yet - will be refactored next');
+  }
+}

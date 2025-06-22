@@ -562,6 +562,9 @@ export class MemStorage implements IStorage {
 
 // Импортируем реализацию базы данных
 import { DatabaseStorage } from "./database-storage";
+import { RefactoredStorage } from "./storage/refactored-storage";
 
-// Используем базу данных для хранения
-export const storage = new DatabaseStorage();
+// Используем рефакторированный storage с модульной архитектурой
+// Временно оставляем старый storage как fallback
+export const storage = new RefactoredStorage();
+export const legacyStorage = new DatabaseStorage();
