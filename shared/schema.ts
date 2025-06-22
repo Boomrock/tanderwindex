@@ -124,6 +124,11 @@ export const tenders = pgTable("tenders", {
   personType: personTypeEnum("person_type").notNull().default('individual'),
   requiredProfessions: json("required_professions").$type<string[]>().default([]),
   images: json("images").$type<string[]>().default([]),
+  // Поля модерации
+  moderationStatus: text("moderation_status").notNull().default('pending'), // pending, approved, rejected
+  moderatedBy: integer("moderated_by").references(() => users.id),
+  moderatedAt: timestamp("moderated_at"),
+  moderationComment: text("moderation_comment"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   viewCount: integer("view_count").default(0),
@@ -155,6 +160,11 @@ export const marketplaceListings = pgTable("marketplace_listings", {
   userId: integer("user_id").notNull().references(() => users.id),
   images: json("images").$type<string[]>().default([]),
   isActive: boolean("is_active").default(true),
+  // Поля модерации
+  moderationStatus: text("moderation_status").notNull().default('pending'), // pending, approved, rejected
+  moderatedBy: integer("moderated_by").references(() => users.id),
+  moderatedAt: timestamp("moderated_at"),
+  moderationComment: text("moderation_comment"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   viewCount: integer("view_count").default(0),

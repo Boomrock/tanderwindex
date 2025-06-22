@@ -119,6 +119,78 @@ export function initializeDatabase() {
   console.log('SQLite database initialized successfully');
 }
 
+export function addModerationFields() {
+  console.log('Adding moderation fields to database...');
+  
+  try {
+    // Добавляем поля модерации в таблицу tenders
+    sqlite.exec(`
+      ALTER TABLE tenders ADD COLUMN moderation_status TEXT DEFAULT 'pending';
+    `);
+  } catch (error) {
+    console.log('Moderation status column already exists in tenders table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE tenders ADD COLUMN moderated_by INTEGER;
+    `);
+  } catch (error) {
+    console.log('Moderated by column already exists in tenders table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE tenders ADD COLUMN moderated_at TEXT;
+    `);
+  } catch (error) {
+    console.log('Moderated at column already exists in tenders table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE tenders ADD COLUMN moderation_comment TEXT;
+    `);
+  } catch (error) {
+    console.log('Moderation comment column already exists in tenders table');
+  }
+
+  // Добавляем поля модерации в таблицу marketplace_listings
+  try {
+    sqlite.exec(`
+      ALTER TABLE marketplace_listings ADD COLUMN moderation_status TEXT DEFAULT 'pending';
+    `);
+  } catch (error) {
+    console.log('Moderation status column already exists in marketplace_listings table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE marketplace_listings ADD COLUMN moderated_by INTEGER;
+    `);
+  } catch (error) {
+    console.log('Moderated by column already exists in marketplace_listings table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE marketplace_listings ADD COLUMN moderated_at TEXT;
+    `);
+  } catch (error) {
+    console.log('Moderated at column already exists in marketplace_listings table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE marketplace_listings ADD COLUMN moderation_comment TEXT;
+    `);
+  } catch (error) {
+    console.log('Moderation comment column already exists in marketplace_listings table');
+  }
+
+  console.log('Moderation fields migration completed');
+}
+
 // Seed database with basic data
 export function seedDatabaseIfEmpty() {
   const userCount = sqlite.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
