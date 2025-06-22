@@ -69,6 +69,25 @@ async function adminMiddleware(req: Request, res: Response, next: Function) {
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
+  // Image upload endpoint
+  apiRouter.post('/upload', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const { image, filename } = req.body;
+      
+      if (!image || !filename) {
+        return res.status(400).json({ message: "Image data and filename required" });
+      }
+      
+      // For this implementation, we'll return the base64 data URL
+      // In production, you would save to a file storage service like AWS S3
+      const imageUrl = `data:image/jpeg;base64,${image}`;
+      
+      res.json({ url: imageUrl });
+    } catch (error) {
+      res.status(500).json({ message: "Upload failed", error: error.message });
+    }
+  });
+  
   // Auth routes
   apiRouter.post('/auth/register', async (req: Request, res: Response) => {
     try {

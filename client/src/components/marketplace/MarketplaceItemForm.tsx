@@ -87,16 +87,20 @@ export default function MarketplaceItemForm({ initialData, isEditing = false }: 
           title: 'Объявление обновлено',
           description: 'Ваше объявление было успешно обновлено',
         });
-        // Invalidate marketplace cache
-        queryClient.invalidateQueries({ queryKey: ['/api/marketplace'] });
+        // Invalidate all marketplace queries with partial matching
+        queryClient.invalidateQueries({ 
+          predicate: (query) => query.queryKey[0]?.toString().startsWith('/api/marketplace')
+        });
       } else {
         await apiRequest('POST', '/api/marketplace', listingData);
         toast({
           title: 'Объявление создано',
           description: 'Ваше объявление было успешно создано',
         });
-        // Invalidate marketplace cache to show new listing
-        queryClient.invalidateQueries({ queryKey: ['/api/marketplace'] });
+        // Invalidate all marketplace queries with partial matching
+        queryClient.invalidateQueries({ 
+          predicate: (query) => query.queryKey[0]?.toString().startsWith('/api/marketplace')
+        });
       }
       
       navigate('/marketplace');
@@ -118,19 +122,67 @@ export default function MarketplaceItemForm({ initialData, isEditing = false }: 
   };
 
   const handleImageUpload = () => {
-    // In a real app, this would be replaced with actual image upload functionality
-    // For this MVP, we'll use placeholder images
-    const placeholderImages = [
-      'https://images.unsplash.com/photo-1580820726687-30e7ba70d976',
-      'https://images.unsplash.com/photo-1504148455328-c376907d081c',
-      'https://images.unsplash.com/photo-1591123120675-6f7f1aae0e5b',
-      'https://images.unsplash.com/photo-1504307651254-35680f356dfd',
-    ];
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = false;
     
-    const newImage = placeholderImages[Math.floor(Math.random() * placeholderImages.length)];
-    const updatedImages = [...uploadedImages, newImage];
-    setUploadedImages(updatedImages);
-    form.setValue('images', updatedImages);
+    input.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      // Check file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: 'Ошибка',
+          description: 'Размер файла не должен превышать 5 МБ',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      try {
+        // Convert file to base64
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64 = reader.result as string;
+          const base64Data = base64.split(',')[1]; // Remove data:image/...;base64, prefix
+          
+          try {
+            const response = await apiRequest('POST', '/api/upload', {
+              image: base64Data,
+              filename: file.name,
+            });
+            
+            const result = await response.json();
+            const updatedImages = [...uploadedImages, result.url];
+            setUploadedImages(updatedImages);
+            form.setValue('images', updatedImages);
+            
+            toast({
+              title: 'Изображение загружено',
+              description: 'Изображение успешно добавлено к объявлению',
+            });
+          } catch (error) {
+            toast({
+              title: 'Ошибка загрузки',
+              description: 'Не удалось загрузить изображение',
+              variant: 'destructive',
+            });
+          }
+        };
+        
+        reader.readAsDataURL(file);
+      } catch (error) {
+        toast({
+          title: 'Ошибка',
+          description: 'Произошла ошибка при обработке файла',
+          variant: 'destructive',
+        });
+      }
+    };
+    
+    input.click();
   };
 
   const removeImage = (index: number) => {
