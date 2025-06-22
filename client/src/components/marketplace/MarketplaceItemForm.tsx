@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import { 
   MARKETPLACE_CATEGORIES, 
   MARKETPLACE_SUBCATEGORIES, 
@@ -87,12 +87,16 @@ export default function MarketplaceItemForm({ initialData, isEditing = false }: 
           title: 'Объявление обновлено',
           description: 'Ваше объявление было успешно обновлено',
         });
+        // Invalidate marketplace cache
+        queryClient.invalidateQueries({ queryKey: ['/api/marketplace'] });
       } else {
         await apiRequest('POST', '/api/marketplace', listingData);
         toast({
           title: 'Объявление создано',
           description: 'Ваше объявление было успешно создано',
         });
+        // Invalidate marketplace cache to show new listing
+        queryClient.invalidateQueries({ queryKey: ['/api/marketplace'] });
       }
       
       navigate('/marketplace');
