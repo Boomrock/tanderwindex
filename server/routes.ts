@@ -311,13 +311,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   apiRouter.post('/tenders', authMiddleware, async (req: Request, res: Response) => {
     try {
-      // Convert deadline string to Date object before validation
-      const bodyWithDateConversion = {
-        ...req.body,
-        deadline: req.body.deadline ? new Date(req.body.deadline) : undefined
-      };
+      console.log('Raw request body:', req.body);
+      console.log('Deadline field:', req.body.deadline, 'Type:', typeof req.body.deadline);
       
-      const tenderData = insertTenderSchema.parse(bodyWithDateConversion);
+      const tenderData = insertTenderSchema.parse(req.body);
+      
+      console.log('After schema validation:', tenderData);
       
       const tender = await storage.createTender({
         ...tenderData,
@@ -326,6 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(tender);
     } catch (error) {
+      console.error('Tender creation error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }

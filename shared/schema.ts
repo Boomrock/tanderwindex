@@ -363,6 +363,8 @@ export const insertTenderSchema = createInsertSchema(tenders).omit({
   createdAt: true, 
   updatedAt: true, 
   viewCount: true
+}).extend({
+  deadline: z.union([z.date(), z.string().transform((str) => new Date(str))])
 });
 
 export const insertTenderBidSchema = createInsertSchema(tenderBids).omit({

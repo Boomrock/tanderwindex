@@ -289,6 +289,9 @@ export class SQLiteStorage implements IStorage {
   }
   
   async createTender(tender: InsertTender): Promise<Tender> {
+    console.log('SQLite createTender received:', tender);
+    console.log('Deadline type and value:', typeof tender.deadline, tender.deadline);
+    
     // Преобразуем массив в строку JSON для сохранения
     // и добавляем временные метки для SQLite (в формате ISO строки)
     const tenderData = {
@@ -298,6 +301,8 @@ export class SQLiteStorage implements IStorage {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+    
+    console.log('SQLite tenderData before insert:', tenderData);
     
     const [newTender] = await db.insert(tenders).values(tenderData).returning();
     
