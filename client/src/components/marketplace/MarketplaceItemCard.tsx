@@ -43,7 +43,7 @@ export default function MarketplaceItemCard({ listing }: MarketplaceItemCardProp
     return listingType === 'rent' ? formattedPrice + '/день' : formattedPrice;
   };
 
-  const imageUrl = getImageUrl(listing.images, listing.title + listing.id);
+  const imageUrl = getImageUrl(listing.images, `${listing.category}-${listing.id}`);
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
