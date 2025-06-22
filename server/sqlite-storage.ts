@@ -294,6 +294,7 @@ export class SQLiteStorage implements IStorage {
     const tenderData = {
       ...tender,
       images: JSON.stringify(tender.images || []),
+      deadline: tender.deadline instanceof Date ? tender.deadline.toISOString() : tender.deadline,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -309,9 +310,13 @@ export class SQLiteStorage implements IStorage {
   
   async updateTender(id: number, tenderData: Partial<Tender>): Promise<Tender | undefined> {
     // Если обновляются изображения, преобразуем их в JSON
+    // Если обновляется deadline, преобразуем Date в ISO string
     const data = { ...tenderData };
     if (data.images) {
       data.images = JSON.stringify(data.images);
+    }
+    if (data.deadline && data.deadline instanceof Date) {
+      data.deadline = data.deadline.toISOString();
     }
     
     const [updatedTender] = await db
