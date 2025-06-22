@@ -9,7 +9,6 @@ import {
   insertMarketplaceListingSchema, 
   insertMessageSchema, 
   insertReviewSchema,
-  insertBankGuaranteeSchema,
   users,
   tenders,
   marketplaceListings,
@@ -678,118 +677,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Bank Guarantee routes
-  apiRouter.get('/guarantees', async (req: Request, res: Response) => {
-    try {
-      const filters = {
-        customerId: req.query.customerId ? parseInt(req.query.customerId as string) : undefined,
-        contractorId: req.query.contractorId ? parseInt(req.query.contractorId as string) : undefined,
-        status: req.query.status as string | undefined
-      };
-      
-      const guarantees = await storage.getBankGuarantees(filters);
-      res.status(200).json(guarantees);
-    } catch (error) {
-      res.status(500).json({ message: "Server error", error: (error as Error).message });
-    }
-  });
 
-  apiRouter.get('/guarantees/:id', async (req: Request, res: Response) => {
-    try {
-      const guaranteeId = parseInt(req.params.id);
-      if (isNaN(guaranteeId)) {
-        return res.status(400).json({ message: "Invalid guarantee ID" });
-      }
-      
-      const guarantee = await storage.getBankGuarantee(guaranteeId);
-      if (!guarantee) {
-        return res.status(404).json({ message: "Guarantee not found" });
-      }
-      
-      res.status(200).json(guarantee);
-    } catch (error) {
-      res.status(500).json({ message: "Server error", error: (error as Error).message });
-    }
-  });
-
-  apiRouter.post('/guarantees', authMiddleware, async (req: Request, res: Response) => {
-    try {
-      console.log('Request body:', req.body);
-      const guaranteeData = insertBankGuaranteeSchema.parse(req.body);
-      console.log('Parsed guarantee data:', guaranteeData);
-      
-      // Allow either the customer or the contractor to create a guarantee
-      if (guaranteeData.customerId !== req.user.id && guaranteeData.contractorId !== req.user.id) {
-        return res.status(403).json({ 
-          message: "You can only create guarantees where you are either the customer or the contractor" 
-        });
-      }
-      
-      // Manually handle dates in guaranteeData
-      const sanitizedData = {
-        ...guaranteeData,
-        startDate: guaranteeData.startDate ? new Date(guaranteeData.startDate) : null,
-        endDate: guaranteeData.endDate ? new Date(guaranteeData.endDate) : null
-      };
-      
-      console.log('Sanitized guarantee data:', sanitizedData);
-      const guarantee = await storage.createBankGuarantee(sanitizedData);
-      res.status(201).json(guarantee);
-    } catch (error) {
-      console.error('Error creating guarantee:', error);
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Validation error", errors: error.errors });
-      }
-      res.status(500).json({ message: "Server error", error: (error as Error).message });
-    }
-  });
-
-  apiRouter.patch('/guarantees/:id/status', authMiddleware, async (req: Request, res: Response) => {
-    try {
-      const guaranteeId = parseInt(req.params.id);
-      if (isNaN(guaranteeId)) {
-        return res.status(400).json({ message: "Invalid guarantee ID" });
-      }
-      
-      const { status } = req.body;
-      if (!status || typeof status !== 'string') {
-        return res.status(400).json({ message: "Status is required" });
-      }
-      
-      // Validate status
-      const validStatuses = ['pending', 'approved', 'active', 'completed', 'cancelled', 'rejected'];
-      if (!validStatuses.includes(status)) {
-        return res.status(400).json({ 
-          message: "Invalid status", 
-          valid_statuses: validStatuses 
-        });
-      }
-      
-      // Get the guarantee to check if the user is authorized to update it
-      const guarantee = await storage.getBankGuarantee(guaranteeId);
-      if (!guarantee) {
-        return res.status(404).json({ message: "Guarantee not found" });
-      }
-      
-      // Check if the user is authorized to update the guarantee
-      // Only allow customers and contractors involved in the guarantee to update status
-      if (guarantee.customerId !== req.user.id && guarantee.contractorId !== req.user.id) {
-        return res.status(403).json({ 
-          message: "You are not authorized to update this guarantee" 
-        });
-      }
-      
-      // Update the guarantee status
-      const updatedGuarantee = await storage.updateBankGuaranteeStatus(guaranteeId, status);
-      if (!updatedGuarantee) {
-        return res.status(404).json({ message: "Guarantee not found" });
-      }
-      
-      res.status(200).json(updatedGuarantee);
-    } catch (error) {
-      res.status(500).json({ message: "Server error", error: (error as Error).message });
-    }
-  });
 
   // Административные маршруты
   apiRouter.get('/admin/stats', adminMiddleware, async (req: Request, res: Response) => {
