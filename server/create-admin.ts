@@ -22,12 +22,12 @@ async function createAdmin() {
       console.log('Пользователь admin уже существует');
       
       // Проверяем, является ли пользователь администратором
-      if (existingUser.is_admin) {
+      if (existingUser.isAdmin) {
         console.log('Пользователь admin уже имеет права администратора');
       } else {
         // Обновляем права до администратора
         const updateStmt = sqliteDb.prepare(
-          `UPDATE users SET is_admin = 1 WHERE id = ?`
+          `UPDATE users SET isAdmin = 1 WHERE id = ?`
         );
         updateStmt.run(existingUser.id);
         console.log('Права администратора успешно добавлены пользователю admin');
@@ -44,8 +44,8 @@ async function createAdmin() {
     const now = new Date().toISOString();
     const insertUserStmt = sqliteDb.prepare(`
       INSERT INTO users (
-        username, password, email, full_name, user_type, is_verified, is_admin,
-        rating, completed_projects, wallet_balance, created_at, updated_at
+        username, password, email, fullName, userType, isVerified, isAdmin,
+        rating, completedProjects, walletBalance, createdAt, updatedAt
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     
