@@ -4,7 +4,7 @@ import { IStorage } from './storage';
 import {
   users, tenders, tenderBids, marketplaceListings, messages, reviews,
   userDocuments, deliveryOptions, deliveryOrders, estimates, estimateItems, designProjects,
-  crews, crewMembers, crewPortfolios, crewMemberSkills, bankGuarantees,
+  crews, crewMembers, crewPortfolios, crewMemberSkills,
   type User, type InsertUser,
   type UserDocument, type InsertUserDocument,
   type Tender, type InsertTender,
@@ -20,8 +20,7 @@ import {
   type Crew, type InsertCrew,
   type CrewMember, type InsertCrewMember, 
   type CrewPortfolio, type InsertCrewPortfolio,
-  type CrewMemberSkill, type InsertCrewMemberSkill,
-  type BankGuarantee, type InsertBankGuarantee
+  type CrewMemberSkill, type InsertCrewMemberSkill
 } from '@shared/schema';
 
 // Преобразование строки JSON в массив строк
@@ -1170,191 +1169,7 @@ export class SQLiteStorage implements IStorage {
     }));
   }
 
-  // Методы для работы с банковскими гарантиями
 
-  async getBankGuarantees(filters?: { 
-    customerId?: number; 
-    contractorId?: number; 
-    status?: string;
-  }): Promise<BankGuarantee[]> {
-    // Строим SQL запрос на основе фильтров
-    let sql = `SELECT * FROM bank_guarantees`;
-    const params: any[] = [];
-    
-    if (filters) {
-      const conditions: string[] = [];
-      
-      if (filters.customerId) {
-        conditions.push(`customer_id = ?`);
-        params.push(filters.customerId);
-      }
-      
-      if (filters.contractorId) {
-        conditions.push(`contractor_id = ?`);
-        params.push(filters.contractorId);
-      }
-      
-      if (filters.status) {
-        conditions.push(`status = ?`);
-        params.push(filters.status);
-      }
-      
-      if (conditions.length > 0) {
-        sql += ` WHERE ` + conditions.join(' AND ');
-      }
-    }
-    
-    // Добавляем сортировку - сначала новые
-    sql += ` ORDER BY created_at DESC`;
-    
-    const stmt = sqliteDb.prepare(sql);
-    const guarantees = stmt.all(...params) as any[];
-    
-    // Преобразуем даты из строк в объекты Date для совместимости с API
-    return guarantees.map(guarantee => ({
-      id: guarantee.id,
-      customerId: guarantee.customer_id,
-      contractorId: guarantee.contractor_id,
-      tenderId: guarantee.tender_id,
-      amount: guarantee.amount,
-      description: guarantee.description,
-      terms: guarantee.terms,
-      startDate: guarantee.start_date ? new Date(guarantee.start_date) : null,
-      endDate: guarantee.end_date ? new Date(guarantee.end_date) : null,
-      status: guarantee.status,
-      createdAt: guarantee.created_at ? new Date(guarantee.created_at) : null,
-      updatedAt: guarantee.updated_at ? new Date(guarantee.updated_at) : null
-    }));
-  }
-
-  async getBankGuarantee(id: number): Promise<BankGuarantee | undefined> {
-    const stmt = sqliteDb.prepare(`
-      SELECT * FROM bank_guarantees WHERE id = ?
-    `);
-    
-    const guarantee = stmt.get(id) as any;
-    
-    if (!guarantee) return undefined;
-    
-    // Преобразуем даты из строк в объекты Date для совместимости с API
-    return {
-      id: guarantee.id,
-      customerId: guarantee.customer_id,
-      contractorId: guarantee.contractor_id,
-      tenderId: guarantee.tender_id,
-      amount: guarantee.amount,
-      description: guarantee.description,
-      terms: guarantee.terms,
-      startDate: guarantee.start_date ? new Date(guarantee.start_date) : null,
-      endDate: guarantee.end_date ? new Date(guarantee.end_date) : null,
-      status: guarantee.status,
-      createdAt: guarantee.created_at ? new Date(guarantee.created_at) : null,
-      updatedAt: guarantee.updated_at ? new Date(guarantee.updated_at) : null
-    };
-  }
-
-  async createBankGuarantee(insertGuarantee: InsertBankGuarantee): Promise<BankGuarantee> {
-    // Используем прямой SQL запрос для создания гарантии
-    const startDateStr = insertGuarantee.startDate instanceof Date 
-      ? insertGuarantee.startDate.toISOString() 
-      : new Date(insertGuarantee.startDate).toISOString();
-      
-    const endDateStr = insertGuarantee.endDate instanceof Date
-      ? insertGuarantee.endDate.toISOString()
-      : new Date(insertGuarantee.endDate).toISOString();
-    
-    const now = new Date().toISOString();
-    
-    const insertStmt = sqliteDb.prepare(`
-      INSERT INTO bank_guarantees (
-        customer_id, contractor_id, tender_id, amount, description, 
-        terms, start_date, end_date, status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    
-    const result = insertStmt.run(
-      insertGuarantee.customerId,
-      insertGuarantee.contractorId,
-      insertGuarantee.tenderId || null,
-      insertGuarantee.amount,
-      insertGuarantee.description,
-      insertGuarantee.terms,
-      startDateStr,
-      endDateStr,
-      insertGuarantee.status || 'pending',
-      now,
-      now
-    );
-    
-    const id = result.lastInsertRowid as number;
-    
-    // Получаем созданную гарантию
-    const selectStmt = sqliteDb.prepare(`
-      SELECT * FROM bank_guarantees WHERE id = ?
-    `);
-    
-    const guarantee = selectStmt.get(id) as any;
-    
-    // Преобразуем даты из строк в объекты Date для совместимости с API
-    return {
-      id: guarantee.id,
-      customerId: guarantee.customer_id,
-      contractorId: guarantee.contractor_id,
-      tenderId: guarantee.tender_id,
-      amount: guarantee.amount,
-      description: guarantee.description,
-      terms: guarantee.terms,
-      startDate: guarantee.start_date ? new Date(guarantee.start_date) : null,
-      endDate: guarantee.end_date ? new Date(guarantee.end_date) : null,
-      status: guarantee.status,
-      createdAt: guarantee.created_at ? new Date(guarantee.created_at) : null,
-      updatedAt: guarantee.updated_at ? new Date(guarantee.updated_at) : null
-    };
-  }
-
-  async updateBankGuaranteeStatus(id: number, status: string): Promise<BankGuarantee | undefined> {
-    // Проверяем, существует ли гарантия
-    const checkStmt = sqliteDb.prepare(`
-      SELECT * FROM bank_guarantees WHERE id = ?
-    `);
-    
-    const existingGuarantee = checkStmt.get(id);
-    if (!existingGuarantee) return undefined;
-    
-    const now = new Date().toISOString();
-    
-    // Обновляем статус гарантии
-    const updateStmt = sqliteDb.prepare(`
-      UPDATE bank_guarantees
-      SET status = ?, updated_at = ?
-      WHERE id = ?
-    `);
-    
-    updateStmt.run(status, now, id);
-    
-    // Получаем обновленную гарантию
-    const selectStmt = sqliteDb.prepare(`
-      SELECT * FROM bank_guarantees WHERE id = ?
-    `);
-    
-    const guarantee = selectStmt.get(id) as any;
-    
-    // Преобразуем даты из строк в объекты Date для совместимости с API
-    return {
-      id: guarantee.id,
-      customerId: guarantee.customer_id,
-      contractorId: guarantee.contractor_id,
-      tenderId: guarantee.tender_id,
-      amount: guarantee.amount,
-      description: guarantee.description,
-      terms: guarantee.terms,
-      startDate: guarantee.start_date ? new Date(guarantee.start_date) : null,
-      endDate: guarantee.end_date ? new Date(guarantee.end_date) : null,
-      status: guarantee.status,
-      createdAt: guarantee.created_at ? new Date(guarantee.created_at) : null,
-      updatedAt: guarantee.updated_at ? new Date(guarantee.updated_at) : null
-    };
-  }
 }
 
 export const sqliteStorage = new SQLiteStorage();

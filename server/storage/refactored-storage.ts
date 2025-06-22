@@ -1,7 +1,6 @@
 import { IStorage } from '../storage';
 import { MessageStorage } from './message-storage';
 import { UserStorage } from './user-storage';
-import { BankGuaranteeStorage } from './bank-guarantee-storage';
 import type {
   User, InsertUser,
   Tender, InsertTender,
@@ -18,8 +17,7 @@ import type {
   Crew, InsertCrew,
   CrewMember, InsertCrewMember,
   CrewPortfolio, InsertCrewPortfolio,
-  CrewMemberSkill, InsertCrewMemberSkill,
-  BankGuarantee, InsertBankGuarantee
+  CrewMemberSkill, InsertCrewMemberSkill
 } from '@shared/schema';
 
 /**
@@ -29,7 +27,6 @@ import type {
 export class RefactoredStorage implements IStorage {
   private messageStorage = new MessageStorage();
   private userStorage = new UserStorage();
-  private bankGuaranteeStorage = new BankGuaranteeStorage();
 
   // === ПОЛЬЗОВАТЕЛИ ===
   async getUser(id: number): Promise<User | undefined> {
@@ -397,19 +394,5 @@ export class RefactoredStorage implements IStorage {
     throw new Error('Not implemented yet - will be refactored next');
   }
 
-  async getBankGuarantees(filters?: any): Promise<BankGuarantee[]> {
-    return this.bankGuaranteeStorage.getBankGuarantees(filters);
-  }
 
-  async getBankGuarantee(id: number): Promise<BankGuarantee | undefined> {
-    return this.bankGuaranteeStorage.getBankGuarantee(id);
-  }
-
-  async createBankGuarantee(guarantee: InsertBankGuarantee): Promise<BankGuarantee> {
-    return this.bankGuaranteeStorage.createBankGuarantee(guarantee);
-  }
-
-  async updateBankGuaranteeStatus(id: number, status: string): Promise<BankGuarantee | undefined> {
-    return this.bankGuaranteeStorage.updateBankGuaranteeStatus(id, status);
-  }
 }
