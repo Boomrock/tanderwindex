@@ -608,10 +608,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         senderId: req.user.id
       });
       
+      console.log('Parsed message data:', messageData);
+      
       const message = await storage.createMessage(messageData);
       
       res.status(201).json(message);
     } catch (error) {
+      console.error('Message creation error:', error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }

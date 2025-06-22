@@ -549,12 +549,20 @@ export class SQLiteStorage implements IStorage {
   }
   
   async createMessage(message: InsertMessage): Promise<Message> {
-    // Добавляем временную метку для SQLite в виде ISO строки
-    const messageWithTimestamp = {
-      ...message,
+    console.log('Original message data:', message);
+    
+    // Убеждаемся, что все значения правильного типа для SQLite
+    const sanitizedMessage = {
+      senderId: Number(message.senderId),
+      receiverId: Number(message.receiverId),
+      content: String(message.content),
+      isRead: Boolean(message.isRead || false),
       createdAt: new Date().toISOString()
     };
-    const [newMessage] = await db.insert(messages).values(messageWithTimestamp).returning();
+    
+    console.log('Sanitized message data:', sanitizedMessage);
+    
+    const [newMessage] = await db.insert(messages).values(sanitizedMessage).returning();
     return newMessage;
   }
   
