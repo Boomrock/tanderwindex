@@ -49,11 +49,7 @@ export default function Tenders() {
           )}
         </div>
 
-        <SearchFilters 
-          type="tenders"
-          initialFilters={filters}
-          onSearch={handleSearch}
-        />
+
 
         <div className="mt-6">
           {isLoading ? (

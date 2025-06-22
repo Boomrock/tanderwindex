@@ -21,9 +21,9 @@ export async function seedTopSpecialists() {
     // Подготавливаем запрос на вставку пользователя
     const insertUserStmt = sqliteDb.prepare(`
       INSERT INTO users (
-        username, password, email, fullName, user_type, location, bio,
-        rating, completed_projects, is_verified, inn, website, wallet_balance
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        username, password, email, firstName, lastName, user_type, rating, 
+        completed_projects, is_verified, inn, website, wallet_balance
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     
     // Тестовые данные для физических лиц - мастеров
@@ -32,61 +32,71 @@ export async function seedTopSpecialists() {
         username: 'master_ivan',
         password: await hashPassword('password123'),
         email: 'ivan@example.com',
-        fullName: 'Иванов Иван',
+        firstName: 'Иван',
+        lastName: 'Иванов',
         userType: 'individual',
-        location: 'Москва',
-        bio: 'Опытный мастер-отделочник с 15-летним стажем работы',
         rating: 5,
         completedProjects: 48,
-        isVerified: 1 // для SQLite используем 1 вместо true
+        isVerified: 1, // для SQLite используем 1 вместо true
+        inn: '123456789012',
+        website: null,
+        walletBalance: 0
       },
       {
         username: 'master_elena',
         password: await hashPassword('password123'),
         email: 'elena@example.com',
-        fullName: 'Елена Смирнова',
+        firstName: 'Елена',
+        lastName: 'Смирнова',
         userType: 'individual',
-        location: 'Санкт-Петербург',
-        bio: 'Дизайнер интерьеров с портфолио более 50 проектов',
         rating: 5,
         completedProjects: 52,
-        isVerified: 1
+        isVerified: 1,
+        inn: '123456789013',
+        website: null,
+        walletBalance: 0
       },
       {
         username: 'master_sergey',
         password: await hashPassword('password123'),
         email: 'sergey@example.com',
-        fullName: 'Сергей Петров',
+        firstName: 'Сергей',
+        lastName: 'Петров',
         userType: 'individual',
-        location: 'Казань',
-        bio: 'Электрик-профессионал, работаю с любыми объектами',
         rating: 4,
         completedProjects: 37,
-        isVerified: 1
+        isVerified: 1,
+        inn: '123456789014',
+        website: null,
+        walletBalance: 0
       },
       {
         username: 'master_olga',
         password: await hashPassword('password123'),
         email: 'olga@example.com',
-        fullName: 'Ольга Николаева',
+        firstName: 'Ольга',
+        lastName: 'Николаева',
         userType: 'individual',
-        location: 'Новосибирск',
-        bio: 'Специалист по ландшафтному дизайну и озеленению',
         rating: 4,
         completedProjects: 28,
-        isVerified: 1
+        isVerified: 1,
+        inn: '123456789015',
+        website: null,
+        walletBalance: 0
       },
       {
         username: 'master_dmitry',
         password: await hashPassword('password123'),
         email: 'dmitry@example.com',
-        fullName: 'Дмитрий Кузнецов',
+        firstName: 'Дмитрий',
+        lastName: 'Кузнецов',
         userType: 'individual',
-        location: 'Екатеринбург',
-        bio: 'Мастер по укладке плитки и сантехническим работам',
         rating: 5,
         completedProjects: 42,
-        isVerified: 1
+        isVerified: 1,
+        inn: '123456789016',
+        website: null,
+        walletBalance: 0
       }
     ];
     
@@ -96,19 +106,22 @@ export async function seedTopSpecialists() {
         username: 'stroybest',
         password: await hashPassword('password123'),
         email: 'info@stroybest.ru',
-        fullName: 'ООО "СтройБест"',
+        firstName: 'ООО',
+        lastName: 'СтройБест',
         userType: 'company',
-        location: 'Москва',
-        bio: 'Строительная компания полного цикла, работаем с 2005 года',
         rating: 5,
         completedProjects: 123,
-        isVerified: 1
+        isVerified: 1,
+        inn: '7701234567',
+        website: 'https://stroybest.ru',
+        walletBalance: 0
       },
       {
         username: 'designpro',
         password: await hashPassword('password123'),
         email: 'info@designpro.ru',
-        fullName: 'ООО "ДизайнПро"',
+        firstName: 'ООО',
+        lastName: 'ДизайнПро',
         userType: 'company',
         location: 'Санкт-Петербург',
         bio: 'Проектируем и реализуем дизайнерские решения для жилых и коммерческих помещений',

@@ -52,11 +52,7 @@ export default function Marketplace() {
           )}
         </div>
 
-        <SearchFilters 
-          type="marketplace"
-          initialFilters={filters}
-          onSearch={handleSearch}
-        />
+
 
         <div className="mt-6">
           {isLoading ? (
