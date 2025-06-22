@@ -19,6 +19,10 @@ export const subcategoryValues = [
   // Услуги
   'repair', 'construction', 'design', 'demolition', 'cleaning',
   'moving_services', 'consulting', 'installation', 'plumbing', 'electrical',
+  // Недвижимость
+  'commercial', 'residential', 'land', 'industrial',
+  // Транспорт
+  'truck', 'van', 'special',
   // Другое
   'furniture', 'dsv', 'mdf', 'solid_wood', 'other'
 ] as const;
