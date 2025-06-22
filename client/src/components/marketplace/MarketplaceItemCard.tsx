@@ -77,7 +77,7 @@ export default function MarketplaceItemCard({ listing }: MarketplaceItemCardProp
           {listing.location}
         </div>
         <div className="mt-4 flex items-center justify-between">
-          <div className="text-xl font-bold text-secondary">
+          <div className="text-xl font-bold text-black">
             {formatPrice(listing.price, listing.listingType)}
           </div>
           <Link href={`/messages?userId=${listing.userId}`}>
