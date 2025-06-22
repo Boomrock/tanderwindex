@@ -1,8 +1,8 @@
-# СтройТендер - Construction Tenders and Marketplace Platform
+# Windex-строй - Construction Tenders and Marketplace Platform
 
 ## Overview
 
-СтройТендер is a comprehensive construction platform that combines tender management with a marketplace for construction materials and equipment. The platform enables construction companies, contractors, and individual specialists to find projects, participate in tenders, and trade construction-related goods and services.
+Windex-строй is a comprehensive construction platform that combines tender management with a marketplace for construction materials and equipment. The platform enables construction companies, contractors, and individual specialists to find projects, participate in tenders, and trade construction-related goods and services.
 
 ## System Architecture
 

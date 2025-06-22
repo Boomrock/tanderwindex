@@ -15,16 +15,11 @@ import {
 import { 
   User, 
   LogOut, 
-  Settings, 
   MessageCircle, 
-  PlusCircle, 
-  Search,
   Menu,
   X,
   Construction,
-  ShieldCheck,
-  Wallet,
-  Shield
+  Settings
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -54,7 +49,7 @@ const Header = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center space-x-1">
               <Construction className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl text-primary">СтройТендер</span>
+              <span className="font-bold text-xl text-primary">Windex-строй</span>
             </Link>
           </div>
           
@@ -122,25 +117,12 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
 
-                    <DropdownMenuItem asChild>
-                      <Link href="/tenders/create">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Создать тендер
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/marketplace/create">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Разместить объявление
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
                     {user?.isAdmin && (
                       <>
                         <DropdownMenuItem asChild>
                           <Link href="/admin">
-                            <Shield className="mr-2 h-4 w-4" />
-                            Панель администратора
+                            <Settings className="mr-2 h-4 w-4" />
+                            Админ панель
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -224,27 +206,13 @@ const Header = () => {
                 )}
               </Link>
 
-              <Link
-                href="/tenders/create"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Создать тендер
-              </Link>
-              <Link
-                href="/marketplace/create"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Разместить объявление
-              </Link>
               {user?.isAdmin && (
                 <Link
                   href="/admin"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Панель администратора
+                  Админ панель
                 </Link>
               )}
               <button
