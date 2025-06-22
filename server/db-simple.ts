@@ -217,6 +217,15 @@ export function addModerationFields() {
     console.log('last_name column already exists in users table');
   }
 
+  try {
+    sqlite.exec(`
+      ALTER TABLE users ADD COLUMN is_verified INTEGER DEFAULT 0;
+    `);
+    console.log('is_verified column added to users table');
+  } catch (error) {
+    console.log('is_verified column already exists in users table');
+  }
+
   console.log('Moderation fields migration completed');
 }
 

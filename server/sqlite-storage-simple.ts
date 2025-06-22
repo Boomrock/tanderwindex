@@ -424,18 +424,18 @@ export class SimpleSQLiteStorage implements IStorage {
   // Placeholder methods for interface compliance
   async getTopSpecialists(userType?: string): Promise<User[]> {
     // Базовый запрос для всех лучших специалистов
-    let whereCondition = eq(users.isTopSpecialist, true);
+    let whereCondition = eq(users.isTopSpecialist, 1);
     
     // Добавляем фильтр по типу пользователя если указан
     if (userType) {
       if (userType === 'legal') {
         whereCondition = and(
-          eq(users.isTopSpecialist, true),
+          eq(users.isTopSpecialist, 1),
           or(eq(users.userType, 'company'), eq(users.userType, 'contractor'))
         );
       } else if (userType === 'individual') {
         whereCondition = and(
-          eq(users.isTopSpecialist, true),
+          eq(users.isTopSpecialist, 1),
           eq(users.userType, 'individual')
         );
       }
