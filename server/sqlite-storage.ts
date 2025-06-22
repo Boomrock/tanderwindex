@@ -294,10 +294,19 @@ export class SQLiteStorage implements IStorage {
     
     // Преобразуем массив в строку JSON для сохранения
     // и добавляем временные метки для SQLite (в формате ISO строки)
+    let deadlineString: string;
+    if (tender.deadline instanceof Date) {
+      deadlineString = tender.deadline.toISOString();
+    } else if (typeof tender.deadline === 'string') {
+      deadlineString = tender.deadline;
+    } else {
+      throw new Error('Invalid deadline format');
+    }
+    
     const tenderData = {
       ...tender,
       images: JSON.stringify(tender.images || []),
-      deadline: tender.deadline instanceof Date ? tender.deadline.toISOString() : tender.deadline,
+      deadline: deadlineString,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -315,13 +324,19 @@ export class SQLiteStorage implements IStorage {
   
   async updateTender(id: number, tenderData: Partial<Tender>): Promise<Tender | undefined> {
     // Если обновляются изображения, преобразуем их в JSON
-    // Если обновляется deadline, преобразуем Date в ISO string
+    // Если обновляется deadline, преобразуем в ISO string
     const data = { ...tenderData };
     if (data.images) {
       data.images = JSON.stringify(data.images);
     }
-    if (data.deadline && data.deadline instanceof Date) {
-      data.deadline = data.deadline.toISOString();
+    if (data.deadline) {
+      if (data.deadline instanceof Date) {
+        data.deadline = data.deadline.toISOString();
+      } else if (typeof data.deadline === 'string') {
+        data.deadline = data.deadline;
+      } else {
+        throw new Error('Invalid deadline format in update');
+      }
     }
     
     const [updatedTender] = await db
