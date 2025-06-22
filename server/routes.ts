@@ -796,11 +796,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Подсчитываем количество активных пользователей (создавших тендеры или объявления)
       const activeUsersStmt = sqliteDb.prepare(`
-        SELECT COUNT(DISTINCT user_id) as count 
+        SELECT COUNT(DISTINCT userId) as count 
         FROM (
-          SELECT user_id FROM tenders
+          SELECT userId FROM tenders WHERE userId IS NOT NULL
           UNION
-          SELECT user_id FROM marketplace_listings
+          SELECT userId FROM marketplace_listings WHERE userId IS NOT NULL
         )
       `);
       const activeUsers = activeUsersStmt.get() as { count: number };
