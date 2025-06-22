@@ -455,16 +455,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Tender bid routes
-  apiRouter.get('/tenders/:id/bids', async (req: Request, res: Response) => {
+  // Tender bid routes - only for tender owner or bid authors
+  apiRouter.get('/tenders/:id/bids', authMiddleware, async (req: Request, res: Response) => {
     try {
       const tenderId = parseInt(req.params.id);
       if (isNaN(tenderId)) {
         return res.status(400).json({ message: "Invalid tender ID" });
       }
       
-      const bids = await storage.getTenderBids(tenderId);
-      res.status(200).json(bids);
+      // Get tender to check ownership
+      const tender = await storage.getTender(tenderId);
+      if (!tender) {
+        return res.status(404).json({ message: "Tender not found" });
+      }
+      
+      const userId = req.user.id;
+      const allBids = await storage.getTenderBids(tenderId);
+      
+      // If user is tender owner, show all bids
+      if (tender.userId === userId) {
+        res.status(200).json(allBids);
+      } else {
+        // If user is not tender owner, show only their own bids
+        const userBids = allBids.filter(bid => bid.userId === userId);
+        res.status(200).json(userBids);
+      }
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -494,6 +509,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       const bid = await storage.createTenderBid(bidData);
+      
+      // Автоматически создаем первое сообщение чата между заказчиком и подрядчиком
+      try {
+        const welcomeMessage = {
+          senderId: req.user.id,
+          receiverId: tender.userId,
+          content: `Здравствуйте! Я подал заявку на ваш тендер "${tender.title}". Готов обсудить детали проекта.`,
+          isRead: false
+        };
+        
+        await storage.createMessage(welcomeMessage);
+      } catch (messageError) {
+        console.log('Error creating welcome message:', messageError);
+        // Не прерываем процесс создания заявки из-за ошибки сообщения
+      }
       
       res.status(201).json(bid);
     } catch (error) {

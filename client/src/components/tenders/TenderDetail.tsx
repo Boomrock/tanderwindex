@@ -67,14 +67,14 @@ export default function TenderDetail({ tenderId }: TenderDetailProps) {
     queryKey: [`/api/tenders/${tenderId}`],
   });
 
-  // Fetch tender bids
+  // Fetch tender bids (only if authenticated)
   const { 
     data: tenderBids, 
     isLoading: isBidsLoading, 
     error: bidsError 
   } = useQuery<TenderBid[]>({
     queryKey: [`/api/tenders/${tenderId}/bids`],
-    enabled: !!tenderId,
+    enabled: !!tenderId && isAuthenticated,
   });
 
   // Submit bid mutation
@@ -403,7 +403,12 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                   ))}
                 </div>
               ) : bidsError ? (
-                <p className="text-center text-gray-500">Не удалось загрузить заявки. Пожалуйста, попробуйте позже.</p>
+                <p className="text-center text-gray-500">
+                  {!isAuthenticated 
+                    ? "Войдите в систему, чтобы видеть заявки" 
+                    : "Не удалось загрузить заявки. Пожалуйста, попробуйте позже."
+                  }
+                </p>
               ) : tenderBids && tenderBids.length > 0 ? (
                 <div className="space-y-4">
                   {tenderBids.map((bid) => (
