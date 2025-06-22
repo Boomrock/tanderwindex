@@ -361,7 +361,9 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
                     navigate('/login');
                     return;
                   }
-                  navigate(`/messages?userId=${listing.userId}`);
+                  if (listing?.userId) {
+                    navigate(`/messages?userId=${listing.userId}`);
+                  }
                 }}
               >
                 <MessageCircle className="mr-2 h-4 w-4" />
