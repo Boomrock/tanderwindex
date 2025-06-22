@@ -133,6 +133,12 @@ The platform uses PostgreSQL with the following key entities:
   - Added automatic chat creation between customer and contractor when bid is submitted
   - Updated API endpoint security with authentication requirements for bid access
   - Modified frontend to handle new privacy restrictions with appropriate user messaging
+- June 22, 2025. Implemented comprehensive content moderation system:
+  - Added moderation fields to database (status, moderator, date, comment)
+  - Created API endpoints for admin approval/rejection of tenders and marketplace items
+  - Updated content visibility logic to show only approved items publicly
+  - Built admin panel with moderation tabs for tenders and marketplace listings
+  - Gradient abstractions already implemented for tenders without images on homepage
 
 ## User Preferences
 

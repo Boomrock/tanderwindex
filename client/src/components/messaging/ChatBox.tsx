@@ -24,6 +24,7 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const processedMessageIds = useRef<Set<number>>(new Set());
 
   // Fetch user details
   const { data: otherUser, isLoading: isUserLoading } = useQuery<User>({
@@ -80,20 +81,25 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
     }
   }, [messages]);
 
-  // Mark unread messages as read
+  // Mark unread messages as read (only once when messages load)
   useEffect(() => {
-    if (!messages || !user) return;
+    if (!messages || !user || markAsReadMutation.isPending) return;
     
-    // Find unread messages sent to current user
+    // Find unread messages sent to current user that haven't been processed yet
     const unreadMessages = messages.filter(
-      msg => msg.receiverId === user.id && !msg.isRead
+      msg => msg.receiverId === user.id && !msg.isRead && !processedMessageIds.has(msg.id)
     );
     
-    // Mark each unread message as read
-    unreadMessages.forEach(msg => {
-      markAsReadMutation.mutate(msg.id);
-    });
-  }, [messages, user, markAsReadMutation]);
+    // Mark each unread message as read (only if there are any)
+    if (unreadMessages.length > 0) {
+      const newProcessedIds = new Set(processedMessageIds);
+      unreadMessages.forEach(msg => {
+        newProcessedIds.add(msg.id);
+        markAsReadMutation.mutate(msg.id);
+      });
+      setProcessedMessageIds(newProcessedIds);
+    }
+  }, [messages, user?.id, markAsReadMutation.isPending, processedMessageIds]);
 
   const handleSendMessage = () => {
     if (!message.trim()) return;

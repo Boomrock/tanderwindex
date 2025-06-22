@@ -21,15 +21,9 @@ export default function Messages() {
   const searchParams = new URLSearchParams(window.location.search);
   const initialUserId = searchParams.get('userId');
   
-  console.log('Messages page - location:', location);
-  console.log('Messages page - window.location.search:', window.location.search);
-  console.log('Messages page - initialUserId:', initialUserId);
-  
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(
     initialUserId ? parseInt(initialUserId) : undefined
   );
-  
-  console.log('Messages page - selectedUserId:', selectedUserId);
 
   // Update selectedUserId when URL changes
   useEffect(() => {
@@ -38,7 +32,7 @@ export default function Messages() {
     if (urlUserId && parseInt(urlUserId) !== selectedUserId) {
       setSelectedUserId(parseInt(urlUserId));
     }
-  }, [location]);
+  }, [location, selectedUserId]);
   const [showMessages, setShowMessages] = useState(!isMobile || !selectedUserId);
   const [showChat, setShowChat] = useState(!isMobile || !!selectedUserId);
 
