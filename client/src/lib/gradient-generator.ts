@@ -59,10 +59,27 @@ export function getImageUrl(images: string[] | string | null, fallbackSeed?: str
   
   if (typeof images === 'string') {
     try {
-      const parsed = JSON.parse(images);
-      return Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : generateGradientPlaceholder(fallbackSeed);
+      // Handle double-encoded JSON strings
+      let parsed = images;
+      
+      // Try to parse multiple times in case of double encoding
+      while (typeof parsed === 'string' && (parsed.startsWith('"') || parsed.startsWith('['))) {
+        try {
+          parsed = JSON.parse(parsed);
+        } catch {
+          break;
+        }
+      }
+      
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed[0];
+      } else if (typeof parsed === 'string' && parsed.startsWith('data:image/')) {
+        return parsed;
+      }
+      
+      return generateGradientPlaceholder(fallbackSeed);
     } catch {
-      return images || generateGradientPlaceholder(fallbackSeed);
+      return images.startsWith('data:image/') ? images : generateGradientPlaceholder(fallbackSeed);
     }
   }
   
