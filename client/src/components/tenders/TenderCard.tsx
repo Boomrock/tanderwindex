@@ -18,10 +18,21 @@ const TenderCard = ({ tender }: TenderCardProps) => {
     : getPlaceholderImage(tender.category);
 
   // Получаем названия требуемых профессий
-  const professionLabels = tender.requiredProfessions?.map(profValue => {
-    const profession = PROFESSIONS.find(p => p.value === profValue);
-    return profession ? profession.label : profValue;
-  }) || [];
+  const professionLabels = (() => {
+    if (!tender.requiredProfessions) return [];
+    
+    // Handle both string and array formats
+    const professions = typeof tender.requiredProfessions === 'string' 
+      ? tender.requiredProfessions.split(',').map(p => p.trim()).filter(Boolean)
+      : Array.isArray(tender.requiredProfessions) 
+        ? tender.requiredProfessions 
+        : [];
+    
+    return professions.map(profValue => {
+      const profession = PROFESSIONS.find(p => p.value === profValue);
+      return profession ? profession.label : profValue;
+    });
+  })();
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">

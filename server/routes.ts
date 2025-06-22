@@ -1,7 +1,7 @@
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
-import { sqliteStorage as storage } from "./sqlite-storage";
-import { sqliteDb, db } from "./db-sqlite";
+import { simpleSqliteStorage as storage } from "./sqlite-storage-simple";
+import { sqliteDb, db, initializeDatabase, seedDatabaseIfEmpty } from "./db-simple";
 import { 
   insertUserSchema, 
   insertTenderSchema, 

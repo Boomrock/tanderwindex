@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { initializeDatabase, seedDatabaseIfEmpty } from "./db-sqlite";
+import { initializeDatabase, seedDatabaseIfEmpty } from "./db-simple";
 import { seedTopSpecialists } from "./seed-specialists";
 import { addCompletedProjectsColumn } from "./migrations/add-completed-projects";
 import { addUserFieldsAndGuarantees } from "./migrations/add-user-fields-and-guarantees";
