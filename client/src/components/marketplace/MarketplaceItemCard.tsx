@@ -4,7 +4,8 @@ import { Heart, MessageCircle, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MarketplaceListing } from '@/lib/types';
-import { getPlaceholderImage, getStatusColor } from '@/lib/utils';
+import { getStatusColor } from '@/lib/utils';
+import { getImageUrl } from '@/lib/gradient-generator';
 import { useToast } from '@/hooks/use-toast';
 
 interface MarketplaceItemCardProps {
@@ -42,9 +43,7 @@ export default function MarketplaceItemCard({ listing }: MarketplaceItemCardProp
     return listingType === 'rent' ? formattedPrice + '/день' : formattedPrice;
   };
 
-  const imageUrl = listing.images && listing.images.length > 0 
-    ? listing.images[0] 
-    : getPlaceholderImage(listing.category);
+  const imageUrl = getImageUrl(listing.images, listing.title + listing.id);
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
