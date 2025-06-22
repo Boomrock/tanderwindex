@@ -6,7 +6,7 @@ import {
   type User, type InsertUser,
   type Tender, type InsertTender,
   type TenderBid, type InsertTenderBid,
-  type MarketplaceListing, type InsertMarketplaceListing,
+  type MarketplaceListing, type MarketplaceListingResponse, type InsertMarketplaceListing,
   type Message, type InsertMessage,
   type Review, type InsertReview
 } from '@shared/sqlite-schema';
@@ -215,7 +215,7 @@ export class SimpleSQLiteStorage implements IStorage {
     listingType?: string;
     limit?: number;
     offset?: number;
-  }): Promise<MarketplaceListing[]> {
+  }): Promise<MarketplaceListingResponse[]> {
     let query = db.select().from(marketplaceListings);
 
     if (filters?.category) {
@@ -239,7 +239,7 @@ export class SimpleSQLiteStorage implements IStorage {
     }));
   }
 
-  async getMarketplaceListing(id: number): Promise<MarketplaceListing | undefined> {
+  async getMarketplaceListing(id: number): Promise<MarketplaceListingResponse | undefined> {
     const [listing] = await db.select().from(marketplaceListings).where(eq(marketplaceListings.id, id));
     if (!listing) return undefined;
 
@@ -249,7 +249,7 @@ export class SimpleSQLiteStorage implements IStorage {
     };
   }
 
-  async createMarketplaceListing(insertListing: InsertMarketplaceListing): Promise<MarketplaceListing> {
+  async createMarketplaceListing(insertListing: InsertMarketplaceListing): Promise<MarketplaceListingResponse> {
     const now = new Date().toISOString();
     const listingData = {
       ...insertListing,
