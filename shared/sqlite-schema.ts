@@ -183,11 +183,12 @@ export const insertMarketplaceListingSchema = createInsertSchema(marketplaceList
   subcategory: z.enum(subcategoryValues).optional(),
   listingType: z.enum(listingTypeValues),
   isActive: z.boolean().optional(),
-  images: z.string().optional(),
+  images: z.array(z.string()).optional(),
   createdAt: z.string().optional(),
   updatedAt: z.string().optional(),
 }).omit({
   id: true,
+  userId: true,
   isActive: true,
   createdAt: true,
   updatedAt: true,

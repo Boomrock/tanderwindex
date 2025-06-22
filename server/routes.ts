@@ -523,10 +523,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const listingData = insertMarketplaceListingSchema.parse(req.body);
       
-      const listing = await storage.createMarketplaceListing({
+      // Convert images array to JSON string for database storage
+      const listingForDB = {
         ...listingData,
+        images: listingData.images ? JSON.stringify(listingData.images) : null,
         userId: req.user.id
-      });
+      };
+      
+      const listing = await storage.createMarketplaceListing(listingForDB);
       
       res.status(201).json(listing);
     } catch (error) {
@@ -555,6 +559,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Only allow certain fields to be updated
       const { isActive, viewCount, createdAt, updatedAt, ...updateData } = req.body;
+      
+      // Convert images array to JSON string for database storage if present
+      if (updateData.images && Array.isArray(updateData.images)) {
+        updateData.images = JSON.stringify(updateData.images);
+      }
       
       const updatedListing = await storage.updateMarketplaceListing(listingId, updateData);
       
