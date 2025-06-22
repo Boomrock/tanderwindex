@@ -1,4 +1,4 @@
-import { eq, and, like, or, sql } from 'drizzle-orm';
+import { eq, and, like, or, sql, desc } from 'drizzle-orm';
 import { db } from './db-simple';
 import { IStorage } from './storage';
 import {
@@ -207,6 +207,10 @@ export class SimpleSQLiteStorage implements IStorage {
     if (filters?.category) {
       query = query.where(eq(marketplaceListings.category, filters.category));
     }
+    
+    // Always order by creation date descending to show newest first
+    query = query.orderBy(desc(marketplaceListings.createdAt));
+    
     if (filters?.limit) {
       query = query.limit(filters.limit);
     }
