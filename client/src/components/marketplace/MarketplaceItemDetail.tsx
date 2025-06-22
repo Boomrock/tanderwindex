@@ -362,7 +362,14 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
                     return;
                   }
                   if (listing?.userId) {
+                    console.log('Navigating to messages with userId:', listing.userId);
                     navigate(`/messages?userId=${listing.userId}`);
+                  } else {
+                    toast({
+                      title: 'Ошибка',
+                      description: 'Не удалось определить продавца',
+                      variant: 'destructive',
+                    });
                   }
                 }}
               >

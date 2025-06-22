@@ -21,9 +21,14 @@ export default function Messages() {
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
   const initialUserId = searchParams.get('userId');
   
+  console.log('Messages page - location:', location);
+  console.log('Messages page - initialUserId:', initialUserId);
+  
   const [selectedUserId, setSelectedUserId] = useState<number | undefined>(
     initialUserId ? parseInt(initialUserId) : undefined
   );
+  
+  console.log('Messages page - selectedUserId:', selectedUserId);
   const [showMessages, setShowMessages] = useState(!isMobile || !selectedUserId);
   const [showChat, setShowChat] = useState(!isMobile || !!selectedUserId);
 
