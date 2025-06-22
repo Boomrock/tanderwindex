@@ -6,7 +6,7 @@ import TenderForm from '@/components/tenders/TenderForm';
 import { useAuth } from '@/lib/authContext';
 import { Redirect } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { Tender } from '@/lib/types';
+import { Tender } from '@shared/sqlite-schema';
 
 export default function TenderCreate() {
   const { isAuthenticated, isLoading } = useAuth();
