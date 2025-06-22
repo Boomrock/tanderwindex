@@ -32,10 +32,11 @@ The application follows a monorepo structure with clear separation between clien
 
 ### Backend Architecture
 - **API Structure**: RESTful API with Express.js
-- **Database Layer**: Drizzle ORM with PostgreSQL (SQLite fallback for development)
+- **Database Layer**: SQLite with direct SQL queries for optimal performance
 - **Authentication**: JWT tokens with Bearer authentication
-- **Storage Abstraction**: Interface-based storage layer supporting both SQLite and PostgreSQL
+- **Storage Abstraction**: Modular storage architecture with specialized classes
 - **Session Management**: Express sessions with PostgreSQL store
+- **Storage Pattern**: Base storage class with domain-specific extensions (MessageStorage, UserStorage, BankGuaranteeStorage)
 
 ### Database Design
 The platform uses PostgreSQL with the following key entities:

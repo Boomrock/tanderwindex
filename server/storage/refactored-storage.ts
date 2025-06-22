@@ -1,6 +1,7 @@
 import { IStorage } from '../storage';
 import { MessageStorage } from './message-storage';
 import { UserStorage } from './user-storage';
+import { BankGuaranteeStorage } from './bank-guarantee-storage';
 import type {
   User, InsertUser,
   Tender, InsertTender,
@@ -28,6 +29,7 @@ import type {
 export class RefactoredStorage implements IStorage {
   private messageStorage = new MessageStorage();
   private userStorage = new UserStorage();
+  private bankGuaranteeStorage = new BankGuaranteeStorage();
 
   // === ПОЛЬЗОВАТЕЛИ ===
   async getUser(id: number): Promise<User | undefined> {
@@ -67,81 +69,100 @@ export class RefactoredStorage implements IStorage {
     return this.messageStorage.markMessageAsRead(id);
   }
 
-  // Временные заглушки для остальных методов - будут реализованы в следующих итерациях
+  // Временные заглушки делегируют к старому storage
   async getTenders(filters?: any): Promise<Tender[]> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getTenders(filters);
   }
 
   async getTender(id: number): Promise<Tender | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getTender(id);
   }
 
   async createTender(tender: InsertTender): Promise<Tender> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.createTender(tender);
   }
 
   async updateTender(id: number, tenderData: Partial<Tender>): Promise<Tender | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.updateTender(id, tenderData);
   }
 
   async deleteTender(id: number): Promise<boolean> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.deleteTender(id);
   }
 
   async incrementTenderViews(id: number): Promise<void> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.incrementTenderViews(id);
   }
 
   async getTenderBids(tenderId: number): Promise<TenderBid[]> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getTenderBids(tenderId);
   }
 
   async getTenderBid(id: number): Promise<TenderBid | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getTenderBid(id);
   }
 
   async createTenderBid(bid: InsertTenderBid): Promise<TenderBid> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.createTenderBid(bid);
   }
 
   async acceptTenderBid(bidId: number): Promise<TenderBid | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.acceptTenderBid(bidId);
   }
 
   async getMarketplaceListings(filters?: any): Promise<MarketplaceListing[]> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getMarketplaceListings(filters);
   }
 
   async getMarketplaceListing(id: number): Promise<MarketplaceListing | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getMarketplaceListing(id);
   }
 
   async createMarketplaceListing(listing: InsertMarketplaceListing): Promise<MarketplaceListing> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.createMarketplaceListing(listing);
   }
 
   async updateMarketplaceListing(id: number, listingData: Partial<MarketplaceListing>): Promise<MarketplaceListing | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.updateMarketplaceListing(id, listingData);
   }
 
   async deleteMarketplaceListing(id: number): Promise<boolean> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.deleteMarketplaceListing(id);
   }
 
   async incrementListingViews(id: number): Promise<void> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.incrementListingViews(id);
   }
 
   async getUserReviews(userId: number): Promise<Review[]> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.getUserReviews(userId);
   }
 
   async createReview(review: InsertReview): Promise<Review> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.createReview(review);
   }
 
   async updateUserRating(userId: number): Promise<number> {
-    throw new Error('Not implemented yet - will be refactored next');
+    const { legacyStorage } = await import('../storage');
+    return legacyStorage.updateUserRating(userId);
   }
 
   async getUserDocuments(userId: number): Promise<UserDocument[]> {
@@ -377,18 +398,18 @@ export class RefactoredStorage implements IStorage {
   }
 
   async getBankGuarantees(filters?: any): Promise<BankGuarantee[]> {
-    throw new Error('Not implemented yet - will be refactored next');
+    return this.bankGuaranteeStorage.getBankGuarantees(filters);
   }
 
   async getBankGuarantee(id: number): Promise<BankGuarantee | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    return this.bankGuaranteeStorage.getBankGuarantee(id);
   }
 
   async createBankGuarantee(guarantee: InsertBankGuarantee): Promise<BankGuarantee> {
-    throw new Error('Not implemented yet - will be refactored next');
+    return this.bankGuaranteeStorage.createBankGuarantee(guarantee);
   }
 
   async updateBankGuaranteeStatus(id: number, status: string): Promise<BankGuarantee | undefined> {
-    throw new Error('Not implemented yet - will be refactored next');
+    return this.bankGuaranteeStorage.updateBankGuaranteeStatus(id, status);
   }
 }
