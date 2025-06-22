@@ -124,3 +124,4 @@ export const PROFESSIONS = [
 
 // Для обратной совместимости со старыми компонентами
 export const MARKETPLACE_SUBCATEGORIES = SUBCATEGORIES;
+export const CONSTRUCTION_CATEGORIES = TENDER_CATEGORIES;

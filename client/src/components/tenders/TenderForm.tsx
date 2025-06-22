@@ -36,6 +36,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { TENDER_CATEGORIES, SUBCATEGORIES, PERSON_TYPES } from '@/lib/constants';
+import { cn } from '@/lib/utils';
 import { TenderFormData } from '@/lib/types';
 
 // Схема валидации формы тендера
@@ -254,7 +255,7 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {TENDER_CATEGORIES.map((category) => (
+                    {CONSTRUCTION_CATEGORIES.map((category) => (
                       <SelectItem key={category.value} value={category.value}>
                         {category.label}
                       </SelectItem>
