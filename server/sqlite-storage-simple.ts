@@ -84,6 +84,7 @@ export class SimpleSQLiteStorage implements IStorage {
     location?: string;
     status?: string;
     personType?: string;
+    userId?: number;
     limit?: number;
     offset?: number;
   }): Promise<Tender[]> {
@@ -94,6 +95,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
     if (filters?.status) {
       query = query.where(eq(tenders.status, filters.status));
+    }
+    if (filters?.userId) {
+      query = query.where(eq(tenders.userId, filters.userId));
     }
     if (filters?.limit) {
       query = query.limit(filters.limit);
@@ -221,6 +225,7 @@ export class SimpleSQLiteStorage implements IStorage {
     subcategory?: string;
     location?: string;
     listingType?: string;
+    userId?: number;
     limit?: number;
     offset?: number;
   }): Promise<MarketplaceListingResponse[]> {
@@ -228,6 +233,9 @@ export class SimpleSQLiteStorage implements IStorage {
 
     if (filters?.category) {
       query = query.where(eq(marketplaceListings.category, filters.category));
+    }
+    if (filters?.userId) {
+      query = query.where(eq(marketplaceListings.userId, filters.userId));
     }
     
     // Always order by creation date descending to show newest first

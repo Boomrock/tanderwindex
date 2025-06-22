@@ -192,7 +192,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allUsers = await db.select({
         id: users.id,
         username: users.username,
-        fullName: users.fullName,
+        firstName: users.firstName,
+        lastName: users.lastName,
         userType: users.userType
       }).from(users);
       
@@ -276,6 +277,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password: _, ...userWithoutPassword } = updatedUser;
       
       res.status(200).json(userWithoutPassword);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  // Get user's own tenders
+  apiRouter.get('/users/me/tenders', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userTenders = await storage.getTenders({ userId: req.user.id });
+      res.status(200).json(userTenders);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  // Get user's own marketplace listings
+  apiRouter.get('/users/me/marketplace', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userListings = await storage.getMarketplaceListings({ userId: req.user.id });
+      res.status(200).json(userListings);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }

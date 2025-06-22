@@ -106,7 +106,7 @@ export default function Profile() {
     data: userTenders, 
     isLoading: isTendersLoading 
   } = useQuery<Tender[]>({
-    queryKey: [`/api/tenders?userId=${userId}`],
+    queryKey: isOwnProfile ? ['/api/users/me/tenders'] : [`/api/tenders?userId=${userId}`],
     enabled: !!userId,
   });
 
@@ -115,7 +115,7 @@ export default function Profile() {
     data: userListings, 
     isLoading: isListingsLoading 
   } = useQuery<MarketplaceListing[]>({
-    queryKey: [`/api/marketplace?userId=${userId}`],
+    queryKey: isOwnProfile ? ['/api/users/me/marketplace'] : [`/api/marketplace?userId=${userId}`],
     enabled: !!userId,
   });
 
