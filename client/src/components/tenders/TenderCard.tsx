@@ -5,7 +5,8 @@ import StarRating from "@/components/shared/StarRating";
 import { Badge } from "@/components/ui/badge";
 import { Tender } from "@/lib/types";
 import { Eye, MapPin, User, Users, Briefcase } from "lucide-react";
-import { cn, formatDate, getUserInitials, getCategoryColor, getStatusColor, getPlaceholderImage } from "@/lib/utils";
+import { cn, formatDate, getUserInitials, getCategoryColor, getStatusColor } from "@/lib/utils";
+import { getImageUrl } from "@/lib/gradient-generator";
 import { PROFESSIONS } from "@/lib/constants";
 
 interface TenderCardProps {
@@ -13,9 +14,7 @@ interface TenderCardProps {
 }
 
 const TenderCard = ({ tender }: TenderCardProps) => {
-  const imageUrl = tender.images && tender.images.length > 0 
-    ? tender.images[0] 
-    : getPlaceholderImage(tender.category);
+  const imageUrl = getImageUrl(tender.images, `${tender.category}-${tender.id}`);
 
   // Получаем названия требуемых профессий
   const professionLabels = (() => {

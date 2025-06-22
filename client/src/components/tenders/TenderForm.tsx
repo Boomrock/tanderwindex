@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useLocation } from 'wouter';
-import { CalendarIcon, ChevronDown } from 'lucide-react';
+import { CalendarIcon, ChevronDown, Upload, X, Image } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { useAuth } from '@/lib/authContext';
@@ -48,6 +48,7 @@ const tenderFormSchema = z.object({
   location: z.string().min(2, { message: 'Укажите местоположение' }),
   deadline: z.date({ required_error: 'Выберите срок выполнения' }),
   personType: z.enum(['individual', 'legal_entity'], { required_error: 'Выберите тип заказчика' }),
+  images: z.array(z.string()).optional(),
 });
 
 // Тип данных для формы, соответствующий схеме валидации
@@ -61,6 +62,7 @@ interface TenderFormProps {
 export default function TenderForm({ initialData, isEditing = false }: TenderFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -80,8 +82,49 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
       location: '',
       deadline: undefined,
       personType: 'individual',
+      images: [],
     },
   });
+
+  // Функция для конвертации файла в base64
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  // Обработка загрузки изображений
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    const newImages: string[] = [];
+    for (let i = 0; i < Math.min(files.length, 5 - uploadedImages.length); i++) {
+      const file = files[i];
+      if (file.type.startsWith('image/')) {
+        try {
+          const base64 = await convertToBase64(file);
+          newImages.push(base64);
+        } catch (error) {
+          console.error('Error converting image:', error);
+        }
+      }
+    }
+
+    const updatedImages = [...uploadedImages, ...newImages];
+    setUploadedImages(updatedImages);
+    form.setValue('images', updatedImages);
+  };
+
+  // Удаление изображения
+  const removeImage = (index: number) => {
+    const updatedImages = uploadedImages.filter((_, i) => i !== index);
+    setUploadedImages(updatedImages);
+    form.setValue('images', updatedImages);
+  };
 
   // Отслеживаем изменение категории для отображения подкатегорий
   const watchCategory = form.watch('category');
@@ -372,6 +415,60 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
               </FormItem>
             )}
           />
+        </div>
+
+        {/* Загрузка изображений */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Изображения проекта</h3>
+          
+          {/* Загруженные изображения */}
+          {uploadedImages.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {uploadedImages.map((image, index) => (
+                <div key={index} className="relative group">
+                  <img 
+                    src={image} 
+                    alt={`Изображение ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Кнопка загрузки */}
+          {uploadedImages.length < 5 && (
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+              <div className="text-center">
+                <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                <div className="mt-4">
+                  <label htmlFor="image-upload" className="cursor-pointer">
+                    <span className="mt-2 block text-sm font-medium text-gray-900">
+                      Загрузить изображения
+                    </span>
+                    <span className="mt-1 block text-sm text-gray-600">
+                      PNG, JPG, GIF до 10МБ (максимум 5 изображений)
+                    </span>
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end space-x-4">
