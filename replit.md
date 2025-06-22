@@ -133,6 +133,11 @@ The platform uses PostgreSQL with the following key entities:
   - Added automatic chat creation between customer and contractor when bid is submitted
   - Updated API endpoint security with authentication requirements for bid access
   - Modified frontend to handle new privacy restrictions with appropriate user messaging
+- June 22, 2025. Platform rebranding and header optimization:
+  - Changed platform name from "СтройТендер" to "Windex-строй"
+  - Cleaned up header navigation by removing unused menu items
+  - Streamlined dropdown menus to show only essential functions
+  - Updated page titles and meta descriptions to reflect new branding
 
 ## User Preferences
 
