@@ -44,7 +44,7 @@ async function createAdmin() {
     const now = new Date().toISOString();
     const insertUserStmt = sqliteDb.prepare(`
       INSERT INTO users (
-        username, password, email, fullName, userType, isVerified, isAdmin,
+        username, password, email, firstName, user_type, isVerified, isAdmin,
         rating, completedProjects, walletBalance, createdAt, updatedAt
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
