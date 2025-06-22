@@ -198,6 +198,25 @@ export function addModerationFields() {
     console.log('isTopSpecialist column already exists in users table');
   }
 
+  // Проверяем и добавляем недостающие колонки в таблицу users
+  try {
+    sqlite.exec(`
+      ALTER TABLE users ADD COLUMN first_name TEXT;
+    `);
+    console.log('first_name column added to users table');
+  } catch (error) {
+    console.log('first_name column already exists in users table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE users ADD COLUMN last_name TEXT;
+    `);
+    console.log('last_name column added to users table');
+  } catch (error) {
+    console.log('last_name column already exists in users table');
+  }
+
   console.log('Moderation fields migration completed');
 }
 
