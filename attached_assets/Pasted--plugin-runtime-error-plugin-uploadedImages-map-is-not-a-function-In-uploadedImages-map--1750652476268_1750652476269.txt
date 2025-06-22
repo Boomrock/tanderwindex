@@ -1,0 +1,49 @@
+[plugin:runtime-error-plugin] uploadedImages.map is not a function. (In 'uploadedImages.map(
+        (image, index) => /* @__PURE__ */ jsxDEV("div", { "data-replit-metadata": "client/src/components/tenders/TenderForm.tsx:455:12", "data-component-name": "div", className: "relative group", children: [
+          /* @__PURE__ */ jsxDEV(
+            "img",
+            {
+              "data-replit-metadata": "client/src/components/tenders/TenderForm.tsx:456:18",
+              "data-component-name": "img",
+              src: image,
+              alt: `Изображение ${index + 1}`,
+              className: "w-full h-32 object-cover rounded-lg border"
+            },
+            void 0,
+            false,
+            {
+              fileName: "/home/runner/workspace/client/src/components/tenders/TenderForm.tsx",
+              lineNumber: 456,
+              columnNumber: 19
+            },
+            this
+          ),
+          /* @__PURE__ */ jsxDEV(
+            "button",
+            {
+              "data-replit-metadata": "client/src/components/tenders/TenderForm.tsx:461:18",
+              "data-component-name": "button",
+              type: "button",
+              onClick: () => removeImage(index),
+              className: "absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity",
+              children: /* @__PURE__ */ jsxDEV(X, { "data-replit-metadata": "client/src/components/tenders/TenderForm.tsx:466:20", "data-component-name": "X", className: "h-4 w-4" }, void 0, false, {
+                fileName: "/home/runner/workspace/client/src/components/tenders/TenderForm.tsx",
+                lineNumber: 466,
+                columnNumber: 21
+              }, this)
+            },
+            void 0,
+            false,
+            {
+              fileName: "/home/runner/workspace/client/src/components/tenders/TenderForm.tsx",
+              lineNumber: 461,
+              columnNumber: 19
+            },
+            this
+          )
+        ] }, index, true, {
+          fileName: "/home/runner/workspace/client/src/components/tenders/TenderForm.tsx",
+          lineNumber: 455,
+          columnNumber: 13
+        }, this)
+      )', 'uploadedImages.map' is undefined)

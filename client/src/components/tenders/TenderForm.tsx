@@ -97,6 +97,20 @@ export default function TenderForm({ tender, isEditMode = false }: TenderFormPro
   // Заполняем форму данными тендера при редактировании
   useEffect(() => {
     if (tender && isEditMode) {
+      // Обрабатываем изображения - они могут быть строкой JSON или массивом
+      let tenderImages: string[] = [];
+      if (tender.images) {
+        if (typeof tender.images === 'string') {
+          try {
+            tenderImages = JSON.parse(tender.images);
+          } catch {
+            tenderImages = [tender.images];
+          }
+        } else if (Array.isArray(tender.images)) {
+          tenderImages = tender.images;
+        }
+      }
+
       form.reset({
         title: tender.title || '',
         description: tender.description || '',
@@ -106,10 +120,10 @@ export default function TenderForm({ tender, isEditMode = false }: TenderFormPro
         location: tender.location || '',
         deadline: tender.deadline ? new Date(tender.deadline) : undefined,
         personType: tender.personType || 'individual',
-        images: tender.images || [],
+        images: tenderImages,
       });
       setSelectedCategory(tender.category || '');
-      setUploadedImages(tender.images || []);
+      setUploadedImages(tenderImages);
     }
   }, [tender, isEditMode, form]);
 
@@ -449,7 +463,7 @@ export default function TenderForm({ tender, isEditMode = false }: TenderFormPro
           <h3 className="text-lg font-medium">Изображения проекта</h3>
           
           {/* Загруженные изображения */}
-          {uploadedImages.length > 0 && (
+          {Array.isArray(uploadedImages) && uploadedImages.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {uploadedImages.map((image, index) => (
                 <div key={index} className="relative group">
