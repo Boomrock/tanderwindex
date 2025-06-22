@@ -30,20 +30,20 @@ export const users = sqliteTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   userType: text("user_type").notNull().default('individual'), // 'individual' | 'contractor' | 'company'
-  firstName: text("first_name"),
-  lastName: text("last_name"),
+  firstName: text("firstName"),
+  lastName: text("lastName"),
   phone: text("phone"),
   address: text("address"),
   avatar: text("avatar"),
   rating: integer("rating").default(0),
-  isVerified: integer("is_verified", { mode: 'boolean' }).default(false),
-  completedProjects: integer("completed_projects").default(0),
+  isVerified: integer("isVerified", { mode: 'boolean' }).default(false),
+  completedProjects: integer("completedProjects").default(0),
   inn: text("inn"),
   website: text("website"),
-  walletBalance: integer("wallet_balance").default(0),
-  isAdmin: integer("is_admin", { mode: 'boolean' }).default(false),
-  createdAt: text("created_at"), // ISO string
-  updatedAt: text("updated_at"), // ISO string
+  walletBalance: integer("walletBalance").default(0),
+  isAdmin: integer("isAdmin", { mode: 'boolean' }).default(false),
+  createdAt: text("createdAt"), // ISO string
+  updatedAt: text("updatedAt"), // ISO string
 });
 
 // Tenders table

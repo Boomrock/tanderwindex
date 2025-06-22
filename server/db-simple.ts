@@ -32,20 +32,20 @@ export function initializeDatabase() {
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL,
       user_type TEXT NOT NULL DEFAULT 'individual',
-      first_name TEXT,
-      last_name TEXT,
+      firstName TEXT,
+      lastName TEXT,
       phone TEXT,
       address TEXT,
       avatar TEXT,
       rating INTEGER DEFAULT 0,
-      is_verified INTEGER DEFAULT 0,
-      completed_projects INTEGER DEFAULT 0,
+      isVerified INTEGER DEFAULT 0,
+      completedProjects INTEGER DEFAULT 0,
       inn TEXT,
       website TEXT,
-      wallet_balance INTEGER DEFAULT 0,
-      is_admin INTEGER DEFAULT 0,
-      created_at TEXT,
-      updated_at TEXT
+      walletBalance INTEGER DEFAULT 0,
+      isAdmin INTEGER DEFAULT 0,
+      createdAt TEXT,
+      updatedAt TEXT
     );
 
     CREATE TABLE IF NOT EXISTS tenders (
@@ -58,13 +58,13 @@ export function initializeDatabase() {
       location TEXT NOT NULL,
       deadline TEXT NOT NULL,
       status TEXT NOT NULL DEFAULT 'open',
-      user_id INTEGER NOT NULL,
-      person_type TEXT NOT NULL DEFAULT 'individual',
-      required_professions TEXT,
+      userId INTEGER NOT NULL,
+      personType TEXT NOT NULL DEFAULT 'individual',
+      requiredProfessions TEXT,
       images TEXT,
-      created_at TEXT,
-      updated_at TEXT,
-      view_count INTEGER DEFAULT 0
+      createdAt TEXT,
+      updatedAt TEXT,
+      viewCount INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS tender_bids (
@@ -86,14 +86,14 @@ export function initializeDatabase() {
       subcategory TEXT,
       price INTEGER NOT NULL,
       location TEXT NOT NULL,
-      user_id INTEGER NOT NULL,
-      listing_type TEXT NOT NULL DEFAULT 'sell',
+      userId INTEGER NOT NULL,
+      listingType TEXT NOT NULL DEFAULT 'sell',
       condition TEXT,
-      is_active INTEGER DEFAULT 1,
+      isActive INTEGER DEFAULT 1,
       images TEXT,
-      created_at TEXT,
-      updated_at TEXT,
-      view_count INTEGER DEFAULT 0
+      createdAt TEXT,
+      updatedAt TEXT,
+      viewCount INTEGER DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS messages (
@@ -129,7 +129,7 @@ export function seedDatabaseIfEmpty() {
     
     // Create sample users
     sqlite.exec(`
-      INSERT INTO users (username, email, password, user_type, first_name, last_name, created_at, updated_at) VALUES
+      INSERT INTO users (username, email, password, user_type, firstName, lastName, createdAt, updatedAt) VALUES
       ('customer1', 'customer1@example.com', '$2a$10$placeholder', 'individual', 'Иван', 'Заказчик', '${now}', '${now}'),
       ('contractor1', 'contractor1@example.com', '$2a$10$placeholder', 'contractor', 'Сергей', 'Подрядчик', '${now}', '${now}'),
       ('company1', 'company1@example.com', '$2a$10$placeholder', 'company', 'ООО', 'СтройКомпания', '${now}', '${now}');
