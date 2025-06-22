@@ -311,7 +311,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   apiRouter.post('/tenders', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const tenderData = insertTenderSchema.parse(req.body);
+      // Convert deadline string to Date object before validation
+      const bodyWithDateConversion = {
+        ...req.body,
+        deadline: req.body.deadline ? new Date(req.body.deadline) : undefined
+      };
+      
+      const tenderData = insertTenderSchema.parse(bodyWithDateConversion);
       
       const tender = await storage.createTender({
         ...tenderData,
@@ -344,7 +350,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Only allow certain fields to be updated
-      const { status, viewCount, createdAt, updatedAt, ...updateData } = req.body;
+      const { status, viewCount, createdAt, updatedAt, ...rawUpdateData } = req.body;
+      
+      // Convert deadline string to Date object if present
+      const updateData = {
+        ...rawUpdateData,
+        ...(rawUpdateData.deadline && { deadline: new Date(rawUpdateData.deadline) })
+      };
       
       const updatedTender = await storage.updateTender(tenderId, updateData);
       
