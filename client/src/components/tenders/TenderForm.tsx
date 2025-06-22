@@ -121,16 +121,26 @@ export default function TenderForm({ initialData, isEditing = false }: TenderFor
           title: 'Тендер обновлен',
           description: 'Ваш тендер был успешно обновлен',
         });
-        // Инвалидируем кэш для обновления списка тендеров
-        queryClient.invalidateQueries({ queryKey: ['/api/tenders'] });
+        // Полностью очищаем кэш тендеров
+        queryClient.removeQueries({ 
+          predicate: (query) => query.queryKey[0] === '/api/tenders'
+        });
+        await queryClient.refetchQueries({ 
+          predicate: (query) => query.queryKey[0] === '/api/tenders'
+        });
       } else {
         await apiRequest('POST', '/api/tenders', tenderData);
         toast({
           title: 'Тендер создан',
           description: 'Ваш тендер был успешно создан',
         });
-        // Инвалидируем кэш для обновления списка тендеров
-        queryClient.invalidateQueries({ queryKey: ['/api/tenders'] });
+        // Полностью очищаем кэш тендеров и принудительно перезагружаем
+        queryClient.removeQueries({ 
+          predicate: (query) => query.queryKey[0] === '/api/tenders'
+        });
+        await queryClient.refetchQueries({ 
+          predicate: (query) => query.queryKey[0] === '/api/tenders'
+        });
       }
       
       navigate('/tenders');
