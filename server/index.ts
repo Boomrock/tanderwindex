@@ -6,6 +6,7 @@ import { seedTopSpecialists } from "./seed-specialists";
 import { addCompletedProjectsColumn } from "./migrations/add-completed-projects";
 import { addUserFieldsAndGuarantees } from "./migrations/add-user-fields-and-guarantees";
 import { addAdminField } from "./migrations/add-admin-field";
+import { addDocumentsField } from "./migrations/add-documents-field";
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
@@ -59,6 +60,9 @@ app.use((req, res, next) => {
   
   // Добавляем поле администратора
   await addAdminField();
+  
+  // Добавляем поле documents в таблицу tender_bids
+  await addDocumentsField();
   
   // Заполняем тестовыми данными, если база пуста
   seedDatabaseIfEmpty();

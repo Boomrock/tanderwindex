@@ -197,7 +197,13 @@ export class SimpleSQLiteStorage implements IStorage {
       isAccepted: false,
     };
 
-    const [bid] = await db.insert(tenderBids).values(bidData).returning();
+    // Ensure documents field is handled as string in database
+    const dbBidData = {
+      ...bidData,
+      documents: bidData.documents as string | null,
+    };
+
+    const [bid] = await db.insert(tenderBids).values(dbBidData).returning();
     return bid;
   }
 
