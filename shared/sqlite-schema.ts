@@ -130,6 +130,11 @@ export type TenderBid = typeof tenderBids.$inferSelect;
 export type InsertTenderBid = typeof tenderBids.$inferInsert;
 export type MarketplaceListing = typeof marketplaceListings.$inferSelect;
 export type InsertMarketplaceListing = typeof marketplaceListings.$inferInsert;
+
+// API response type with parsed images
+export type MarketplaceListingResponse = Omit<MarketplaceListing, 'images'> & {
+  images: string[];
+};
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
 export type Review = typeof reviews.$inferSelect;

@@ -20,6 +20,20 @@ function ensureDateString(date: string | Date): string {
 export class SimpleSQLiteStorage implements IStorage {
   sessionStore: any;
 
+  // Helper method to parse images from database
+  private parseImages(images: any): string[] {
+    if (!images) return [];
+    if (typeof images === 'string') {
+      try {
+        return JSON.parse(images);
+      } catch {
+        return [];
+      }
+    }
+    if (Array.isArray(images)) return images;
+    return [];
+  }
+
   constructor() {
     this.sessionStore = null; // Placeholder for session store
   }
@@ -221,7 +235,7 @@ export class SimpleSQLiteStorage implements IStorage {
     const results = await query;
     return results.map(listing => ({
       ...listing,
-      images: listing.images ? JSON.parse(listing.images) : [],
+      images: this.parseImages(listing.images),
     }));
   }
 
@@ -231,7 +245,7 @@ export class SimpleSQLiteStorage implements IStorage {
 
     return {
       ...listing,
-      images: listing.images ? JSON.parse(listing.images) : [],
+      images: this.parseImages(listing.images),
     };
   }
 
@@ -249,7 +263,7 @@ export class SimpleSQLiteStorage implements IStorage {
     const [listing] = await db.insert(marketplaceListings).values(listingData).returning();
     return {
       ...listing,
-      images: listing.images ? JSON.parse(listing.images) : [],
+      images: this.parseImages(listing.images),
     };
   }
 
