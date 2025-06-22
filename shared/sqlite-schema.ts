@@ -158,6 +158,7 @@ export const insertTenderSchema = createInsertSchema(tenders, {
   updatedAt: z.string().optional(),
 }).omit({
   id: true,
+  userId: true,
   status: true,
   createdAt: true,
   updatedAt: true,
