@@ -70,6 +70,8 @@ export default function Admin() {
     walletBalance?: number;
     isVerified: boolean;
     isAdmin: boolean;
+    isTopSpecialist?: boolean;
+    rating?: number;
   }
 
   // Получение статистики
@@ -226,6 +228,29 @@ export default function Admin() {
     }
   });
 
+  // Мутация для управления лучшими специалистами
+  const toggleTopSpecialistMutation = useMutation({
+    mutationFn: async ({ userId, isTopSpecialist }: { userId: number, isTopSpecialist: boolean }) => {
+      const response = await apiRequest('PUT', `/api/admin/users/${userId}`, { isTopSpecialist });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/top'] });
+      toast({
+        title: "Статус лучшего специалиста обновлен",
+        description: "Изменения отображены на главной странице",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка обновления статуса",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
   if (!user?.isAdmin) {
     return null;
   }
@@ -255,6 +280,7 @@ export default function Admin() {
         <TabsList className="mb-6">
           <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
           <TabsTrigger value="users">Пользователи</TabsTrigger>
+          <TabsTrigger value="top-specialists">Лучшие специалисты</TabsTrigger>
           <TabsTrigger value="tender-moderation">Модерация тендеров</TabsTrigger>
           <TabsTrigger value="marketplace-moderation">Модерация маркетплейса</TabsTrigger>
         </TabsList>
@@ -556,6 +582,79 @@ export default function Admin() {
                     </div>
                   )}
                 </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="top-specialists" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Управление лучшими специалистами</CardTitle>
+              <CardDescription>
+                Выберите специалистов для отображения на главной странице
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingUsers ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Пользователь</TableHead>
+                      <TableHead>Тип</TableHead>
+                      <TableHead>Рейтинг</TableHead>
+                      <TableHead>Верификация</TableHead>
+                      <TableHead>Лучший специалист</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {users?.map((user: AdminUser) => (
+                      <TableRow key={user.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{user.fullName}</div>
+                            <div className="text-sm text-gray-500">@{user.username}</div>
+                            <div className="text-sm text-gray-500">{user.email}</div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {getUserTypeLabel(user.userType)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center">
+                            <span className="mr-1">⭐</span>
+                            <span>{user.rating || 0}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {user.isVerified ? (
+                            <Badge className="bg-green-100 text-green-800">Верифицирован</Badge>
+                          ) : (
+                            <Badge variant="secondary">Не верифицирован</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Switch
+                            checked={user.isTopSpecialist || false}
+                            onCheckedChange={(checked) => 
+                              toggleTopSpecialistMutation.mutate({
+                                userId: user.id,
+                                isTopSpecialist: checked
+                              })
+                            }
+                            disabled={toggleTopSpecialistMutation.isPending}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               )}
             </CardContent>
           </Card>

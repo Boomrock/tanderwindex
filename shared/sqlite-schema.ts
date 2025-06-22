@@ -46,6 +46,7 @@ export const users = sqliteTable("users", {
   website: text("website"),
   walletBalance: integer("walletBalance").default(0),
   isAdmin: integer("isAdmin", { mode: 'boolean' }).default(false),
+  isTopSpecialist: integer("isTopSpecialist", { mode: 'boolean' }).default(false),
   createdAt: text("createdAt"), // ISO string
   updatedAt: text("updatedAt"), // ISO string
 });
