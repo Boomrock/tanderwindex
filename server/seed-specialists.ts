@@ -22,7 +22,7 @@ export async function seedTopSpecialists() {
     const insertUserStmt = sqliteDb.prepare(`
       INSERT INTO users (
         username, password, email, firstName, lastName, user_type, rating, 
-        completed_projects, is_verified, inn, website, wallet_balance
+        completedProjects, isVerified, inn, website, walletBalance
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     
@@ -123,47 +123,54 @@ export async function seedTopSpecialists() {
         firstName: 'ООО',
         lastName: 'ДизайнПро',
         userType: 'company',
-        location: 'Санкт-Петербург',
-        bio: 'Проектируем и реализуем дизайнерские решения для жилых и коммерческих помещений',
         rating: 5,
         completedProjects: 87,
-        isVerified: 1
+        isVerified: 1,
+        inn: '7701234568',
+        website: 'https://designpro.ru',
+        walletBalance: 0
       },
       {
         username: 'remstroi',
         password: await hashPassword('password123'),
         email: 'info@remstroi.ru',
-        fullName: 'ООО "РемСтрой"',
+        firstName: 'ООО',
+        lastName: 'РемСтрой',
         userType: 'company',
-        location: 'Нижний Новгород',
-        bio: 'Качественный ремонт квартир, офисов и других помещений',
         rating: 4,
         completedProjects: 56,
-        isVerified: 1
+        isVerified: 1,
+        inn: '7701234569',
+        website: 'https://remstroi.ru',
+        walletBalance: 0
       },
       {
         username: 'architekton',
         password: await hashPassword('password123'),
         email: 'info@architekton.ru',
-        fullName: 'ООО "Архитектон"',
+        firstName: 'ООО',
+        lastName: 'Архитектон',
         userType: 'company',
-        location: 'Казань',
-        bio: 'Архитектурное проектирование и строительство',
         rating: 5,
         completedProjects: 34,
-        isVerified: 1
+        isVerified: 1,
+        inn: '7701234570',
+        website: 'https://architekton.ru',
+        walletBalance: 0
       },
       {
         username: 'stroigrad',
         password: await hashPassword('password123'),
         email: 'info@stroigrad.ru',
-        fullName: 'ООО "СтройГрад"',
+        firstName: 'ООО',
+        lastName: 'СтройГрад',
         userType: 'company',
-        location: 'Ростов-на-Дону',
-        bio: 'Строительство малоэтажных жилых домов и коттеджей',
         rating: 4,
         completedProjects: 29,
-        isVerified: 1
+        isVerified: 1,
+        inn: '7701234571',
+        website: 'https://stroigrad.ru',
+        walletBalance: 0
       }
     ];
     
@@ -174,48 +181,42 @@ export async function seedTopSpecialists() {
           individual.username,
           individual.password,
           individual.email,
-          individual.fullName,
+          individual.firstName,
+          individual.lastName,
           individual.userType,
-          individual.location,
-          individual.bio,
           individual.rating,
           individual.completedProjects,
           individual.isVerified,
-          null, // inn
-          null, // website
-          0     // wallet_balance
+          individual.inn,
+          individual.website,
+          individual.walletBalance
         );
-        console.log(`Добавлен специалист: ${individual.fullName}`);
+        console.log(`Добавлен специалист: ${individual.firstName} ${individual.lastName}`);
       } catch (error) {
-        console.error(`Ошибка при добавлении специалиста ${individual.fullName}:`, error);
+        console.error(`Ошибка при добавлении специалиста ${individual.firstName} ${individual.lastName}:`, error);
       }
     }
     
     // Добавляем юридические лица
     for (const company of companies) {
       try {
-        const inn = '7701234567'; // ИНН для примера
-        const website = `https://www.${company.username}.ru`;
-        const walletBalance = 10000; // Начальный баланс для примера
-        
         insertUserStmt.run(
           company.username,
           company.password,
           company.email,
-          company.fullName,
+          company.firstName,
+          company.lastName,
           company.userType,
-          company.location,
-          company.bio,
           company.rating,
           company.completedProjects,
           company.isVerified,
-          inn,
-          website,
-          walletBalance
+          company.inn,
+          company.website,
+          company.walletBalance
         );
-        console.log(`Добавлена компания: ${company.fullName}`);
+        console.log(`Добавлена компания: ${company.firstName} ${company.lastName}`);
       } catch (error) {
-        console.error(`Ошибка при добавлении компании ${company.fullName}:`, error);
+        console.error(`Ошибка при добавлении компании ${company.firstName} ${company.lastName}:`, error);
       }
     }
     

@@ -120,6 +120,14 @@ The platform uses PostgreSQL with the following key entities:
 ## Changelog
 
 - June 22, 2025. Initial setup
+- June 22, 2025. Major refactoring completed:
+  - Removed unused storage modules (database-storage.ts, sqlite-storage.ts, refactored-storage.ts)
+  - Cleaned up server/storage directory 
+  - Removed search functionality from header navigation
+  - Removed wallet functionality from user menus
+  - Consolidated to single storage implementation (sqlite-storage-simple.ts)
+  - Fixed seed-specialists.ts to match current database schema
+  - Removed SearchFilters component and related imports
 
 ## User Preferences
 
