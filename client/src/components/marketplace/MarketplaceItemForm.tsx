@@ -87,21 +87,16 @@ export default function MarketplaceItemForm({ initialData, isEditing = false }: 
           title: 'Объявление обновлено',
           description: 'Ваше объявление было успешно обновлено',
         });
-        // Invalidate all marketplace queries with partial matching
-        queryClient.invalidateQueries({ 
-          predicate: (query) => query.queryKey[0]?.toString().startsWith('/api/marketplace')
-        });
       } else {
         await apiRequest('POST', '/api/marketplace', listingData);
         toast({
           title: 'Объявление создано',
           description: 'Ваше объявление было успешно создано',
         });
-        // Invalidate all marketplace queries with partial matching
-        queryClient.invalidateQueries({ 
-          predicate: (query) => query.queryKey[0]?.toString().startsWith('/api/marketplace')
-        });
       }
+      
+      // Clear all marketplace cache after successful operation
+      queryClient.clear();
       
       navigate('/marketplace');
     } catch (error) {
