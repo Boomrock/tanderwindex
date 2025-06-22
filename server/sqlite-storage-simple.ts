@@ -423,33 +423,28 @@ export class SimpleSQLiteStorage implements IStorage {
 
   // Placeholder methods for interface compliance
   async getTopSpecialists(userType?: string): Promise<User[]> {
-    let query = db.select().from(users)
-      .where(eq(users.isTopSpecialist, true))
-      .orderBy(users.rating, users.completedProjects)
-      .limit(10);
+    // Базовый запрос для всех лучших специалистов
+    let whereCondition = eq(users.isTopSpecialist, true);
     
-    // Если указан тип пользователя, добавляем фильтр
+    // Добавляем фильтр по типу пользователя если указан
     if (userType) {
       if (userType === 'legal') {
-        query = db.select().from(users)
-          .where(and(
-            eq(users.isTopSpecialist, true),
-            or(eq(users.userType, 'company'), eq(users.userType, 'contractor'))
-          ))
-          .orderBy(users.rating, users.completedProjects)
-          .limit(10);
+        whereCondition = and(
+          eq(users.isTopSpecialist, true),
+          or(eq(users.userType, 'company'), eq(users.userType, 'contractor'))
+        );
       } else if (userType === 'individual') {
-        query = db.select().from(users)
-          .where(and(
-            eq(users.isTopSpecialist, true),
-            eq(users.userType, 'individual')
-          ))
-          .orderBy(users.rating, users.completedProjects)
-          .limit(10);
+        whereCondition = and(
+          eq(users.isTopSpecialist, true),
+          eq(users.userType, 'individual')
+        );
       }
     }
     
-    return await query;
+    return await db.select().from(users)
+      .where(whereCondition)
+      .orderBy(desc(users.rating), desc(users.completedProjects))
+      .limit(10);
   }
 
   // Add minimal implementations for other required methods
