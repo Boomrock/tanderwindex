@@ -80,7 +80,9 @@ export const tenderBids = sqliteTable("tender_bids", {
   description: text("description").notNull(),
   timeframe: integer("timeframe"), // in days
   documents: text("documents"), // JSON string array
+  status: text("status").notNull().default('pending'), // 'pending', 'approved', 'rejected'
   isAccepted: integer("isAccepted", { mode: 'boolean' }).default(false),
+  rejectionReason: text("rejection_reason"), // причина отказа
   createdAt: text("createdAt"), // ISO string
 });
 
@@ -123,6 +125,18 @@ export const reviews = sqliteTable("reviews", {
   createdAt: text("createdAt"), // ISO string
 });
 
+// Notifications table
+export const notifications = sqliteTable("notifications", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("userId").notNull(),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  type: text("type").notNull(), // 'bid_approved', 'bid_rejected', 'tender_bid', etc.
+  relatedId: integer("related_id"), // ID связанной записи (тендер, заявка и т.д.)
+  isRead: integer("is_read", { mode: 'boolean' }).default(false),
+  createdAt: text("createdAt"), // ISO string
+});
+
 // Type definitions
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
@@ -141,6 +155,8 @@ export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = typeof reviews.$inferInsert;
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;
 
 // Insert schemas with validation
 export const insertUserSchema = createInsertSchema(users, {

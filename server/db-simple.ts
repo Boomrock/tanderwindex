@@ -75,7 +75,9 @@ export function initializeDatabase() {
       description TEXT NOT NULL,
       timeframe INTEGER,
       documents TEXT,
+      status TEXT NOT NULL DEFAULT 'pending',
       isAccepted INTEGER DEFAULT 0,
+      rejection_reason TEXT,
       createdAt TEXT
     );
 
@@ -112,6 +114,17 @@ export function initializeDatabase() {
       revieweeId INTEGER NOT NULL,
       rating INTEGER NOT NULL,
       comment TEXT,
+      createdAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      type TEXT NOT NULL,
+      related_id INTEGER,
+      is_read INTEGER DEFAULT 0,
       createdAt TEXT
     );
   `);
