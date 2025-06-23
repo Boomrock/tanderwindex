@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { initializeDatabase, seedDatabaseIfEmpty, addModerationFields } from "./db-simple";
+import { initializeDatabase, seedDatabaseIfEmpty, addModerationFields, addBidStatusFields } from "./db-simple";
 import { seedTopSpecialists } from "./seed-specialists";
 import { addCompletedProjectsColumn } from "./migrations/add-completed-projects";
 import { addUserFieldsAndGuarantees } from "./migrations/add-user-fields-and-guarantees";
@@ -66,6 +66,9 @@ app.use((req, res, next) => {
   
   // Добавляем поля модерации
   addModerationFields();
+  
+  // Добавляем поля статуса заявок
+  addBidStatusFields();
   
   // Заполняем тестовыми данными, если база пуста
   seedDatabaseIfEmpty();

@@ -242,6 +242,28 @@ export function addModerationFields() {
   console.log('Moderation fields migration completed');
 }
 
+export function addBidStatusFields() {
+  console.log('Adding bid status fields to database...');
+  
+  try {
+    sqlite.exec(`
+      ALTER TABLE tender_bids ADD COLUMN status TEXT DEFAULT 'pending';
+    `);
+  } catch (error) {
+    console.log('Status column already exists in tender_bids table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE tender_bids ADD COLUMN rejection_reason TEXT;
+    `);
+  } catch (error) {
+    console.log('Rejection reason column already exists in tender_bids table');
+  }
+
+  console.log('Bid status fields migration completed');
+}
+
 // Seed database with basic data
 export function seedDatabaseIfEmpty() {
   const userCount = sqlite.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };

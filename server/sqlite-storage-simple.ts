@@ -2,13 +2,14 @@ import { eq, and, like, or, sql, desc } from 'drizzle-orm';
 import { db, sqliteDb } from './db-simple';
 import { IStorage } from './storage';
 import {
-  users, tenders, tenderBids, marketplaceListings, messages, reviews,
+  users, tenders, tenderBids, marketplaceListings, messages, reviews, notifications,
   type User, type InsertUser,
   type Tender, type InsertTender,
   type TenderBid, type InsertTenderBid,
   type MarketplaceListing, type MarketplaceListingResponse, type InsertMarketplaceListing,
   type Message, type InsertMessage,
-  type Review, type InsertReview
+  type Review, type InsertReview,
+  type Notification, type InsertNotification
 } from '@shared/sqlite-schema';
 
 // Helper function to handle date strings properly
@@ -465,6 +466,143 @@ export class SimpleSQLiteStorage implements IStorage {
       .where(whereCondition)
       .orderBy(desc(users.rating), desc(users.completedProjects))
       .limit(10);
+  }
+
+  // Методы для работы с уведомлениями
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    try {
+      const stmt = sqliteDb.prepare(`
+        INSERT INTO notifications (userId, title, message, type, related_id, is_read, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
+      
+      const result = stmt.run(
+        insertNotification.userId,
+        insertNotification.title,
+        insertNotification.message,
+        insertNotification.type,
+        insertNotification.relatedId || null,
+        insertNotification.isRead || false,
+        insertNotification.createdAt || new Date().toISOString()
+      );
+      
+      return this.getNotification(result.lastInsertRowid as number);
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      throw error;
+    }
+  }
+
+  async getNotification(id: number): Promise<Notification> {
+    const stmt = sqliteDb.prepare('SELECT * FROM notifications WHERE id = ?');
+    const notification = stmt.get(id) as any;
+    
+    if (!notification) {
+      throw new Error('Notification not found');
+    }
+    
+    return {
+      ...notification,
+      isRead: Boolean(notification.is_read)
+    };
+  }
+
+  async getUserNotifications(userId: number): Promise<Notification[]> {
+    const stmt = sqliteDb.prepare(`
+      SELECT * FROM notifications 
+      WHERE userId = ? 
+      ORDER BY createdAt DESC
+    `);
+    const notifications = stmt.all(userId) as any[];
+    
+    return notifications.map(notification => ({
+      ...notification,
+      isRead: Boolean(notification.is_read)
+    }));
+  }
+
+  async markNotificationAsRead(id: number): Promise<Notification> {
+    const stmt = sqliteDb.prepare('UPDATE notifications SET is_read = 1 WHERE id = ?');
+    stmt.run(id);
+    return this.getNotification(id);
+  }
+
+  // Методы для управления статусами заявок
+  async approveTenderBid(bidId: number): Promise<TenderBid | undefined> {
+    try {
+      const stmt = sqliteDb.prepare('UPDATE tender_bids SET status = ? WHERE id = ?');
+      stmt.run('approved', bidId);
+      
+      const bid = await this.getTenderBid(bidId);
+      if (bid) {
+        // Создаем уведомление для исполнителя
+        await this.createNotification({
+          userId: bid.userId,
+          title: 'Заявка одобрена',
+          message: 'Ваша заявка на участие в тендере была одобрена заказчиком',
+          type: 'bid_approved',
+          relatedId: bid.tenderId,
+          isRead: false,
+          createdAt: new Date().toISOString()
+        });
+      }
+      
+      return bid;
+    } catch (error) {
+      console.error('Error approving tender bid:', error);
+      throw error;
+    }
+  }
+
+  async rejectTenderBid(bidId: number, reason?: string): Promise<TenderBid | undefined> {
+    try {
+      const stmt = sqliteDb.prepare('UPDATE tender_bids SET status = ?, rejection_reason = ? WHERE id = ?');
+      stmt.run('rejected', reason || null, bidId);
+      
+      const bid = await this.getTenderBid(bidId);
+      if (bid) {
+        // Создаем уведомление для исполнителя
+        await this.createNotification({
+          userId: bid.userId,
+          title: 'Заявка отклонена',
+          message: reason ? `Ваша заявка была отклонена. Причина: ${reason}` : 'Ваша заявка на участие в тендере была отклонена',
+          type: 'bid_rejected',
+          relatedId: bid.tenderId,
+          isRead: false,
+          createdAt: new Date().toISOString()
+        });
+      }
+      
+      return bid;
+    } catch (error) {
+      console.error('Error rejecting tender bid:', error);
+      throw error;
+    }
+  }
+
+  async getTenderBidsForApproval(tenderId: number): Promise<TenderBid[]> {
+    const stmt = sqliteDb.prepare(`
+      SELECT tb.*, u.username, u.fullName, u.rating, u.isVerified, u.completedProjects 
+      FROM tender_bids tb
+      JOIN users u ON tb.userId = u.id
+      WHERE tb.tenderId = ?
+      ORDER BY tb.createdAt DESC
+    `);
+    const bids = stmt.all(tenderId) as any[];
+    
+    return bids.map(bid => ({
+      ...bid,
+      isAccepted: Boolean(bid.isAccepted),
+      documents: bid.documents ? JSON.parse(bid.documents) : [],
+      user: {
+        id: bid.userId,
+        username: bid.username,
+        fullName: bid.fullName,
+        rating: bid.rating,
+        isVerified: Boolean(bid.isVerified),
+        completedProjects: bid.completedProjects
+      }
+    }));
   }
 
   // Add minimal implementations for other required methods
