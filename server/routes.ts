@@ -502,17 +502,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You cannot bid on your own tender" });
       }
       
+      console.log('Raw bid request body:', JSON.stringify(req.body, null, 2));
+      console.log('Documents field:', req.body.documents, 'Type:', typeof req.body.documents);
+      
       const bidData = insertTenderBidSchema.parse({
         ...req.body,
         tenderId,
         userId: req.user.id
       });
       
+      console.log('Parsed bid data:', JSON.stringify(bidData, null, 2));
+      
       // Convert documents to JSON string for database storage
       const bidForDB = {
         ...bidData,
         documents: bidData.documents ? JSON.stringify(bidData.documents) : JSON.stringify([])
       };
+      
+      console.log('Bid data for DB:', JSON.stringify(bidForDB, null, 2));
       
       const bid = await storage.createTenderBid(bidForDB);
       
@@ -533,7 +540,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json(bid);
     } catch (error) {
+      console.error('Tender bid creation error:', error);
       if (error instanceof z.ZodError) {
+        console.error('Zod validation errors:', JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Validation error", errors: error.errors });
       }
       res.status(500).json({ message: "Server error", error: error.message });

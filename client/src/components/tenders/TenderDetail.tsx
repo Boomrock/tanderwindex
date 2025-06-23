@@ -182,7 +182,7 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
         amount: parseInt(bidAmount),
         description: bidDescription,
         timeframe: bidTimeframe ? parseInt(bidTimeframe) : undefined,
-        documents: bidDocuments,
+        documents: bidDocuments.length > 0 ? bidDocuments : null,
       });
     } finally {
       setIsSubmittingBid(false);
