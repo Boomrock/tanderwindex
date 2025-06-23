@@ -143,7 +143,12 @@ export default function TenderBids() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ru-RU');
+    if (!dateString) return 'Не указан';
+    try {
+      return new Date(dateString).toLocaleDateString('ru-RU');
+    } catch (e) {
+      return 'Некорректная дата';
+    }
   };
 
   if (isLoadingTender || isLoadingBids) {

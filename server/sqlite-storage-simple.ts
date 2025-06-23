@@ -291,10 +291,18 @@ export class SimpleSQLiteStorage implements IStorage {
       let documents = [];
       if (bid.documents) {
         try {
-          documents = JSON.parse(bid.documents);
+          // Проверяем, если документы уже являются строкой JSON
+          const parsed = JSON.parse(bid.documents);
+          // Если результат парсинга - строка, парсим еще раз (двойное кодирование)
+          if (typeof parsed === 'string') {
+            documents = JSON.parse(parsed);
+          } else {
+            documents = parsed;
+          }
           console.log(`Parsed documents for bid ${bid.id}:`, documents);
         } catch (e) {
           console.error(`Error parsing documents for bid ${bid.id}:`, e);
+          console.error(`Raw documents value:`, bid.documents);
           documents = [];
         }
       }
@@ -728,19 +736,36 @@ export class SimpleSQLiteStorage implements IStorage {
     `);
     const bids = stmt.all(tenderId) as any[];
     
-    return bids.map(bid => ({
-      ...bid,
-      isAccepted: Boolean(bid.isAccepted),
-      documents: bid.documents ? JSON.parse(bid.documents) : [],
-      user: {
-        id: bid.userId,
-        username: bid.username,
-        fullName: bid.fullName,
-        rating: bid.rating,
-        isVerified: Boolean(bid.isVerified),
-        completedProjects: bid.completedProjects
+    return bids.map(bid => {
+      let documents = [];
+      if (bid.documents) {
+        try {
+          const parsed = JSON.parse(bid.documents);
+          if (typeof parsed === 'string') {
+            documents = JSON.parse(parsed);
+          } else {
+            documents = parsed;
+          }
+        } catch (e) {
+          console.error(`Error parsing documents for bid ${bid.id}:`, e);
+          documents = [];
+        }
       }
-    }));
+      
+      return {
+        ...bid,
+        isAccepted: Boolean(bid.isAccepted),
+        documents,
+        user: {
+          id: bid.userId,
+          username: bid.username,
+          fullName: bid.fullName,
+          rating: bid.rating,
+          isVerified: Boolean(bid.isVerified),
+          completedProjects: bid.completedProjects
+        }
+      };
+    });
   }
 
   // Add minimal implementations for other required methods

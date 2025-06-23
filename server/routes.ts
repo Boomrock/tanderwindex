@@ -529,7 +529,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Convert documents to JSON string for database storage
       const bidForDB = {
         ...bidData,
-        documents: bidData.documents ? JSON.stringify(bidData.documents) : JSON.stringify([])
+        documents: bidData.documents ? JSON.stringify(bidData.documents) : "[]"
       };
       
       console.log('Bid data for DB:', JSON.stringify(bidForDB, null, 2));
