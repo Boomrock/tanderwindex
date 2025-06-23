@@ -99,3 +99,39 @@ export function getPlaceholderImage(category: string): string {
   
   return imageMapping[category] || "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1400&q=80";
 }
+
+// Download document utility
+export async function downloadDocument(documentUrl: string, fileName?: string): Promise<boolean> {
+  try {
+    // Если URL не содержит полный путь к API, добавляем его
+    const fullUrl = documentUrl.startsWith('/api/') ? documentUrl : `/api/files/${documentUrl}`;
+    
+    const response = await fetch(fullUrl, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error('Файл не найден');
+    }
+    
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName || documentUrl.split('/').pop() || `document_${Date.now()}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Освобождаем память
+    window.URL.revokeObjectURL(url);
+    
+    return true;
+  } catch (error) {
+    console.error('Download error:', error);
+    return false;
+  }
+}

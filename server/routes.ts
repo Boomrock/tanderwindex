@@ -72,17 +72,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File upload endpoint
   apiRouter.post('/upload', authMiddleware, async (req: Request, res: Response) => {
     try {
-      // For document uploads, we'll store the file name and return a mock URL
-      // In production, you would save to a file storage service like AWS S3
+      const { filename, fileSize, fileType } = req.body;
+      
+      if (!filename) {
+        return res.status(400).json({ message: "Filename required" });
+      }
+      
+      // Create a unique file identifier
       const fileId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-      const fileName = req.body.filename || `document_${fileId}`;
+      const savedFileName = `${fileId}_${filename}`;
       
-      // Return a mock URL for now - in production this would be the actual file URL
-      const fileUrl = `/uploads/${fileId}_${fileName}`;
+      // For this demo, we'll store file metadata and return a download URL
+      // In production, you would save the actual file to disk or cloud storage
+      const fileUrl = `/api/files/${savedFileName}`;
       
-      res.json({ url: fileUrl, filename: fileName });
+      res.json({ url: fileUrl, filename: savedFileName });
     } catch (error) {
       res.status(500).json({ message: "Upload failed", error: error.message });
+    }
+  });
+
+  // File download endpoint
+  apiRouter.get('/files/:filename', (req: Request, res: Response) => {
+    try {
+      const filename = req.params.filename;
+      
+      // Extract original filename from the saved filename
+      const originalName = filename.split('_').slice(1).join('_');
+      
+      // For demo purposes, return a sample file content
+      // In production, you would read the actual file from storage
+      const sampleContent = `Документ: ${originalName}\nЗагружен: ${new Date().toLocaleString('ru-RU')}\nЭто демонстрационный файл для системы Windex-Строй.`;
+      
+      // Set appropriate headers for file download
+      res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      
+      res.send(sampleContent);
+    } catch (error) {
+      res.status(500).json({ message: "File download failed", error: error.message });
     }
   });
   

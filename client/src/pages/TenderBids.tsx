@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, User, Star, Award, Clock, DollarSign, FileText, Loader2, Download } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { downloadDocument } from '@/lib/utils';
 
 interface TenderBid {
   id: number;
@@ -155,15 +156,15 @@ export default function TenderBids() {
     }
   };
 
-  const downloadDocument = (documentUrl: string, fileName?: string) => {
-    try {
-      const link = document.createElement('a');
-      link.href = documentUrl;
-      link.download = fileName || `document_${Date.now()}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
+  const handleDownloadDocument = async (documentUrl: string, fileName?: string) => {
+    const success = await downloadDocument(documentUrl, fileName);
+    
+    if (success) {
+      toast({
+        title: "Файл скачан",
+        description: "Документ успешно скачан",
+      });
+    } else {
       toast({
         title: "Ошибка скачивания",
         description: "Не удалось скачать документ",
