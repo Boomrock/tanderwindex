@@ -28,6 +28,7 @@ import {
   Shield
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const Header = () => {
   const [location] = useLocation();
@@ -98,6 +99,8 @@ const Header = () => {
                     </Badge>
                   )}
                 </Link>
+                
+                <NotificationBell />
                 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
