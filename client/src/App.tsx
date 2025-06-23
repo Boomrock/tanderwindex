@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Tenders from "@/pages/Tenders";
 import TenderDetail from "@/pages/TenderDetail";
 import TenderCreate from "@/pages/TenderCreate";
+import TenderBids from "@/pages/TenderBids";
 import Marketplace from "@/pages/Marketplace";
 import MarketplaceItemDetail from "@/pages/MarketplaceItemDetail";
 import MarketplaceItemCreate from "@/pages/MarketplaceItemCreate";
@@ -34,6 +35,7 @@ function Router() {
           <Route path="/tenders" component={Tenders} />
           <Route path="/tenders/create" component={TenderCreate} />
           <Route path="/tenders/:id/edit" component={TenderCreate} />
+          <Route path="/tenders/:id/bids" component={TenderBids} />
           <Route path="/tenders/:id" component={TenderDetail} />
           <Route path="/marketplace" component={Marketplace} />
           <Route path="/marketplace/create" component={MarketplaceItemCreate} />

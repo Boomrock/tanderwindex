@@ -330,6 +330,9 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
         
         {isOwner && tender.status === 'open' && (
           <div className="flex space-x-2">
+            <Button variant="outline" onClick={() => navigate(`/tenders/${tender.id}/bids`)}>
+              Управление заявками
+            </Button>
             <Button variant="outline" onClick={() => navigate(`/tenders/${tender.id}/edit`)}>
               Редактировать
             </Button>

@@ -510,19 +510,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const bid = await storage.createTenderBid(bidData);
       
-      // Автоматически создаем первое сообщение чата между заказчиком и подрядчиком
+      // Создаем уведомление для заказчика о новой заявке
       try {
-        const welcomeMessage = {
-          senderId: req.user.id,
-          receiverId: tender.userId,
-          content: `Здравствуйте! Я подал заявку на ваш тендер "${tender.title}". Готов обсудить детали проекта.`,
-          isRead: false
-        };
-        
-        await storage.createMessage(welcomeMessage);
-      } catch (messageError) {
-        console.log('Error creating welcome message:', messageError);
-        // Не прерываем процесс создания заявки из-за ошибки сообщения
+        await storage.createNotification({
+          userId: tender.userId,
+          title: 'Новая заявка на тендер',
+          message: `Получена новая заявка на тендер "${tender.title}" от пользователя ${req.user.fullName || req.user.username}`,
+          type: 'tender_bid',
+          relatedId: tender.id,
+          isRead: false,
+          createdAt: new Date().toISOString()
+        });
+      } catch (notificationError) {
+        console.log('Error creating notification:', notificationError);
       }
       
       res.status(201).json(bid);
@@ -559,6 +559,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const acceptedBid = await storage.acceptTenderBid(bidId);
       
       res.status(200).json(acceptedBid);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  // Новые маршруты для управления заявками
+  apiRouter.post('/tenders/bids/:id/approve', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const bidId = parseInt(req.params.id);
+      if (isNaN(bidId)) {
+        return res.status(400).json({ message: "Invalid bid ID" });
+      }
+      
+      const bid = await storage.getTenderBid(bidId);
+      if (!bid) {
+        return res.status(404).json({ message: "Bid not found" });
+      }
+      
+      const tender = await storage.getTender(bid.tenderId);
+      if (!tender) {
+        return res.status(404).json({ message: "Tender not found" });
+      }
+      
+      // Проверяем, что пользователь является владельцем тендера
+      if (tender.userId !== req.user.id) {
+        return res.status(403).json({ message: "Only tender owner can approve bids" });
+      }
+      
+      const approvedBid = await storage.approveTenderBid(bidId);
+      res.status(200).json(approvedBid);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  apiRouter.post('/tenders/bids/:id/reject', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const bidId = parseInt(req.params.id);
+      if (isNaN(bidId)) {
+        return res.status(400).json({ message: "Invalid bid ID" });
+      }
+      
+      const { reason } = req.body;
+      
+      const bid = await storage.getTenderBid(bidId);
+      if (!bid) {
+        return res.status(404).json({ message: "Bid not found" });
+      }
+      
+      const tender = await storage.getTender(bid.tenderId);
+      if (!tender) {
+        return res.status(404).json({ message: "Tender not found" });
+      }
+      
+      // Проверяем, что пользователь является владельцем тендера
+      if (tender.userId !== req.user.id) {
+        return res.status(403).json({ message: "Only tender owner can reject bids" });
+      }
+      
+      const rejectedBid = await storage.rejectTenderBid(bidId, reason);
+      res.status(200).json(rejectedBid);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  // Маршруты для уведомлений
+  apiRouter.get('/notifications', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const notifications = await storage.getUserNotifications(req.user.id);
+      res.status(200).json(notifications);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  apiRouter.put('/notifications/:id/read', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const notificationId = parseInt(req.params.id);
+      if (isNaN(notificationId)) {
+        return res.status(400).json({ message: "Invalid notification ID" });
+      }
+      
+      const notification = await storage.markNotificationAsRead(notificationId);
+      res.status(200).json(notification);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }
