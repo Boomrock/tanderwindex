@@ -610,10 +610,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const listingData = insertMarketplaceListingSchema.parse(req.body);
       
-      // Convert images array to JSON string for database storage
+      // Pass images array directly - storage layer will handle serialization
       const listingForDB = {
         ...listingData,
-        images: listingData.images ? JSON.stringify(listingData.images) : null,
         userId: req.user.id
       };
       

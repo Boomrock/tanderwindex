@@ -59,32 +59,48 @@ export function getImageUrl(images: string[] | string | null, fallbackSeed?: str
   
   if (typeof images === 'string') {
     try {
-      // Handle double-encoded JSON strings
+      // Handle multiple levels of JSON encoding (like "\"[]\"")
       let parsed = images;
       
-      // Try to parse multiple times in case of double encoding
-      while (typeof parsed === 'string' && (parsed.startsWith('"') || parsed.startsWith('['))) {
+      // Keep parsing until we get a non-string or can't parse anymore
+      while (typeof parsed === 'string' && (parsed.startsWith('"') || parsed.startsWith('[') || parsed.startsWith('{'))) {
         try {
-          parsed = JSON.parse(parsed);
+          const nextParsed = JSON.parse(parsed);
+          if (nextParsed === parsed) break; // Prevent infinite loop
+          parsed = nextParsed;
         } catch {
           break;
         }
       }
       
+      // Check if we have a valid array with images
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed[0];
-      } else if (typeof parsed === 'string' && parsed.startsWith('data:image/')) {
+        const firstImage = parsed[0];
+        if (typeof firstImage === 'string' && (firstImage.startsWith('data:image/') || firstImage.startsWith('http'))) {
+          return firstImage;
+        }
+      }
+      
+      // Check if we have a single valid image string
+      if (typeof parsed === 'string' && (parsed.startsWith('data:image/') || parsed.startsWith('http'))) {
         return parsed;
       }
       
       return generateGradientPlaceholder(fallbackSeed);
     } catch {
-      return images.startsWith('data:image/') ? images : generateGradientPlaceholder(fallbackSeed);
+      // If original string is a valid image URL, use it
+      if (images.startsWith('data:image/') || images.startsWith('http')) {
+        return images;
+      }
+      return generateGradientPlaceholder(fallbackSeed);
     }
   }
   
   if (Array.isArray(images) && images.length > 0) {
-    return images[0];
+    const firstImage = images[0];
+    if (typeof firstImage === 'string' && (firstImage.startsWith('data:image/') || firstImage.startsWith('http'))) {
+      return firstImage;
+    }
   }
   
   return generateGradientPlaceholder(fallbackSeed);

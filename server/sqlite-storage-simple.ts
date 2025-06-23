@@ -25,10 +25,21 @@ export class SimpleSQLiteStorage implements IStorage {
     if (!images) return [];
     if (typeof images === 'string') {
       try {
-        const parsed = JSON.parse(images);
-        return Array.isArray(parsed) ? parsed : [images];
+        // Handle multiple levels of JSON encoding
+        let parsed = images;
+        while (typeof parsed === 'string' && (parsed.startsWith('"') || parsed.startsWith('['))) {
+          try {
+            parsed = JSON.parse(parsed);
+          } catch {
+            break;
+          }
+        }
+        
+        if (Array.isArray(parsed)) return parsed;
+        if (typeof parsed === 'string') return [parsed];
+        return [];
       } catch {
-        return [images];
+        return images.startsWith('data:') || images.startsWith('http') ? [images] : [];
       }
     }
     if (Array.isArray(images)) return images;
@@ -314,9 +325,18 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async createMarketplaceListing(insertListing: InsertMarketplaceListing): Promise<MarketplaceListingResponse> {
     const now = new Date().toISOString();
+    
+    // Handle images properly - check if already stringified
+    let imagesForDb: string;
+    if (typeof insertListing.images === 'string') {
+      imagesForDb = insertListing.images;
+    } else {
+      imagesForDb = JSON.stringify(insertListing.images || []);
+    }
+    
     const listingData = {
       ...insertListing,
-      images: JSON.stringify(insertListing.images || []),
+      images: imagesForDb,
       isActive: true,
       moderationStatus: 'pending' as const,
       createdAt: now,
