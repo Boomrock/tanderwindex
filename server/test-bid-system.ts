@@ -28,26 +28,27 @@ async function createTestTenderAndBid() {
 
     console.log('Test tender created:', tender);
 
-    // Create a test specialist user for bidding
-    const specialist = await simpleSqliteStorage.createUser({
-      username: 'specialist_builder',
-      email: 'builder@example.com',
-      password: '$2b$10$example_hash', // This is just for testing
-      fullName: 'Иван Строитель',
-      userType: 'contractor',
-      isVerified: true,
-      rating: 4.8,
-      completedProjects: 25,
-      phoneNumber: '+7 (999) 555-77-88',
-      location: 'Москва'
-    });
+    // Use existing user ID 1 (should be a specialist from seeded data)
+    const specialist = await simpleSqliteStorage.getUser(1);
+    if (!specialist) {
+      console.log('No specialist found with ID 1, creating one...');
+      const newSpecialist = await simpleSqliteStorage.createUser({
+        username: 'specialist_builder',
+        email: 'builder@example.com',
+        password: '$2b$10$example_hash',
+        userType: 'contractor'
+      });
+      console.log('Test specialist created:', newSpecialist);
+    } else {
+      console.log('Using existing specialist:', specialist);
+    }
 
-    console.log('Test specialist created:', specialist);
-
+    const specialistId = specialist?.id || 1;
+    
     // Create a test bid with pending status
     const bid = await simpleSqliteStorage.createTenderBid({
       tenderId: tender.id,
-      userId: specialist.id,
+      userId: specialistId,
       amount: 7500000,
       description: 'Здравствуйте! Я готов взяться за строительство вашего дома. Имею 8 лет опыта в загородном строительстве, все необходимые лицензии и сертификаты. В портфолио более 30 успешно завершенных проектов. Предлагаю использовать качественные материалы и современные технологии. Гарантия на все работы 3 года.',
       timeframe: 120, // 120 days
@@ -57,11 +58,16 @@ async function createTestTenderAndBid() {
 
     console.log('Test bid created:', bid);
 
+    // Get specialist name for notification
+    const specialistName = specialist 
+      ? `${specialist.firstName || ''} ${specialist.lastName || ''}`.trim() || specialist.username
+      : 'Специалист';
+
     // Create notification for tender owner
     await simpleSqliteStorage.createNotification({
       userId: 17, // admin user (tender owner)
       title: 'Новая заявка на тендер',
-      message: `Получена новая заявка на тендер "${tender.title}" от пользователя ${specialist.fullName}`,
+      message: `Получена новая заявка на тендер "${tender.title}" от пользователя ${specialistName}`,
       type: 'tender_bid',
       relatedId: tender.id,
       isRead: false,
