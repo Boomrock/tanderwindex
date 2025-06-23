@@ -7,20 +7,19 @@ async function createTestBidData() {
     // Create a test bid directly in SQL
     const insertBidSql = `
       INSERT INTO tender_bids (
-        tender_id, user_id, amount, description, timeframe, documents, status, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        tenderId, userId, amount, description, timeframe, documents, status, createdAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const bidResult = sqliteDb.prepare(insertBidSql).run(
-      3, // tender_id (the test tender we created)
-      1, // user_id (specialist)
+      3, // tenderId (the test tender we created)
+      1, // userId (specialist)
       7500000, // amount
       'Здравствуйте! Я готов взяться за строительство вашего дома. Имею 8 лет опыта в загородном строительстве, все необходимые лицензии и сертификаты. В портфолио более 30 успешно завершенных проектов. Предлагаю использовать качественные материалы и современные технологии. Гарантия на все работы 3 года.', // description
       120, // timeframe
       '["license.pdf", "portfolio.pdf", "certificates.pdf"]', // documents
       'pending', // status
-      new Date().toISOString(), // created_at
-      new Date().toISOString()  // updated_at
+      new Date().toISOString() // createdAt
     );
 
     console.log('Test bid created with ID:', bidResult.lastInsertRowid);
@@ -28,18 +27,18 @@ async function createTestBidData() {
     // Create notification for tender owner
     const insertNotificationSql = `
       INSERT INTO notifications (
-        user_id, title, message, type, related_id, is_read, created_at
+        userId, title, message, type, related_id, is_read, createdAt
       ) VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     const notificationResult = sqliteDb.prepare(insertNotificationSql).run(
-      17, // user_id (admin - tender owner)
+      17, // userId (admin - tender owner)
       'Новая заявка на тендер', // title
       'Получена новая заявка на тендер "Строительство загородного дома" от специалиста', // message
       'tender_bid', // type
       3, // related_id (tender_id)
       0, // is_read (false)
-      new Date().toISOString() // created_at
+      new Date().toISOString() // createdAt
     );
 
     console.log('Test notification created with ID:', notificationResult.lastInsertRowid);
@@ -47,16 +46,16 @@ async function createTestBidData() {
     // Also create a chat between the customer and contractor
     const insertMessageSql = `
       INSERT INTO messages (
-        sender_id, receiver_id, content, is_read, created_at
+        senderId, receiverId, content, isRead, createdAt
       ) VALUES (?, ?, ?, ?, ?)
     `;
 
     const messageResult = sqliteDb.prepare(insertMessageSql).run(
-      1, // sender_id (specialist)
-      17, // receiver_id (admin - tender owner)
+      1, // senderId (specialist)
+      17, // receiverId (admin - tender owner)
       'Здравствуйте! Я подал заявку на ваш тендер по строительству загородного дома. Готов обсудить детали проекта и ответить на любые вопросы.', // content
-      0, // is_read (false)
-      new Date().toISOString() // created_at
+      0, // isRead (false)
+      new Date().toISOString() // createdAt
     );
 
     console.log('Test message created with ID:', messageResult.lastInsertRowid);
