@@ -635,8 +635,13 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                   
                   for (const file of files) {
                     try {
-                      const formData = new FormData();
-                      formData.append('file', file);
+                      // Convert file to base64
+                      const fileData = await new Promise<string>((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result as string);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                      });
                       
                       const response = await fetch('/api/upload', {
                         method: 'POST',
@@ -646,6 +651,7 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                         },
                         body: JSON.stringify({
                           filename: file.name,
+                          fileData: fileData,
                           fileSize: file.size,
                           fileType: file.type
                         })

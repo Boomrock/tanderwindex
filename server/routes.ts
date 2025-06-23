@@ -72,23 +72,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File upload endpoint
   apiRouter.post('/upload', authMiddleware, async (req: Request, res: Response) => {
     try {
-      const { filename, fileSize, fileType } = req.body;
+      const { filename, fileData, fileSize, fileType } = req.body;
       
-      if (!filename) {
-        return res.status(400).json({ message: "Filename required" });
+      if (!filename || !fileData) {
+        return res.status(400).json({ message: "Filename and file data required" });
+      }
+      
+      // Create uploads directory if it doesn't exist
+      const uploadsDir = './uploads';
+      if (!require('fs').existsSync(uploadsDir)) {
+        require('fs').mkdirSync(uploadsDir, { recursive: true });
       }
       
       // Create a unique file identifier
       const fileId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
       const savedFileName = `${fileId}_${filename}`;
+      const filePath = `${uploadsDir}/${savedFileName}`;
       
-      // For this demo, we'll store file metadata and return a download URL
-      // In production, you would save the actual file to disk or cloud storage
+      // Decode base64 file data and save to disk
+      const base64Data = fileData.replace(/^data:.*;base64,/, '');
+      require('fs').writeFileSync(filePath, base64Data, 'base64');
+      
       const fileUrl = `/api/files/${savedFileName}`;
       
       res.json({ url: fileUrl, filename: savedFileName });
     } catch (error) {
-      res.status(500).json({ message: "Upload failed", error: error.message });
+      res.status(500).json({ message: "Upload failed", error: (error as Error).message });
     }
   });
 
@@ -96,21 +105,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get('/files/:filename', (req: Request, res: Response) => {
     try {
       const filename = req.params.filename;
+      const filePath = `./uploads/${filename}`;
+      
+      // Check if file exists
+      if (!require('fs').existsSync(filePath)) {
+        return res.status(404).json({ message: "File not found" });
+      }
       
       // Extract original filename from the saved filename
       const originalName = filename.split('_').slice(1).join('_');
       
-      // For demo purposes, return a sample file content
-      // In production, you would read the actual file from storage
-      const sampleContent = `Документ: ${originalName}\nЗагружен: ${new Date().toLocaleString('ru-RU')}\nЭто демонстрационный файл для системы Windex-Строй.`;
-      
       // Set appropriate headers for file download
       res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
-      res.setHeader('Content-Type', 'application/octet-stream');
       
-      res.send(sampleContent);
+      // Determine content type based on file extension
+      const ext = originalName.split('.').pop()?.toLowerCase();
+      const contentTypes: { [key: string]: string } = {
+        'pdf': 'application/pdf',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'txt': 'text/plain',
+        'xls': 'application/vnd.ms-excel',
+        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      };
+      
+      res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
+      
+      // Send the actual file
+      res.sendFile(require('path').resolve(filePath));
     } catch (error) {
-      res.status(500).json({ message: "File download failed", error: error.message });
+      res.status(500).json({ message: "File download failed", error: (error as Error).message });
     }
   });
   
