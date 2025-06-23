@@ -285,21 +285,41 @@ export class SimpleSQLiteStorage implements IStorage {
       ORDER BY b.createdAt DESC
     `).all(tenderId) as any[];
     
-    return bidsWithUser.map(bid => ({
-      ...bid,
-      documents: bid.documents ? JSON.parse(bid.documents) : [],
-      user: {
-        id: bid.userId,
-        username: bid.username,
-        fullName: bid.first_name && bid.last_name 
-          ? `${bid.first_name} ${bid.last_name}` 
-          : bid.username,
-        rating: bid.rating || 0,
-        avatar: bid.avatar,
-        email: bid.email,
-        phone: bid.phone
+    console.log('Raw bids from database:', JSON.stringify(bidsWithUser, null, 2));
+    
+    const processedBids = bidsWithUser.map(bid => {
+      let documents = [];
+      if (bid.documents) {
+        try {
+          documents = JSON.parse(bid.documents);
+          console.log(`Parsed documents for bid ${bid.id}:`, documents);
+        } catch (e) {
+          console.error(`Error parsing documents for bid ${bid.id}:`, e);
+          documents = [];
+        }
       }
-    }));
+      
+      const processedBid = {
+        ...bid,
+        documents,
+        user: {
+          id: bid.userId,
+          username: bid.username,
+          fullName: bid.first_name && bid.last_name 
+            ? `${bid.first_name} ${bid.last_name}` 
+            : bid.username,
+          rating: bid.rating || 0,
+          avatar: bid.avatar,
+          email: bid.email,
+          phone: bid.phone
+        }
+      };
+      
+      console.log(`Processed bid ${bid.id}:`, JSON.stringify(processedBid, null, 2));
+      return processedBid;
+    });
+    
+    return processedBids;
   }
 
   async getTenderBid(id: number): Promise<TenderBid | undefined> {
