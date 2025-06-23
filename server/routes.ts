@@ -508,7 +508,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.user.id
       });
       
-      const bid = await storage.createTenderBid(bidData);
+      // Convert documents to JSON string for database storage
+      const bidForDB = {
+        ...bidData,
+        documents: bidData.documents ? JSON.stringify(bidData.documents) : JSON.stringify([])
+      };
+      
+      const bid = await storage.createTenderBid(bidForDB);
       
       // Создаем уведомление для заказчика о новой заявке
       try {

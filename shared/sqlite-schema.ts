@@ -194,7 +194,7 @@ export const insertTenderSchema = createInsertSchema(tenders, {
 
 export const insertTenderBidSchema = createInsertSchema(tenderBids, {
   isAccepted: z.boolean().optional(),
-  documents: z.array(z.string()).optional(),
+  documents: z.array(z.string()).nullable().optional(),
   createdAt: z.string().optional(),
 }).omit({
   id: true,
