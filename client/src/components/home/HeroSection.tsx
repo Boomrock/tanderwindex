@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Calendar, MapPin, DollarSign, Loader2 } from "lucide-react";
 import { formatPrice, formatDate } from "@/lib/utils";
+import { getImageUrl } from "@/lib/gradient-generator";
 
 // Интерфейс для тендеров
 interface Tender {
@@ -114,24 +115,16 @@ const HeroSection = () => {
                 <Card className="bg-white text-gray-900 shadow-xl overflow-hidden h-[420px] flex flex-col">
                   {/* Фиксированная высота для изображения */}
                   <div className="relative h-48 overflow-hidden flex-shrink-0">
-                    {currentTender.images && currentTender.images.length > 0 ? (
-                      <>
-                        <img 
-                          src={currentTender.images[0]} 
-                          alt={currentTender.title}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
-                          <Badge className="bg-amber-500 hover:bg-amber-600">
-                            {currentTender.category} / {currentTender.subcategory}
-                          </Badge>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <p className="text-gray-500">Нет изображения</p>
-                      </div>
-                    )}
+                    <img 
+                      src={getImageUrl(currentTender.images, currentTender.title)} 
+                      alt={currentTender.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4">
+                      <Badge className="bg-amber-500 hover:bg-amber-600">
+                        {currentTender.category} / {currentTender.subcategory}
+                      </Badge>
+                    </div>
                   </div>
                   
                   {/* Фиксированная высота для контента */}

@@ -31,7 +31,8 @@ import { apiRequest } from '@/lib/queryClient';
 import StarRating from '@/components/shared/StarRating';
 import { MarketplaceListing } from '@/lib/types';
 import { useAuth } from '@/lib/authContext';
-import { formatDate, getUserInitials, getStatusColor, getPlaceholderImage } from '@/lib/utils';
+import { formatDate, getUserInitials, getStatusColor } from '@/lib/utils';
+import { getImageUrl } from '@/lib/gradient-generator';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface MarketplaceItemDetailProps {
@@ -214,12 +215,10 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
   const isOwner = isAuthenticated && user?.id === listing.userId;
   
   // Get current image URL
-  const currentImage = listing.images && listing.images.length > 0 
-    ? listing.images[currentImageIndex] 
-    : getPlaceholderImage(listing.category);
+  const currentImage = getImageUrl(listing.images, listing.title);
   
   // Has multiple images
-  const hasMultipleImages = listing.images && listing.images.length > 1;
+  const hasMultipleImages = listing.images && Array.isArray(listing.images) && listing.images.length > 1;
 
   return (
     <div className="space-y-6">
