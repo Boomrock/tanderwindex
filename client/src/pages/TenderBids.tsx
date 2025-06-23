@@ -63,7 +63,7 @@ export default function TenderBids() {
 
   // Получение заявок на тендер
   const { data: bids, isLoading: isLoadingBids } = useQuery<TenderBid[]>({
-    queryKey: ['/api/tenders', tenderId, 'bids'],
+    queryKey: [`/api/tenders/${tenderId}/bids`],
     enabled: !!tenderId,
   });
 
@@ -74,7 +74,7 @@ export default function TenderBids() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tenders', tenderId, 'bids'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}/bids`] });
       toast({
         title: "Заявка одобрена",
         description: "Исполнитель получит уведомление о допуске к участию в тендере",
@@ -96,7 +96,7 @@ export default function TenderBids() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tenders', tenderId, 'bids'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}/bids`] });
       setRejectDialogOpen(false);
       setRejectionReason('');
       setSelectedBid(null);
@@ -174,17 +174,9 @@ export default function TenderBids() {
     );
   }
 
-  // Отладка: выводим в консоль полученные заявки
-  console.log('Received bids:', bids);
-  
   const pendingBids = bids?.filter(bid => bid.status === 'pending') || [];
   const approvedBids = bids?.filter(bid => bid.status === 'approved') || [];
   const rejectedBids = bids?.filter(bid => bid.status === 'rejected') || [];
-  
-  // Отладка: выводим количество заявок по статусам
-  console.log('Pending bids:', pendingBids.length, pendingBids);
-  console.log('Approved bids:', approvedBids.length, approvedBids);
-  console.log('Rejected bids:', rejectedBids.length, rejectedBids);
 
   return (
     <div className="container mx-auto px-4 py-8">
