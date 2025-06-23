@@ -29,8 +29,9 @@ interface TenderBid {
     username: string;
     fullName: string;
     rating: number;
-    isVerified: boolean;
-    completedProjects: number;
+    avatar?: string;
+    email?: string;
+    phone?: string;
   };
 }
 
@@ -223,21 +224,20 @@ export default function TenderBids() {
                       <div>
                         <CardTitle className="text-lg flex items-center space-x-2">
                           <User className="h-5 w-5" />
-                          <span>{bid.user?.fullName || bid.user?.username}</span>
-                          {bid.user?.isVerified && (
-                            <Award className="h-4 w-4 text-blue-500" />
-                          )}
+                          <span>{bid.user?.fullName || bid.user?.username || 'Пользователь'}</span>
                         </CardTitle>
                         <CardDescription className="flex items-center space-x-4 mt-1">
                           <span className="flex items-center space-x-1">
                             <Star className="h-4 w-4" />
-                            <span>{bid.user?.rating || 0}</span>
+                            <span>{bid.user?.rating?.toFixed(1) || '0.0'}</span>
                           </span>
-                          <span>{bid.user?.completedProjects || 0} проектов</span>
                           <span className="flex items-center space-x-1">
                             <Clock className="h-4 w-4" />
                             <span>{formatDate(bid.createdAt)}</span>
                           </span>
+                          {bid.user?.email && (
+                            <span className="text-sm text-gray-500">{bid.user.email}</span>
+                          )}
                         </CardDescription>
                       </div>
                     </div>
@@ -268,12 +268,22 @@ export default function TenderBids() {
 
                   {bid.documents && bid.documents.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="font-medium mb-2">Документы:</h4>
+                      <h4 className="font-medium mb-2 flex items-center space-x-2">
+                        <FileText className="h-4 w-4" />
+                        <span>Документы:</span>
+                      </h4>
                       <div className="flex flex-wrap gap-2">
                         {bid.documents.map((doc, index) => (
-                          <Badge key={index} variant="outline">
-                            Документ {index + 1}
-                          </Badge>
+                          <a
+                            key={index}
+                            href={doc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
+                          >
+                            <FileText className="h-3 w-3" />
+                            <span>Документ {index + 1}</span>
+                          </a>
                         ))}
                       </div>
                     </div>
@@ -321,17 +331,20 @@ export default function TenderBids() {
                       <div>
                         <CardTitle className="text-lg flex items-center space-x-2">
                           <User className="h-5 w-5" />
-                          <span>{bid.user?.fullName || bid.user?.username}</span>
-                          {bid.user?.isVerified && (
-                            <Award className="h-4 w-4 text-blue-500" />
-                          )}
+                          <span>{bid.user?.fullName || bid.user?.username || 'Пользователь'}</span>
                         </CardTitle>
                         <CardDescription className="flex items-center space-x-4 mt-1">
                           <span className="flex items-center space-x-1">
                             <Star className="h-4 w-4" />
-                            <span>{bid.user?.rating || 0}</span>
+                            <span>{bid.user?.rating?.toFixed(1) || '0.0'}</span>
                           </span>
-                          <span>{bid.user?.completedProjects || 0} проектов</span>
+                          <span className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{formatDate(bid.createdAt)}</span>
+                          </span>
+                          {bid.user?.email && (
+                            <span className="text-sm text-gray-500">{bid.user.email}</span>
+                          )}
                         </CardDescription>
                       </div>
                     </div>
@@ -352,7 +365,36 @@ export default function TenderBids() {
                     </div>
                   </div>
                   
-                  <p className="text-gray-600">{bid.description}</p>
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2 flex items-center space-x-2">
+                      <FileText className="h-4 w-4" />
+                      <span>Описание предложения:</span>
+                    </h4>
+                    <p className="text-gray-600">{bid.description}</p>
+                  </div>
+
+                  {bid.documents && bid.documents.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-medium mb-2 flex items-center space-x-2">
+                        <FileText className="h-4 w-4" />
+                        <span>Документы:</span>
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {bid.documents.map((doc, index) => (
+                          <a
+                            key={index}
+                            href={doc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
+                          >
+                            <FileText className="h-3 w-3" />
+                            <span>Документ {index + 1}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))
@@ -373,17 +415,20 @@ export default function TenderBids() {
                       <div>
                         <CardTitle className="text-lg flex items-center space-x-2">
                           <User className="h-5 w-5" />
-                          <span>{bid.user?.fullName || bid.user?.username}</span>
-                          {bid.user?.isVerified && (
-                            <Award className="h-4 w-4 text-blue-500" />
-                          )}
+                          <span>{bid.user?.fullName || bid.user?.username || 'Пользователь'}</span>
                         </CardTitle>
                         <CardDescription className="flex items-center space-x-4 mt-1">
                           <span className="flex items-center space-x-1">
                             <Star className="h-4 w-4" />
-                            <span>{bid.user?.rating || 0}</span>
+                            <span>{bid.user?.rating?.toFixed(1) || '0.0'}</span>
                           </span>
-                          <span>{bid.user?.completedProjects || 0} проектов</span>
+                          <span className="flex items-center space-x-1">
+                            <Clock className="h-4 w-4" />
+                            <span>{formatDate(bid.createdAt)}</span>
+                          </span>
+                          {bid.user?.email && (
+                            <span className="text-sm text-gray-500">{bid.user.email}</span>
+                          )}
                         </CardDescription>
                       </div>
                     </div>
@@ -404,7 +449,36 @@ export default function TenderBids() {
                     </div>
                   </div>
                   
-                  <p className="text-gray-600 mb-4">{bid.description}</p>
+                  <div className="mb-4">
+                    <h4 className="font-medium mb-2 flex items-center space-x-2">
+                      <FileText className="h-4 w-4" />
+                      <span>Описание предложения:</span>
+                    </h4>
+                    <p className="text-gray-600">{bid.description}</p>
+                  </div>
+
+                  {bid.documents && bid.documents.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-medium mb-2 flex items-center space-x-2">
+                        <FileText className="h-4 w-4" />
+                        <span>Документы:</span>
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {bid.documents.map((doc, index) => (
+                          <a
+                            key={index}
+                            href={doc}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
+                          >
+                            <FileText className="h-3 w-3" />
+                            <span>Документ {index + 1}</span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   {bid.rejectionReason && (
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3">

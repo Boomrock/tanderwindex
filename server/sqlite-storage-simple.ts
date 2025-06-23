@@ -268,7 +268,38 @@ export class SimpleSQLiteStorage implements IStorage {
 
   // Tender bid methods
   async getTenderBids(tenderId: number): Promise<TenderBid[]> {
-    return await db.select().from(tenderBids).where(eq(tenderBids.tenderId, tenderId));
+    // Используем SQL запрос с JOIN для получения информации о пользователе
+    const bidsWithUser = await sqliteDb.prepare(`
+      SELECT 
+        b.*,
+        u.username,
+        u.first_name,
+        u.last_name,
+        u.rating,
+        u.avatar,
+        u.email,
+        u.phone
+      FROM tender_bids b
+      LEFT JOIN users u ON b.userId = u.id
+      WHERE b.tenderId = ?
+      ORDER BY b.createdAt DESC
+    `).all(tenderId) as any[];
+    
+    return bidsWithUser.map(bid => ({
+      ...bid,
+      documents: bid.documents ? JSON.parse(bid.documents) : [],
+      user: {
+        id: bid.userId,
+        username: bid.username,
+        fullName: bid.first_name && bid.last_name 
+          ? `${bid.first_name} ${bid.last_name}` 
+          : bid.username,
+        rating: bid.rating || 0,
+        avatar: bid.avatar,
+        email: bid.email,
+        phone: bid.phone
+      }
+    }));
   }
 
   async getTenderBid(id: number): Promise<TenderBid | undefined> {
