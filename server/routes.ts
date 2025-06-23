@@ -502,20 +502,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You cannot bid on your own tender" });
       }
       
-      // Pre-process documents field to handle null/undefined
-      const processedBody = {
-        ...req.body,
-        documents: req.body.documents || []
-      };
-      
-      console.log('Raw bid request body:', JSON.stringify(req.body, null, 2));
-      console.log('Processed body:', JSON.stringify(processedBody, null, 2));
-      
-      const bidData = insertTenderBidSchema.parse({
-        ...processedBody,
+      // Pre-process and transform data
+      const dataToValidate = {
+        amount: req.body.amount,
+        description: req.body.description,
+        timeframe: req.body.timeframe,
         tenderId,
         userId: req.user.id
-      });
+      };
+      
+      // Only add documents if they exist and are not null
+      if (req.body.documents && Array.isArray(req.body.documents)) {
+        dataToValidate.documents = req.body.documents;
+      }
+      
+      console.log('Raw bid request body:', JSON.stringify(req.body, null, 2));
+      console.log('Data to validate:', JSON.stringify(dataToValidate, null, 2));
+      
+      const bidData = insertTenderBidSchema.parse(dataToValidate);
       
       console.log('Parsed bid data:', JSON.stringify(bidData, null, 2));
       
