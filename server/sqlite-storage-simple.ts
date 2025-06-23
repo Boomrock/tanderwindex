@@ -291,19 +291,36 @@ export class SimpleSQLiteStorage implements IStorage {
       let documents = [];
       if (bid.documents) {
         try {
-          // Проверяем, если документы уже являются строкой JSON
-          const parsed = JSON.parse(bid.documents);
-          // Если результат парсинга - строка, парсим еще раз (двойное кодирование)
-          if (typeof parsed === 'string') {
-            documents = JSON.parse(parsed);
-          } else {
-            documents = parsed;
+          // Обрабатываем различные форматы сохранения документов
+          let parsedDocs = bid.documents;
+          
+          // Если это строка, пытаемся распарсить
+          if (typeof parsedDocs === 'string') {
+            parsedDocs = JSON.parse(parsedDocs);
           }
+          
+          // Если после первого парсинга получили строку, парсим еще раз
+          if (typeof parsedDocs === 'string') {
+            parsedDocs = JSON.parse(parsedDocs);
+          }
+          
+          // Убеждаемся, что это массив
+          if (Array.isArray(parsedDocs)) {
+            documents = parsedDocs;
+          } else if (parsedDocs) {
+            documents = [parsedDocs];
+          }
+          
           console.log(`Parsed documents for bid ${bid.id}:`, documents);
         } catch (e) {
           console.error(`Error parsing documents for bid ${bid.id}:`, e);
           console.error(`Raw documents value:`, bid.documents);
-          documents = [];
+          // Пытаемся обработать как простую строку
+          if (typeof bid.documents === 'string' && bid.documents.trim() && bid.documents !== '[]' && bid.documents !== '""') {
+            documents = [bid.documents];
+          } else {
+            documents = [];
+          }
         }
       }
       

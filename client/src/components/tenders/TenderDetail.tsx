@@ -629,25 +629,47 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                 onChange={async (e) => {
                   const files = Array.from(e.target.files || []);
-                  const uploadedUrls: string[] = [];
+                  if (files.length === 0) return;
+                  
+                  const newDocuments: string[] = [];
                   
                   for (const file of files) {
-                    const reader = new FileReader();
-                    reader.onload = async () => {
-                      try {
-                        const response = await fetch('/api/upload', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ file: reader.result })
-                        });
-                        const result = await response.json();
-                        uploadedUrls.push(result.url);
-                        setBidDocuments([...uploadedUrls]);
-                      } catch (error) {
-                        console.error('Upload failed:', error);
+                    try {
+                      const formData = new FormData();
+                      formData.append('file', file);
+                      
+                      const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${localStorage.getItem('token')}`
+                        },
+                        body: JSON.stringify({
+                          filename: file.name,
+                          fileSize: file.size,
+                          fileType: file.type
+                        })
+                      });
+                      
+                      const result = await response.json();
+                      if (result.url) {
+                        newDocuments.push(result.url);
                       }
-                    };
-                    reader.readAsDataURL(file);
+                    } catch (error) {
+                      console.error('Upload failed for file:', file.name, error);
+                      toast({
+                        title: "Ошибка загрузки",
+                        description: `Не удалось загрузить файл ${file.name}`,
+                        variant: "destructive",
+                      });
+                    }
+                  }
+                  
+                  if (newDocuments.length > 0) {
+                    setBidDocuments(prev => [...prev, ...newDocuments]);
+                    toast({
+                      title: "Файлы загружены",
+                      description: `Успешно загружено ${newDocuments.length} файлов`,
+                    });
                   }
                 }}
                 className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
