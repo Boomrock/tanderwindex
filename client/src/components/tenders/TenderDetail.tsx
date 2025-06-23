@@ -79,7 +79,7 @@ export default function TenderDetail({ tenderId }: TenderDetailProps) {
 
   // Submit bid mutation
   const submitBidMutation = useMutation({
-    mutationFn: async (bidData: { amount: number; description: string; timeframe?: number; documents?: string[] }) => {
+    mutationFn: async (bidData: { amount: number; description: string; timeframe?: number; documents?: string[] | null }) => {
       return apiRequest('POST', `/api/tenders/${tenderId}/bids`, bidData);
     },
     onSuccess: async () => {
