@@ -511,9 +511,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.user.id
       };
       
-      // Only add documents if they exist and are not null
+      // Filter out null values from documents array and only add if valid documents exist
       if (req.body.documents && Array.isArray(req.body.documents)) {
-        dataToValidate.documents = req.body.documents;
+        const validDocuments = req.body.documents.filter(doc => doc !== null && doc !== undefined && doc !== '');
+        if (validDocuments.length > 0) {
+          dataToValidate.documents = validDocuments;
+        }
       }
       
       console.log('Raw bid request body:', JSON.stringify(req.body, null, 2));
