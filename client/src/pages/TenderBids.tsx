@@ -300,16 +300,16 @@ export default function TenderBids() {
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {bid.documents.map((doc, index) => (
-                          <a
+                          <Button
                             key={index}
-                            href={doc}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => downloadDocument(doc, `document_${bid.id}_${index + 1}`)}
+                            className="inline-flex items-center space-x-1"
                           >
-                            <FileText className="h-3 w-3" />
+                            <Download className="h-3 w-3" />
                             <span>Документ {index + 1}</span>
-                          </a>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -407,16 +407,16 @@ export default function TenderBids() {
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {bid.documents.map((doc, index) => (
-                          <a
+                          <Button
                             key={index}
-                            href={doc}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => downloadDocument(doc, `document_${bid.id}_${index + 1}`)}
+                            className="inline-flex items-center space-x-1"
                           >
-                            <FileText className="h-3 w-3" />
+                            <Download className="h-3 w-3" />
                             <span>Документ {index + 1}</span>
-                          </a>
+                          </Button>
                         ))}
                       </div>
                     </div>
@@ -491,16 +491,16 @@ export default function TenderBids() {
                       </h4>
                       <div className="flex flex-wrap gap-2">
                         {bid.documents.map((doc, index) => (
-                          <a
+                          <Button
                             key={index}
-                            href={doc}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center space-x-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-md hover:bg-blue-100 transition-colors"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => downloadDocument(doc, `document_${bid.id}_${index + 1}`)}
+                            className="inline-flex items-center space-x-1"
                           >
-                            <FileText className="h-3 w-3" />
+                            <Download className="h-3 w-3" />
                             <span>Документ {index + 1}</span>
-                          </a>
+                          </Button>
                         ))}
                       </div>
                     </div>
