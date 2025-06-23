@@ -139,6 +139,11 @@ The platform uses PostgreSQL with the following key entities:
   - Updated content visibility logic to show only approved items publicly
   - Built admin panel with moderation tabs for tenders and marketplace listings
   - Gradient abstractions already implemented for tenders without images on homepage
+- June 23, 2025. Fixed critical issues with user experience:
+  - Resolved documents validation error preventing bid submissions without uploaded documents
+  - Implemented user information display in tender and marketplace cards via SQL JOINs
+  - Fixed fallback "Пользователь" text by showing real names (first_name + last_name or username)
+  - Enhanced data retrieval methods to include user profile information in listings
 
 ## User Preferences
 

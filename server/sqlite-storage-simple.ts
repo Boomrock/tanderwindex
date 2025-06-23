@@ -105,20 +105,40 @@ export class SimpleSQLiteStorage implements IStorage {
 
     // Показываем только одобренные тендеры, если не указано showAll
     if (!filters?.showAll) {
-      // Используем SQL запрос напрямую, так как поле moderation_status добавлено через миграцию
-      const tendersWithModeration = await sqliteDb.prepare(`
-        SELECT * FROM tenders 
-        WHERE moderation_status = 'approved'
-        ${filters?.category ? `AND category = '${filters.category}'` : ''}
-        ${filters?.status ? `AND status = '${filters.status}'` : ''}
-        ${filters?.userId ? `AND userId = ${filters.userId}` : ''}
+      // Используем SQL запрос с JOIN для получения информации о пользователе
+      const tendersWithUser = await sqliteDb.prepare(`
+        SELECT 
+          t.*,
+          u.username,
+          u.first_name,
+          u.last_name,
+          u.rating,
+          u.avatar,
+          u.email
+        FROM tenders t
+        LEFT JOIN users u ON t.userId = u.id
+        WHERE t.moderation_status = 'approved'
+        ${filters?.category ? `AND t.category = '${filters.category}'` : ''}
+        ${filters?.status ? `AND t.status = '${filters.status}'` : ''}
+        ${filters?.userId ? `AND t.userId = ${filters.userId}` : ''}
+        ORDER BY t.createdAt DESC
         ${filters?.limit ? `LIMIT ${filters.limit}` : ''}
         ${filters?.offset ? `OFFSET ${filters.offset}` : ''}
       `).all() as any[];
       
-      return tendersWithModeration.map(tender => ({
+      return tendersWithUser.map(tender => ({
         ...tender,
         images: tender.images ? JSON.parse(tender.images) : [],
+        user: {
+          id: tender.userId,
+          username: tender.username,
+          fullName: tender.first_name && tender.last_name 
+            ? `${tender.first_name} ${tender.last_name}` 
+            : tender.username,
+          rating: tender.rating || 0,
+          avatar: tender.avatar,
+          email: tender.email
+        }
       }));
     }
 
@@ -146,12 +166,36 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   async getTender(id: number): Promise<Tender | undefined> {
-    const [tender] = await db.select().from(tenders).where(eq(tenders.id, id));
-    if (!tender) return undefined;
+    // Используем SQL запрос с JOIN для получения информации о пользователе
+    const [tenderWithUser] = await sqliteDb.prepare(`
+      SELECT 
+        t.*,
+        u.username,
+        u.first_name,
+        u.last_name,
+        u.rating,
+        u.avatar,
+        u.email
+      FROM tenders t
+      LEFT JOIN users u ON t.userId = u.id
+      WHERE t.id = ?
+    `).all(id) as any[];
+    
+    if (!tenderWithUser) return undefined;
 
     return {
-      ...tender,
-      images: tender.images ? JSON.parse(tender.images) : [],
+      ...tenderWithUser,
+      images: tenderWithUser.images ? JSON.parse(tenderWithUser.images) : [],
+      user: {
+        id: tenderWithUser.userId,
+        username: tenderWithUser.username,
+        fullName: tenderWithUser.first_name && tenderWithUser.last_name 
+          ? `${tenderWithUser.first_name} ${tenderWithUser.last_name}` 
+          : tenderWithUser.username,
+        rating: tenderWithUser.rating || 0,
+        avatar: tenderWithUser.avatar,
+        email: tenderWithUser.email
+      }
     };
   }
 
@@ -273,20 +317,39 @@ export class SimpleSQLiteStorage implements IStorage {
 
     // Показываем только одобренные объявления, если не указано showAll
     if (!filters?.showAll) {
-      // Используем SQL запрос напрямую, так как поле moderation_status добавлено через миграцию
-      const listingsWithModeration = await sqliteDb.prepare(`
-        SELECT * FROM marketplace_listings 
-        WHERE moderation_status = 'approved'
-        ${filters?.category ? `AND category = '${filters.category}'` : ''}
-        ${filters?.userId ? `AND userId = ${filters.userId}` : ''}
-        ORDER BY createdAt DESC
+      // Используем SQL запрос с JOIN для получения информации о пользователе
+      const listingsWithUser = await sqliteDb.prepare(`
+        SELECT 
+          l.*,
+          u.username,
+          u.first_name,
+          u.last_name,
+          u.rating,
+          u.avatar,
+          u.email
+        FROM marketplace_listings l
+        LEFT JOIN users u ON l.userId = u.id
+        WHERE l.moderation_status = 'approved'
+        ${filters?.category ? `AND l.category = '${filters.category}'` : ''}
+        ${filters?.userId ? `AND l.userId = ${filters.userId}` : ''}
+        ORDER BY l.createdAt DESC
         ${filters?.limit ? `LIMIT ${filters.limit}` : ''}
         ${filters?.offset ? `OFFSET ${filters.offset}` : ''}
       `).all() as any[];
       
-      return listingsWithModeration.map(listing => ({
+      return listingsWithUser.map(listing => ({
         ...listing,
         images: this.parseImages(listing.images),
+        user: {
+          id: listing.userId,
+          username: listing.username,
+          fullName: listing.first_name && listing.last_name 
+            ? `${listing.first_name} ${listing.last_name}` 
+            : listing.username,
+          rating: listing.rating || 0,
+          avatar: listing.avatar,
+          email: listing.email
+        }
       })) as MarketplaceListingResponse[];
     }
 
@@ -315,12 +378,36 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   async getMarketplaceListing(id: number): Promise<MarketplaceListingResponse | undefined> {
-    const [listing] = await db.select().from(marketplaceListings).where(eq(marketplaceListings.id, id));
-    if (!listing) return undefined;
+    // Используем SQL запрос с JOIN для получения информации о пользователе
+    const [listingWithUser] = await sqliteDb.prepare(`
+      SELECT 
+        l.*,
+        u.username,
+        u.first_name,
+        u.last_name,
+        u.rating,
+        u.avatar,
+        u.email
+      FROM marketplace_listings l
+      LEFT JOIN users u ON l.userId = u.id
+      WHERE l.id = ?
+    `).all(id) as any[];
+    
+    if (!listingWithUser) return undefined;
 
     return {
-      ...listing,
-      images: this.parseImages(listing.images),
+      ...listingWithUser,
+      images: this.parseImages(listingWithUser.images),
+      user: {
+        id: listingWithUser.userId,
+        username: listingWithUser.username,
+        fullName: listingWithUser.first_name && listingWithUser.last_name 
+          ? `${listingWithUser.first_name} ${listingWithUser.last_name}` 
+          : listingWithUser.username,
+        rating: listingWithUser.rating || 0,
+        avatar: listingWithUser.avatar,
+        email: listingWithUser.email
+      }
     } as MarketplaceListingResponse;
   }
 
