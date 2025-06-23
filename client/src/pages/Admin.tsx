@@ -98,6 +98,18 @@ export default function Admin() {
     enabled: !!user?.isAdmin && activeTab === 'marketplace-moderation',
   });
 
+  // Получение всех тендеров
+  const { data: allTenders, isLoading: isLoadingAllTenders } = useQuery({
+    queryKey: ['/api/tenders'],
+    enabled: !!user?.isAdmin && activeTab === 'all-tenders',
+  });
+
+  // Получение всех объявлений маркетплейса
+  const { data: allListings, isLoading: isLoadingAllListings } = useQuery({
+    queryKey: ['/api/marketplace'],
+    enabled: !!user?.isAdmin && activeTab === 'all-marketplace',
+  });
+
   // Мутация для изменения прав администратора
   const toggleAdminMutation = useMutation({
     mutationFn: async ({ userId, isAdmin }: { userId: number, isAdmin: boolean }) => {
@@ -328,6 +340,8 @@ export default function Admin() {
           <TabsTrigger value="top-specialists">Лучшие специалисты</TabsTrigger>
           <TabsTrigger value="tender-moderation">Модерация тендеров</TabsTrigger>
           <TabsTrigger value="marketplace-moderation">Модерация маркетплейса</TabsTrigger>
+          <TabsTrigger value="all-tenders">Все тендеры</TabsTrigger>
+          <TabsTrigger value="all-marketplace">Все объявления</TabsTrigger>
         </TabsList>
         
         <TabsContent value="dashboard" className="space-y-6">
@@ -732,6 +746,139 @@ export default function Admin() {
                     ))}
                   </TableBody>
                 </Table>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="all-tenders" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Все тендеры</CardTitle>
+              <CardDescription>
+                Управление всеми тендерами в системе
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingAllTenders ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {allTenders && allTenders.length > 0 ? (
+                    allTenders.map((tender: any) => (
+                      <Card key={tender.id} className="border-l-4 border-l-blue-500">
+                        <CardHeader>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg">{tender.title}</CardTitle>
+                              <CardDescription>
+                                Бюджет: {tender.budget?.toLocaleString()} ₽ | 
+                                Создан: {new Date(tender.createdAt).toLocaleDateString()} |
+                                Статус: {tender.moderationStatus || 'одобрен'}
+                              </CardDescription>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => deleteTenderMutation.mutate(tender.id)}
+                                disabled={deleteTenderMutation.isPending}
+                              >
+                                {deleteTenderMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    Удалить
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-gray-600 mb-2">{tender.description}</p>
+                          <div className="text-xs text-gray-500">
+                            Категория: {tender.category} | Локация: {tender.location}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">Тендеры не найдены</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="all-marketplace" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Все объявления маркетплейса</CardTitle>
+              <CardDescription>
+                Управление всеми объявлениями в системе
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingAllListings ? (
+                <div className="flex items-center justify-center p-8">
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {allListings && allListings.length > 0 ? (
+                    allListings.map((listing: any) => (
+                      <Card key={listing.id} className="border-l-4 border-l-green-500">
+                        <CardHeader>
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <CardTitle className="text-lg">{listing.title}</CardTitle>
+                              <CardDescription>
+                                Цена: {listing.price?.toLocaleString()} ₽ | 
+                                Тип: {listing.listingType} |
+                                Создано: {new Date(listing.createdAt).toLocaleDateString()} |
+                                Статус: {listing.moderationStatus || 'одобрено'}
+                              </CardDescription>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => deleteListingMutation.mutate(listing.id)}
+                                disabled={deleteListingMutation.isPending}
+                              >
+                                {deleteListingMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    Удалить
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-gray-600 mb-2">{listing.description}</p>
+                          <div className="text-xs text-gray-500">
+                            Категория: {listing.category} | Локация: {listing.location}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500">Объявления не найдены</p>
+                    </div>
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
