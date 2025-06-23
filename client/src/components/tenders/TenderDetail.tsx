@@ -102,7 +102,9 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
         console.log('Failed to create chat:', error);
       }
 
+      // Инвалидируем кэш для обеих страниц
       queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}/bids`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}`] });
       setIsBidDialogOpen(false);
       setBidAmount('');
       setBidDescription('');

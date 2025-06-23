@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, XCircle, User, Star, Award, Clock, DollarSign, FileText, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, User, Star, Award, Clock, DollarSign, FileText, Loader2, Download } from 'lucide-react';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
@@ -74,7 +74,9 @@ export default function TenderBids() {
       return response.json();
     },
     onSuccess: () => {
+      // Инвалидируем кэш для обеих страниц
       queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}/bids`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}`] });
       toast({
         title: "Заявка одобрена",
         description: "Исполнитель получит уведомление о допуске к участию в тендере",
@@ -96,7 +98,9 @@ export default function TenderBids() {
       return response.json();
     },
     onSuccess: () => {
+      // Инвалидируем кэш для обеих страниц
       queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}/bids`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tenders/${tenderId}`] });
       setRejectDialogOpen(false);
       setRejectionReason('');
       setSelectedBid(null);
@@ -148,6 +152,23 @@ export default function TenderBids() {
       return new Date(dateString).toLocaleDateString('ru-RU');
     } catch (e) {
       return 'Некорректная дата';
+    }
+  };
+
+  const downloadDocument = (documentUrl: string, fileName?: string) => {
+    try {
+      const link = document.createElement('a');
+      link.href = documentUrl;
+      link.download = fileName || `document_${Date.now()}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      toast({
+        title: "Ошибка скачивания",
+        description: "Не удалось скачать документ",
+        variant: "destructive",
+      });
     }
   };
 
