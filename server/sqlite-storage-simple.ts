@@ -355,18 +355,16 @@ export class SimpleSQLiteStorage implements IStorage {
   async createTenderBid(insertBid: InsertTenderBid): Promise<TenderBid> {
     const bidData = {
       ...insertBid,
-      documents: insertBid.documents ? JSON.stringify(insertBid.documents) : null,
+      documents: insertBid.documents && Array.isArray(insertBid.documents) 
+        ? JSON.stringify(insertBid.documents) 
+        : "[]",
       createdAt: new Date().toISOString(),
       isAccepted: false,
     };
 
-    // Ensure documents field is handled as string in database
-    const dbBidData = {
-      ...bidData,
-      documents: bidData.documents as string | null,
-    };
+    console.log('Creating bid with documents:', bidData.documents);
 
-    const [bid] = await db.insert(tenderBids).values(dbBidData).returning();
+    const [bid] = await db.insert(tenderBids).values(bidData).returning();
     return bid;
   }
 

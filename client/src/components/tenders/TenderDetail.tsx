@@ -641,7 +641,8 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                       const response = await fetch('/api/upload', {
                         method: 'POST',
                         headers: {
-                          'Authorization': `Bearer ${localStorage.getItem('token')}`
+                          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                          'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                           filename: file.name,
