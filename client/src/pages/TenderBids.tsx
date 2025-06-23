@@ -305,7 +305,7 @@ export default function TenderBids() {
                             key={index}
                             variant="outline"
                             size="sm"
-                            onClick={() => downloadDocument(doc, `document_${bid.id}_${index + 1}`)}
+                            onClick={() => handleDownloadDocument(doc, `document_${bid.id}_${index + 1}`)}
                             className="inline-flex items-center space-x-1"
                           >
                             <Download className="h-3 w-3" />
@@ -412,7 +412,7 @@ export default function TenderBids() {
                             key={index}
                             variant="outline"
                             size="sm"
-                            onClick={() => downloadDocument(doc, `document_${bid.id}_${index + 1}`)}
+                            onClick={() => handleDownloadDocument(doc, `document_${bid.id}_${index + 1}`)}
                             className="inline-flex items-center space-x-1"
                           >
                             <Download className="h-3 w-3" />
@@ -496,7 +496,7 @@ export default function TenderBids() {
                             key={index}
                             variant="outline"
                             size="sm"
-                            onClick={() => downloadDocument(doc, `document_${bid.id}_${index + 1}`)}
+                            onClick={() => handleDownloadDocument(doc, `document_${bid.id}_${index + 1}`)}
                             className="inline-flex items-center space-x-1"
                           >
                             <Download className="h-3 w-3" />
