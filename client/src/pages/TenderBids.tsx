@@ -174,9 +174,17 @@ export default function TenderBids() {
     );
   }
 
+  // Отладка: выводим в консоль полученные заявки
+  console.log('Received bids:', bids);
+  
   const pendingBids = bids?.filter(bid => bid.status === 'pending') || [];
   const approvedBids = bids?.filter(bid => bid.status === 'approved') || [];
   const rejectedBids = bids?.filter(bid => bid.status === 'rejected') || [];
+  
+  // Отладка: выводим количество заявок по статусам
+  console.log('Pending bids:', pendingBids.length, pendingBids);
+  console.log('Approved bids:', approvedBids.length, approvedBids);
+  console.log('Rejected bids:', rejectedBids.length, rejectedBids);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -194,9 +202,9 @@ export default function TenderBids() {
           <CardHeader>
             <CardTitle>{tender.title}</CardTitle>
             <CardDescription>
-              Бюджет: {tender.budget?.toLocaleString()} ₽ | 
-              Срок: {formatDate(tender.deadline)} | 
-              Локация: {tender.location}
+              Бюджет: {tender.budget ? tender.budget.toLocaleString() : 'Не указан'} ₽ | 
+              Срок: {tender.deadline ? formatDate(tender.deadline) : 'Не указан'} | 
+              Локация: {tender.location || 'Не указана'}
             </CardDescription>
           </CardHeader>
         </Card>

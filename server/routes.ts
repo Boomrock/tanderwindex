@@ -472,12 +472,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const allBids = await storage.getTenderBids(tenderId);
       
+      console.log(`User ${userId} requesting bids for tender ${tenderId}`);
+      console.log(`Tender owner: ${tender.userId}`);
+      console.log(`Total bids found: ${allBids.length}`);
+      
       // If user is tender owner, show all bids
       if (tender.userId === userId) {
+        console.log('User is tender owner, returning all bids');
         res.status(200).json(allBids);
       } else {
         // If user is not tender owner, show only their own bids
         const userBids = allBids.filter(bid => bid.userId === userId);
+        console.log(`User is not tender owner, returning ${userBids.length} user bids`);
         res.status(200).json(userBids);
       }
     } catch (error) {
