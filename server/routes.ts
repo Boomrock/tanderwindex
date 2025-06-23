@@ -110,12 +110,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filePath = `./uploads/${filename}`;
       
       // Check if file exists
-      if (!require('fs').existsSync(filePath)) {
+      if (!fs.existsSync(filePath)) {
         return res.status(404).json({ message: "File not found" });
       }
       
       // Extract original filename from the saved filename
-      const originalName = filename.split('_').slice(1).join('_');
+      // If filename contains timestamp prefix, extract original name, otherwise use as is
+      const originalName = filename.includes('_') && filename.match(/^\d+_[a-z0-9]+_/) 
+        ? filename.split('_').slice(2).join('_') 
+        : filename;
       
       // Set appropriate headers for file download
       res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
@@ -138,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
       
       // Send the actual file
-      res.sendFile(require('path').resolve(filePath));
+      res.sendFile(path.resolve(filePath));
     } catch (error) {
       res.status(500).json({ message: "File download failed", error: (error as Error).message });
     }
