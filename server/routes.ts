@@ -17,6 +17,8 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
+import fs from "fs";
+import path from "path";
 
 // Constants
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-jwt-token";
@@ -80,8 +82,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create uploads directory if it doesn't exist
       const uploadsDir = './uploads';
-      if (!require('fs').existsSync(uploadsDir)) {
-        require('fs').mkdirSync(uploadsDir, { recursive: true });
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
       }
       
       // Create a unique file identifier
@@ -91,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Decode base64 file data and save to disk
       const base64Data = fileData.replace(/^data:.*;base64,/, '');
-      require('fs').writeFileSync(filePath, base64Data, 'base64');
+      fs.writeFileSync(filePath, base64Data, 'base64');
       
       const fileUrl = `/api/files/${savedFileName}`;
       
