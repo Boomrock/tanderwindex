@@ -628,7 +628,7 @@ export class SimpleSQLiteStorage implements IStorage {
         insertNotification.message,
         insertNotification.type,
         insertNotification.relatedId || null,
-        insertNotification.isRead || false,
+        insertNotification.isRead ? 1 : 0,
         insertNotification.createdAt || new Date().toISOString()
       );
       
