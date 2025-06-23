@@ -107,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get('/files/:filename', (req: Request, res: Response) => {
     try {
       const filename = req.params.filename;
-      const filePath = `./uploads/${filename}`;
+      const filePath = path.join(process.cwd(), 'uploads', filename);
       
       // Check if file exists
       if (!fs.existsSync(filePath)) {
@@ -141,7 +141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Content-Type', contentTypes[ext || ''] || 'application/octet-stream');
       
       // Send the actual file
-      res.sendFile(path.resolve(filePath));
+      res.sendFile(filePath);
     } catch (error) {
       res.status(500).json({ message: "File download failed", error: (error as Error).message });
     }
