@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, UserPlus, DollarSign, Check, X, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, UserPlus, DollarSign, Check, X, CheckCircle, XCircle, Trash2 } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -222,6 +222,51 @@ export default function Admin() {
     onError: (error) => {
       toast({
         title: "Ошибка отклонения объявления",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Мутации для удаления
+  const deleteTenderMutation = useMutation({
+    mutationFn: async (tenderId: number) => {
+      const response = await apiRequest('DELETE', `/api/admin/tenders/${tenderId}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/moderation/tenders'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/tenders'] });
+      toast({
+        title: "Тендер удален",
+        description: "Тендер был полностью удален из системы",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка удаления тендера",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteListingMutation = useMutation({
+    mutationFn: async (listingId: number) => {
+      const response = await apiRequest('DELETE', `/api/admin/marketplace/${listingId}`, {});
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/moderation/marketplace'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/marketplace'] });
+      toast({
+        title: "Объявление удалено",
+        description: "Объявление было полностью удалено из системы",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Ошибка удаления объявления",
         description: error.message,
         variant: "destructive",
       });
@@ -481,6 +526,22 @@ export default function Admin() {
                                   </>
                                 )}
                               </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-red-300 text-red-600 hover:bg-red-50"
+                                onClick={() => deleteTenderMutation.mutate(tender.id)}
+                                disabled={deleteTenderMutation.isPending}
+                              >
+                                {deleteTenderMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    Удалить
+                                  </>
+                                )}
+                              </Button>
                             </div>
                           </div>
                         </CardHeader>
@@ -562,6 +623,22 @@ export default function Admin() {
                                   <>
                                     <XCircle className="h-4 w-4 mr-1" />
                                     Отклонить
+                                  </>
+                                )}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-red-300 text-red-600 hover:bg-red-50"
+                                onClick={() => deleteListingMutation.mutate(listing.id)}
+                                disabled={deleteListingMutation.isPending}
+                              >
+                                {deleteListingMutation.isPending ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    Удалить
                                   </>
                                 )}
                               </Button>

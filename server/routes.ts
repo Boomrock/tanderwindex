@@ -1056,6 +1056,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin delete tender
+  apiRouter.delete('/admin/tenders/:id', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const tenderId = parseInt(req.params.id);
+      if (isNaN(tenderId)) {
+        return res.status(400).json({ message: "Invalid tender ID" });
+      }
+
+      const success = await storage.deleteTender(tenderId);
+      if (!success) {
+        return res.status(404).json({ message: "Tender not found" });
+      }
+
+      res.status(200).json({ message: "Тендер удален" });
+    } catch (error) {
+      console.error("Error deleting tender:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
+  // Admin delete marketplace listing
+  apiRouter.delete('/admin/marketplace/:id', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const listingId = parseInt(req.params.id);
+      if (isNaN(listingId)) {
+        return res.status(400).json({ message: "Invalid listing ID" });
+      }
+
+      const success = await storage.deleteMarketplaceListing(listingId);
+      if (!success) {
+        return res.status(404).json({ message: "Listing not found" });
+      }
+
+      res.status(200).json({ message: "Объявление удалено" });
+    } catch (error) {
+      console.error("Error deleting marketplace listing:", error);
+      res.status(500).json({ message: "Server error", error: (error as Error).message });
+    }
+  });
+
   // Mount the API router
   app.use('/api', apiRouter);
 
