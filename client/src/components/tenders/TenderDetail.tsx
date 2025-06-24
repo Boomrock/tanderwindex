@@ -168,10 +168,10 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
   });
 
   const handleBidSubmit = async () => {
-    if (!bidAmount || !bidDescription) {
+    if (!bidAmount || !bidDescription || bidDocuments.length === 0) {
       toast({
-        title: 'Ошибка',
-        description: 'Укажите сумму и описание заявки',
+        title: 'Ошибка валидации',
+        description: 'Пожалуйста, заполните все обязательные поля и загрузите документы, подтверждающие профессионализм',
         variant: 'destructive',
       });
       return;
@@ -184,7 +184,7 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
         amount: parseInt(bidAmount),
         description: bidDescription,
         timeframe: bidTimeframe ? parseInt(bidTimeframe) : undefined,
-        documents: bidDocuments.length > 0 ? bidDocuments : null,
+        documents: bidDocuments,
       });
     } finally {
       setIsSubmittingBid(false);
@@ -441,6 +441,62 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
                       
                       <p className="text-gray-600 mb-3">{bid.description}</p>
                       
+                      {/* Documents section for bid owner and tender owner */}
+                      {bid.documents && bid.documents.length > 0 && (isOwner || (user && bid.userId === user.id)) && (
+                        <div className="mb-3">
+                          <p className="text-sm font-medium mb-2">
+                            {isOwner ? "Документы исполнителя:" : "Ваши документы:"}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {bid.documents.map((doc, index) => (
+                              <Button
+                                key={index}
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  const filename = doc.split('/').pop();
+                                  const token = localStorage.getItem('token');
+                                  const link = document.createElement('a');
+                                  link.href = `/api/files/${filename}`;
+                                  link.setAttribute('download', '');
+                                  if (token) {
+                                    // For authenticated download, open in new tab with auth header
+                                    fetch(`/api/files/${filename}`, {
+                                      headers: {
+                                        'Authorization': `Bearer ${token}`
+                                      }
+                                    }).then(response => response.blob())
+                                      .then(blob => {
+                                        const url = window.URL.createObjectURL(blob);
+                                        link.href = url;
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                        window.URL.revokeObjectURL(url);
+                                      })
+                                      .catch(error => {
+                                        console.error('Download failed:', error);
+                                        toast({
+                                          title: "Ошибка скачивания",
+                                          description: "Не удалось скачать документ",
+                                          variant: "destructive",
+                                        });
+                                      });
+                                  } else {
+                                    // Fallback for non-authenticated
+                                    window.open(`/api/files/${filename}`, '_blank');
+                                  }
+                                }}
+                                className="flex items-center gap-1"
+                              >
+                                <FileText className="w-4 h-4" />
+                                Документ {index + 1}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="flex flex-wrap items-center justify-between">
                         <div className="space-x-4">
                           <span className="inline-block text-lg font-bold text-primary">{bid.amount.toLocaleString()} ₽</span>
@@ -620,8 +676,11 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
             </div>
             <div className="grid gap-2">
               <label htmlFor="bid-documents" className="text-sm font-medium">
-                Документы (необязательно)
+                Документы, подтверждающие профессионализм *
               </label>
+              <p className="text-xs text-gray-600 mb-2">
+                Загрузите документы, подтверждающие ваш опыт и квалификацию (дипломы, сертификаты, примеры работ, рекомендации)
+              </p>
               <Input
                 id="bid-documents"
                 type="file"

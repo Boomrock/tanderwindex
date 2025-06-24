@@ -103,8 +103,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File download endpoint
-  apiRouter.get('/files/:filename', (req: Request, res: Response) => {
+  // File download endpoint (requires authentication)
+  apiRouter.get('/files/:filename', authMiddleware, (req: Request, res: Response) => {
     try {
       const filename = req.params.filename;
       const filePath = path.join(process.cwd(), 'uploads', filename);
@@ -576,13 +576,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.user.id
       };
       
-      // Filter out null values from documents array and only add if valid documents exist
-      if (req.body.documents && Array.isArray(req.body.documents)) {
-        const validDocuments = req.body.documents.filter(doc => doc !== null && doc !== undefined && doc !== '');
-        if (validDocuments.length > 0) {
-          dataToValidate.documents = validDocuments;
-        }
+      // Validate that documents are provided (now required)
+      if (!req.body.documents || !Array.isArray(req.body.documents) || req.body.documents.length === 0) {
+        return res.status(400).json({ 
+          message: "Документы, подтверждающие профессионализм, обязательны для участия в тендере" 
+        });
       }
+      
+      const validDocuments = req.body.documents.filter(doc => doc !== null && doc !== undefined && doc !== '');
+      if (validDocuments.length === 0) {
+        return res.status(400).json({ 
+          message: "Необходимо загрузить хотя бы один документ, подтверждающий профессионализм" 
+        });
+      }
+      
+      dataToValidate.documents = validDocuments;
       
       console.log('Raw bid request body:', JSON.stringify(req.body, null, 2));
       console.log('Data to validate:', JSON.stringify(dataToValidate, null, 2));
