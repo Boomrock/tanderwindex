@@ -353,11 +353,14 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   async createTenderBid(insertBid: InsertTenderBid): Promise<TenderBid> {
+    // Validate that documents are provided (now required)
+    if (!insertBid.documents || !Array.isArray(insertBid.documents) || insertBid.documents.length === 0) {
+      throw new Error("Документы, подтверждающие профессионализм, обязательны для участия в тендере");
+    }
+
     const bidData = {
       ...insertBid,
-      documents: insertBid.documents && Array.isArray(insertBid.documents) 
-        ? JSON.stringify(insertBid.documents) 
-        : "[]",
+      documents: JSON.stringify(insertBid.documents),
       createdAt: new Date().toISOString(),
       isAccepted: false,
     };

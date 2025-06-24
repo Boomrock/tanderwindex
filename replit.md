@@ -144,6 +144,12 @@ The platform uses PostgreSQL with the following key entities:
   - Implemented user information display in tender and marketplace cards via SQL JOINs
   - Fixed fallback "Пользователь" text by showing real names (first_name + last_name or username)
   - Enhanced data retrieval methods to include user profile information in listings
+- June 24, 2025. Refactored bid system with mandatory document requirements:
+  - Made document uploads mandatory for tender participation to ensure contractor professionalism
+  - Added comprehensive document validation on both client and server sides
+  - Implemented secure document download system for tender owners to review contractor credentials
+  - Enhanced bid display with document access controls (only visible to bid owner and tender owner)
+  - Added proper error handling and user feedback for document requirements
 
 ## User Preferences
 
