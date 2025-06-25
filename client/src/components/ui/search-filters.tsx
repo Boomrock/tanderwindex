@@ -57,7 +57,9 @@ export function SearchFilters({ type, onFiltersChange, initialFilters = {} }: Se
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
   const handleFilterChange = (key: string, value: string) => {
-    const newFilters = { ...filters, [key]: value };
+    // Преобразуем специальные значения в пустые строки для API
+    const apiValue = value === 'all' || value === 'createdAt' ? '' : value;
+    const newFilters = { ...filters, [key]: apiValue };
     setFilters(newFilters);
     onFiltersChange(newFilters);
   };
@@ -130,12 +132,12 @@ export function SearchFilters({ type, onFiltersChange, initialFilters = {} }: Se
               {/* Категория */}
               <div>
                 <label className="text-sm font-medium mb-2 block">Категория</label>
-                <Select value={filters.category} onValueChange={(value) => handleFilterChange('category', value)}>
+                <Select value={filters.category || 'all'} onValueChange={(value) => handleFilterChange('category', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Все категории" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Все категории</SelectItem>
+                    <SelectItem value="all">Все категории</SelectItem>
                     {categories.map((category) => (
                       <SelectItem key={category} value={category}>
                         {category}
@@ -159,12 +161,12 @@ export function SearchFilters({ type, onFiltersChange, initialFilters = {} }: Se
               {type === 'marketplace' && (
                 <div>
                   <label className="text-sm font-medium mb-2 block">Тип объявления</label>
-                  <Select value={filters.listingType} onValueChange={(value) => handleFilterChange('listingType', value)}>
+                  <Select value={filters.listingType || 'all'} onValueChange={(value) => handleFilterChange('listingType', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Все типы" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Все типы</SelectItem>
+                      <SelectItem value="all">Все типы</SelectItem>
                       {listingTypes.map((type) => (
                         <SelectItem key={type.value} value={type.value}>
                           {type.label}
@@ -178,12 +180,12 @@ export function SearchFilters({ type, onFiltersChange, initialFilters = {} }: Se
               {/* Сортировка */}
               <div>
                 <label className="text-sm font-medium mb-2 block">Сортировка</label>
-                <Select value={filters.sortBy} onValueChange={(value) => handleFilterChange('sortBy', value)}>
+                <Select value={filters.sortBy || 'createdAt'} onValueChange={(value) => handleFilterChange('sortBy', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="По дате создания" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">По дате создания</SelectItem>
+                    <SelectItem value="createdAt">По дате создания</SelectItem>
                     {type === 'tenders' ? (
                       <>
                         <SelectItem value="budget">По бюджету</SelectItem>

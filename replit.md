@@ -157,6 +157,7 @@ The platform uses PostgreSQL with the following key entities:
   - Built responsive SearchFilters component with collapsible advanced options
   - Added filter badge display and individual filter removal functionality
   - Enhanced API endpoints to support all search and filtering parameters with SQL-based queries
+  - Fixed Select component validation errors by ensuring all SelectItem components have non-empty values
 
 ## User Preferences
 
