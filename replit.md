@@ -1,8 +1,8 @@
-# Windex-Строй - Construction Tenders and Marketplace Platform
+# Windexs-Строй - Construction Tenders and Marketplace Platform
 
 ## Overview
 
-Windex-Строй is a comprehensive construction platform that combines tender management with a marketplace for construction materials and equipment. The platform enables construction companies, contractors, and individual specialists to find projects, participate in tenders, and trade construction-related goods and services.
+Windexs-Строй is a comprehensive construction platform that combines tender management with a marketplace for construction materials and equipment. The platform enables construction companies, contractors, and individual specialists to find projects, participate in tenders, and trade construction-related goods and services.
 
 ## System Architecture
 

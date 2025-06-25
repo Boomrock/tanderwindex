@@ -56,7 +56,7 @@ export default function TopSpecialists() {
   return (
     <>
       <Helmet>
-        <title>Лучшие специалисты | Windex-Строй</title>
+        <title>Лучшие специалисты | Windexs-Строй</title>
         <meta
           name="description"
           content="Лучшие специалисты и компании в сфере строительства с высоким рейтингом и обширным портфолио выполненных проектов"

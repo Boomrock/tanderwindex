@@ -64,7 +64,7 @@ const Header = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center space-x-1">
               <Construction className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl text-primary">Windex-Строй</span>
+              <span className="font-bold text-xl text-primary">Windexs-Строй</span>
             </Link>
           </div>
           
