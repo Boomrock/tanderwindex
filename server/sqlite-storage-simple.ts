@@ -100,13 +100,18 @@ export class SimpleSQLiteStorage implements IStorage {
     limit?: number;
     offset?: number;
     showAll?: boolean; // Для админов, чтобы видеть все тендеры
+    search?: string;
+    minBudget?: number;
+    maxBudget?: number;
+    sortBy?: string;
+    sortOrder?: string;
   }): Promise<Tender[]> {
     let query = db.select().from(tenders);
 
     // Показываем только одобренные тендеры, если не указано showAll
     if (!filters?.showAll) {
       // Используем SQL запрос с JOIN для получения информации о пользователе
-      const tendersWithUser = await sqliteDb.prepare(`
+      let sqlQuery = `
         SELECT 
           t.*,
           u.username,
@@ -118,13 +123,67 @@ export class SimpleSQLiteStorage implements IStorage {
         FROM tenders t
         LEFT JOIN users u ON t.userId = u.id
         WHERE t.moderation_status = 'approved'
-        ${filters?.category ? `AND t.category = '${filters.category}'` : ''}
-        ${filters?.status ? `AND t.status = '${filters.status}'` : ''}
-        ${filters?.userId ? `AND t.userId = ${filters.userId}` : ''}
-        ORDER BY t.createdAt DESC
-        ${filters?.limit ? `LIMIT ${filters.limit}` : ''}
-        ${filters?.offset ? `OFFSET ${filters.offset}` : ''}
-      `).all() as any[];
+      `;
+      
+      const params: any[] = [];
+      
+      if (filters?.category) {
+        sqlQuery += ' AND t.category = ?';
+        params.push(filters.category);
+      }
+      
+      if (filters?.status) {
+        sqlQuery += ' AND t.status = ?';
+        params.push(filters.status);
+      }
+      
+      if (filters?.userId) {
+        sqlQuery += ' AND t.userId = ?';
+        params.push(filters.userId);
+      }
+      
+      if (filters?.location) {
+        sqlQuery += ' AND t.location LIKE ?';
+        params.push(`%${filters.location}%`);
+      }
+      
+      if (filters?.minBudget) {
+        sqlQuery += ' AND t.budget >= ?';
+        params.push(filters.minBudget);
+      }
+      
+      if (filters?.maxBudget) {
+        sqlQuery += ' AND t.budget <= ?';
+        params.push(filters.maxBudget);
+      }
+      
+      if (filters?.search) {
+        sqlQuery += ' AND (t.title LIKE ? OR t.description LIKE ? OR t.location LIKE ?)';
+        const searchTerm = `%${filters.search}%`;
+        params.push(searchTerm, searchTerm, searchTerm);
+      }
+      
+      // Добавляем сортировку
+      if (filters?.sortBy) {
+        const sortColumn = filters.sortBy === 'budget' ? 't.budget' : 
+                          filters.sortBy === 'deadline' ? 't.deadline' : 't.createdAt';
+        const sortDirection = filters.sortOrder === 'asc' ? 'ASC' : 'DESC';
+        sqlQuery += ` ORDER BY ${sortColumn} ${sortDirection}`;
+      } else {
+        sqlQuery += ' ORDER BY t.createdAt DESC';
+      }
+      
+      if (filters?.limit) {
+        sqlQuery += ' LIMIT ?';
+        params.push(filters.limit);
+      }
+      
+      if (filters?.offset) {
+        sqlQuery += ' OFFSET ?';
+        params.push(filters.offset);
+      }
+
+      const tendersWithUser = sqliteDb.prepare(sqlQuery).all(...params) as any[];
       
       return tendersWithUser.map(tender => ({
         ...tender,
@@ -389,13 +448,18 @@ export class SimpleSQLiteStorage implements IStorage {
     limit?: number;
     offset?: number;
     showAll?: boolean; // Для админов, чтобы видеть все объявления
+    search?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sortBy?: string;
+    sortOrder?: string;
   }): Promise<MarketplaceListingResponse[]> {
     let query = db.select().from(marketplaceListings);
 
     // Показываем только одобренные объявления, если не указано showAll
     if (!filters?.showAll) {
       // Используем SQL запрос с JOIN для получения информации о пользователе
-      const listingsWithUser = await sqliteDb.prepare(`
+      let sqlQuery = `
         SELECT 
           l.*,
           u.username,
@@ -407,12 +471,72 @@ export class SimpleSQLiteStorage implements IStorage {
         FROM marketplace_listings l
         LEFT JOIN users u ON l.userId = u.id
         WHERE l.moderation_status = 'approved'
-        ${filters?.category ? `AND l.category = '${filters.category}'` : ''}
-        ${filters?.userId ? `AND l.userId = ${filters.userId}` : ''}
-        ORDER BY l.createdAt DESC
-        ${filters?.limit ? `LIMIT ${filters.limit}` : ''}
-        ${filters?.offset ? `OFFSET ${filters.offset}` : ''}
-      `).all() as any[];
+      `;
+      
+      const params: any[] = [];
+      
+      if (filters?.category) {
+        sqlQuery += ' AND l.category = ?';
+        params.push(filters.category);
+      }
+      
+      if (filters?.subcategory) {
+        sqlQuery += ' AND l.subcategory = ?';
+        params.push(filters.subcategory);
+      }
+      
+      if (filters?.listingType) {
+        sqlQuery += ' AND l.listing_type = ?';
+        params.push(filters.listingType);
+      }
+      
+      if (filters?.userId) {
+        sqlQuery += ' AND l.userId = ?';
+        params.push(filters.userId);
+      }
+      
+      if (filters?.location) {
+        sqlQuery += ' AND l.location LIKE ?';
+        params.push(`%${filters.location}%`);
+      }
+      
+      if (filters?.minPrice) {
+        sqlQuery += ' AND l.price >= ?';
+        params.push(filters.minPrice);
+      }
+      
+      if (filters?.maxPrice) {
+        sqlQuery += ' AND l.price <= ?';
+        params.push(filters.maxPrice);
+      }
+      
+      if (filters?.search) {
+        sqlQuery += ' AND (l.title LIKE ? OR l.description LIKE ? OR l.location LIKE ?)';
+        const searchTerm = `%${filters.search}%`;
+        params.push(searchTerm, searchTerm, searchTerm);
+      }
+      
+      // Добавляем сортировку
+      if (filters?.sortBy) {
+        const sortColumn = filters.sortBy === 'price' ? 'l.price' : 
+                          filters.sortBy === 'title' ? 'l.title' : 'l.createdAt';
+        const sortDirection = filters.sortOrder === 'asc' ? 'ASC' : 'DESC';
+        sqlQuery += ` ORDER BY ${sortColumn} ${sortDirection}`;
+      } else {
+        sqlQuery += ' ORDER BY l.createdAt DESC';
+      }
+      
+      if (filters?.limit) {
+        sqlQuery += ' LIMIT ?';
+        params.push(filters.limit);
+      }
+      
+      if (filters?.offset) {
+        sqlQuery += ' OFFSET ?';
+        params.push(filters.offset);
+      }
+
+      const listingsWithUser = sqliteDb.prepare(sqlQuery).all(...params) as any[];
       
       return listingsWithUser.map(listing => ({
         ...listing,

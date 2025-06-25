@@ -381,20 +381,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Tender routes
   apiRouter.get('/tenders', async (req: Request, res: Response) => {
     try {
-      // Обработка параметра requiredProfessions, который приходит в виде строки с разделителями
-      let requiredProfessions: string[] | undefined;
-      if (req.query.requiredProfessions) {
-        requiredProfessions = (req.query.requiredProfessions as string).split(',');
-      }
-
       const filters = {
         category: req.query.category as string | undefined,
         location: req.query.location as string | undefined,
         status: req.query.status as string | undefined,
         userId: req.query.userId ? parseInt(req.query.userId as string) : undefined,
-        searchTerm: req.query.search as string | undefined,
-        personType: req.query.personType as string | undefined,
-        requiredProfessions
+        search: req.query.search as string | undefined,
+        minBudget: req.query.minBudget ? parseInt(req.query.minBudget as string) : undefined,
+        maxBudget: req.query.maxBudget ? parseInt(req.query.maxBudget as string) : undefined,
+        sortBy: req.query.sortBy as string | undefined,
+        sortOrder: req.query.sortOrder as string | undefined,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+        offset: req.query.offset ? parseInt(req.query.offset as string) : undefined,
       };
       
       const tenders = await storage.getTenders(filters);
@@ -753,7 +751,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.query.userId ? parseInt(req.query.userId as string) : undefined,
         minPrice: req.query.minPrice ? parseInt(req.query.minPrice as string) : undefined,
         maxPrice: req.query.maxPrice ? parseInt(req.query.maxPrice as string) : undefined,
-        searchTerm: req.query.search as string | undefined
+        search: req.query.search as string | undefined,
+        sortBy: req.query.sortBy as string | undefined,
+        sortOrder: req.query.sortOrder as string | undefined,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+        offset: req.query.offset ? parseInt(req.query.offset as string) : undefined,
       };
       
       const listings = await storage.getMarketplaceListings(filters);
