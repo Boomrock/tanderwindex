@@ -94,19 +94,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Decode base64 file data and save to disk
       const base64Data = fileData.replace(/^data:.*;base64,/, '');
       
-      // Log upload details for debugging
-      console.log(`Uploading file: ${filename}`);
-      console.log(`Saved as: ${savedFileName}`);
-      console.log(`Base64 data length: ${base64Data.length}`);
-      console.log(`File type: ${fileType}`);
-      
+      // Decode and save the file
       try {
         fs.writeFileSync(filePath, base64Data, 'base64');
-        console.log(`File saved successfully to: ${filePath}`);
         
         // Verify file was written correctly
         const fileStats = fs.statSync(filePath);
-        console.log(`File size on disk: ${fileStats.size} bytes`);
+        console.log(`File uploaded: ${filename} (${fileStats.size} bytes)`);
         
       } catch (writeError) {
         console.error(`Error writing file: ${writeError}`);
@@ -128,26 +122,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filename = req.params.filename;
       const filePath = path.join(process.cwd(), 'uploads', filename);
       
-      console.log(`Download request for file: ${filename}`);
-      console.log(`Looking for file at: ${filePath}`);
-      
       // Check if file exists
       if (!fs.existsSync(filePath)) {
-        console.log(`File not found: ${filePath}`);
         return res.status(404).json({ message: "File not found" });
       }
-      
-      // Get file stats for debugging
-      const fileStats = fs.statSync(filePath);
-      console.log(`File found - size: ${fileStats.size} bytes, modified: ${fileStats.mtime}`);
       
       // Extract original filename from the saved filename
       // If filename contains timestamp prefix, extract original name, otherwise use as is
       const originalName = filename.includes('_') && filename.match(/^\d+_[a-z0-9]+_/) 
         ? filename.split('_').slice(2).join('_') 
         : filename;
-      
-      console.log(`Original filename: ${originalName}`);
       
       // Set appropriate headers for file download
       res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
@@ -170,17 +154,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contentType = contentTypes[ext || ''] || 'application/octet-stream';
       res.setHeader('Content-Type', contentType);
       
-      console.log(`Sending file with content type: ${contentType}`);
-      
       // Send the actual file
       res.sendFile(filePath, (err) => {
-        if (err) {
-          console.error(`Error sending file: ${err}`);
-          if (!res.headersSent) {
-            res.status(500).json({ message: "File download failed", error: err.message });
-          }
-        } else {
-          console.log(`File sent successfully: ${filename}`);
+        if (err && !res.headersSent) {
+          res.status(500).json({ message: "File download failed", error: err.message });
         }
       });
     } catch (error) {
