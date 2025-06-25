@@ -119,11 +119,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // File download endpoint (requires authentication)
   apiRouter.get('/files/:filename', authMiddleware, (req: Request, res: Response) => {
     try {
-      const filename = req.params.filename;
+      // Decode the filename parameter to handle URL-encoded names
+      const filename = decodeURIComponent(req.params.filename);
       const filePath = path.join(process.cwd(), 'uploads', filename);
+      
+      console.log(`Download request for: ${filename}`);
+      console.log(`Looking at path: ${filePath}`);
       
       // Check if file exists
       if (!fs.existsSync(filePath)) {
+        console.log(`File not found: ${filePath}`);
         return res.status(404).json({ message: "File not found" });
       }
       
@@ -133,10 +138,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? filename.split('_').slice(2).join('_') 
         : filename;
       
+      console.log(`Original name: ${originalName}`);
+      
       // Set appropriate headers for file download
-      // Create ASCII-safe filename for compatibility
-      const asciiSafeName = originalName.replace(/[^\x20-\x7E]/g, '_');
-      res.setHeader('Content-Disposition', `attachment; filename="${asciiSafeName}"`);
+      // Create ASCII-safe filename for compatibility and avoid header encoding issues
+      const safeName = originalName
+        .replace(/[^\w\s.-]/g, '_')  // Replace non-word characters except spaces, dots, hyphens
+        .replace(/\s+/g, '_')       // Replace spaces with underscores
+        .substring(0, 100);         // Limit length
+      
+      res.setHeader('Content-Disposition', `attachment; filename="${safeName}"`);
       
       // Determine content type based on file extension
       const ext = originalName.split('.').pop()?.toLowerCase();
@@ -156,10 +167,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const contentType = contentTypes[ext || ''] || 'application/octet-stream';
       res.setHeader('Content-Type', contentType);
       
+      console.log(`Sending file as: ${safeName} (${contentType})`);
+      
       // Send the actual file
       res.sendFile(filePath, (err) => {
-        if (err && !res.headersSent) {
-          res.status(500).json({ message: "File download failed", error: err.message });
+        if (err) {
+          console.error(`Error sending file: ${err.message}`);
+          if (!res.headersSent) {
+            res.status(500).json({ message: "File download failed", error: err.message });
+          }
+        } else {
+          console.log(`File sent successfully: ${filename}`);
         }
       });
     } catch (error) {
