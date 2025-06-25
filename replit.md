@@ -150,6 +150,13 @@ The platform uses PostgreSQL with the following key entities:
   - Implemented secure document download system for tender owners to review contractor credentials
   - Enhanced bid display with document access controls (only visible to bid owner and tender owner)
   - Added proper error handling and user feedback for document requirements
+- June 25, 2025. Implemented comprehensive search and filtering system:
+  - Added search functionality across tenders and marketplace by title, description, and location
+  - Created advanced filtering with category, price range, location, and type filters
+  - Implemented sorting by budget/price, date, deadline, and title with ascending/descending order
+  - Built responsive SearchFilters component with collapsible advanced options
+  - Added filter badge display and individual filter removal functionality
+  - Enhanced API endpoints to support all search and filtering parameters with SQL-based queries
 
 ## User Preferences
 
