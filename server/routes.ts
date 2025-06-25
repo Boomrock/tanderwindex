@@ -134,7 +134,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         : filename;
       
       // Set appropriate headers for file download
-      res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+      // Create ASCII-safe filename for compatibility
+      const asciiSafeName = originalName.replace(/[^\x20-\x7E]/g, '_');
+      res.setHeader('Content-Disposition', `attachment; filename="${asciiSafeName}"`);
       
       // Determine content type based on file extension
       const ext = originalName.split('.').pop()?.toLowerCase();

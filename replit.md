@@ -160,6 +160,7 @@ The platform uses PostgreSQL with the following key entities:
   - Fixed Select component validation errors by ensuring all SelectItem components have non-empty values
   - Identified and resolved file download system issue where test content was served instead of actual uploaded documents
   - Enhanced file upload/download system with proper logging and error handling for real document delivery
+  - Fixed Content-Disposition header encoding for files with non-ASCII characters by using ASCII-safe filenames
 
 ## User Preferences
 
