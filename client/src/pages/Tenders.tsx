@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import TenderCard from '@/components/tenders/TenderCard';
+import { SearchFilters } from '@/components/ui/search-filters';
 
 import { Tender } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,10 +23,10 @@ export default function Tenders() {
 
   // Fetch tenders with filters
   const { data: tenders, isLoading, error } = useQuery<Tender[]>({
-    queryKey: ['/api/tenders', queryString],
+    queryKey: [`/api/tenders${queryString ? `?${queryString}` : ''}`],
   });
 
-  const handleSearch = (newFilters: Record<string, any>) => {
+  const handleFiltersChange = (newFilters: Record<string, any>) => {
     setFilters(newFilters);
   };
 
@@ -48,6 +49,13 @@ export default function Tenders() {
             </Link>
           )}
         </div>
+
+        {/* Фильтры и поиск */}
+        <SearchFilters
+          type="tenders"
+          onFiltersChange={handleFiltersChange}
+          initialFilters={filters}
+        />
 
 
 

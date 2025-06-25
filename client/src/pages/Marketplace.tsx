@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import MarketplaceItemCard from '@/components/marketplace/MarketplaceItemCard';
+import { SearchFilters } from '@/components/ui/search-filters';
 
 import { MarketplaceListing } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,7 +26,7 @@ export default function Marketplace() {
     queryKey: [`/api/marketplace${queryString ? `?${queryString}` : ''}`],
   });
 
-  const handleSearch = (newFilters: Record<string, any>) => {
+  const handleFiltersChange = (newFilters: Record<string, any>) => {
     setFilters(newFilters);
   };
 
@@ -51,6 +52,13 @@ export default function Marketplace() {
             </Link>
           )}
         </div>
+
+        {/* Фильтры и поиск */}
+        <SearchFilters
+          type="marketplace"
+          onFiltersChange={handleFiltersChange}
+          initialFilters={filters}
+        />
 
 
 
