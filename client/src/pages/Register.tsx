@@ -20,7 +20,7 @@ export default function Register() {
   return (
     <>
       <Helmet>
-        <title>Регистрация | СтройТендер</title>
+        <title>Регистрация | Windexs-Строй</title>
         <meta
           name="description"
           content="Зарегистрируйтесь на платформе СтройТендер для доступа к тендерам на строительные работы и маркетплейсу строительных материалов."

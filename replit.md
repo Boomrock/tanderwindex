@@ -162,6 +162,16 @@ The platform uses PostgreSQL with the following key entities:
   - Enhanced file upload/download system with proper logging and error handling for real document delivery
   - Fixed Content-Disposition header encoding for files with non-ASCII characters by using ASCII-safe filenames
   - Updated project branding from "Windex-Строй" to "Windexs-Строй" across all headers, footers, and page titles
+- June 28, 2025. Implemented green color scheme and restructured specialist sections:
+  - Changed primary color scheme from blue to green (#22c55e) across the entire platform
+  - Updated all logos, headers, footers, and login/register pages to use green branding
+  - Split "Лучшие специалисты" into two separate sections: "Специалисты" and "Бригады"
+  - Created dedicated Specialists page with individual contractor profiles and chat functionality
+  - Created dedicated Crews page for construction teams with member count and team rates
+  - Added specialist creation form with photo upload, skills, hourly rates, and portfolio
+  - Added crew creation form with team photo, member count, daily rates, and specializations
+  - Enhanced tender creation with expanded repair categories: house, apartment, commercial repair
+  - Implemented green accent colors throughout UI components and navigation
 
 ## User Preferences
 

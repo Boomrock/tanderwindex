@@ -18,6 +18,8 @@ import Login from "@/pages/Login";
 import TopSpecialists from "@/pages/TopSpecialists";
 import Specialists from "@/pages/Specialists";
 import Crews from "@/pages/Crews";
+import SpecialistCreate from "@/pages/SpecialistCreate";
+import CrewCreate from "@/pages/CrewCreate";
 import HowItWorks from "@/pages/HowItWorks";
 import Help from "@/pages/Help";
 
@@ -51,7 +53,9 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/top-specialists" component={TopSpecialists} />
           <Route path="/specialists" component={Specialists} />
+          <Route path="/specialists/create" component={SpecialistCreate} />
           <Route path="/crews" component={Crews} />
+          <Route path="/crews/create" component={CrewCreate} />
 
           <Route path="/how-it-works" component={HowItWorks} />
           <Route path="/help" component={Help} />
