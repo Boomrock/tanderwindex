@@ -85,13 +85,13 @@ export default function Crews() {
       <div className="container py-12">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-4 text-green-600">Бригады</h1>
+            <h1 className="text-4xl font-bold mb-4">Бригады</h1>
             <p className="text-gray-600 text-lg">
               Найдите профессиональные строительные бригады для ваших проектов
             </p>
           </div>
           <Link href="/crews/create">
-            <Button className="bg-green-600 hover:bg-green-700">
+            <Button className="bg-primary hover:bg-primary/90">
               <Plus className="h-4 w-4 mr-2" />
               Добавить бригаду
             </Button>
@@ -156,7 +156,7 @@ export default function Crews() {
                   )}
                 </div>
 
-                <div className="text-lg font-semibold text-green-600">
+                <div className="text-lg font-semibold text-primary">
                   от {crew.dailyRate.toLocaleString()} ₽/день
                 </div>
 
@@ -168,7 +168,7 @@ export default function Crews() {
                   </Link>
                   <Button 
                     size="sm" 
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-primary hover:bg-primary/90"
                     onClick={() => {
                       // Логика открытия чата
                       console.log(`Открыть чат с ${crew.name}`);

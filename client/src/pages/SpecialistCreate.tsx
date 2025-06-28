@@ -107,7 +107,7 @@ export default function SpecialistCreate() {
       <div className="container py-12">
         <Card className="max-w-2xl mx-auto">
           <CardHeader>
-            <CardTitle className="text-2xl text-green-600">Создать объявление специалиста</CardTitle>
+            <CardTitle className="text-2xl">Создать объявление специалиста</CardTitle>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -127,7 +127,7 @@ export default function SpecialistCreate() {
                       type="file"
                       accept="image/*"
                       onChange={handleAvatarUpload}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
                   </div>
                 </div>
@@ -301,7 +301,7 @@ export default function SpecialistCreate() {
                 />
 
                 <div className="flex space-x-4">
-                  <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700">
+                  <Button type="submit" className="flex-1"
                     Создать объявление
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setLocation("/specialists")}>
