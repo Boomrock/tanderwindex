@@ -116,7 +116,7 @@ export default function Specialists() {
                         ({specialist.reviewCount})
                       </span>
                       {specialist.isOnline && (
-                        <div className="ml-2 h-2 w-2 bg-green-500 rounded-full"></div>
+                        <div className="ml-2 h-2 w-2 bg-emerald-500 rounded-full"></div>
                       )}
                     </div>
                   </div>

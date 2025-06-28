@@ -301,7 +301,7 @@ export default function SpecialistCreate() {
                 />
 
                 <div className="flex space-x-4">
-                  <Button type="submit" className="flex-1"
+                  <Button type="submit" className="flex-1">
                     Создать объявление
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setLocation("/specialists")}>
