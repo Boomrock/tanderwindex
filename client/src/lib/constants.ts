@@ -4,10 +4,6 @@ export const TENDER_CATEGORIES = [
   { value: "materials", label: "Материалы" },
   { value: "tools", label: "Инструменты" },
   { value: "services", label: "Услуги" },
-  { value: "repair", label: "Ремонт" },
-  { value: "repair-house", label: "Ремонт → Дома" },
-  { value: "repair-apartment", label: "Ремонт → Квартиры" },
-  { value: "repair-commercial", label: "Ремонт → Коммерческого помещения" },
   { value: "property", label: "Недвижимость" },
   { value: "transport", label: "Транспорт" },
 ];

@@ -162,31 +162,6 @@ The platform uses PostgreSQL with the following key entities:
   - Enhanced file upload/download system with proper logging and error handling for real document delivery
   - Fixed Content-Disposition header encoding for files with non-ASCII characters by using ASCII-safe filenames
   - Updated project branding from "Windex-Строй" to "Windexs-Строй" across all headers, footers, and page titles
-- June 28, 2025. Implemented green branding for Windexs-Строй logo only and restructured specialist sections:
-  - Changed only the Windexs-Строй logo and brand name to green color while keeping the platform's primary UI in blue
-  - Updated logo colors in headers, footers, and login/register pages to use green specifically for brand identity
-  - Split "Лучшие специалисты" into two separate sections: "Специалисты" and "Бригады"
-  - Created dedicated Specialists page with individual contractor profiles and chat functionality
-  - Created dedicated Crews page for construction teams with member count and team rates
-  - Added specialist creation form with photo upload, skills, hourly rates, and portfolio
-  - Added crew creation form with team photo, member count, daily rates, and specializations
-  - Enhanced tender creation with expanded repair categories: house, apartment, commercial repair
-- June 29, 2025. Fixed critical issues and completed specialist/crew functionality:
-  - Fixed 404 errors by adding proper routes for /specialists/:id and /crews/:id detail pages
-  - Implemented functional chat buttons that redirect to messaging system
-  - Created complete API for specialists and crews with CRUD operations
-  - Fixed creation forms to properly submit data to database via API calls
-  - Expanded admin panel with 4-tab moderation system for Tenders, Marketplace, Specialists, and Crews
-  - Created SQLite database tables for specialists and crews with moderation fields
-  - Added detail pages with comprehensive profile information, portfolios, and contact options
-  - Implemented proper data flow from creation forms through moderation to public listings
-  - Fixed database connection issues causing empty API responses by correcting database file path
-  - Resolved SQL query compatibility problems with duplicate column names in users table
-  - Created admin account with credentials: login: admin, password: admin123
-  - Verified all API endpoints working correctly with proper data retrieval and admin access
-  - Fixed authentication system issues: resolved password hashing problems and recreated admin user
-  - Corrected field name mismatches in specialist and crew detail pages (hourly_rate, daily_rate, member_count)
-  - All detail pages now display data correctly without runtime errors
 
 ## User Preferences
 

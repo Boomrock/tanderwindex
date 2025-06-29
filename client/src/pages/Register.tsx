@@ -20,10 +20,10 @@ export default function Register() {
   return (
     <>
       <Helmet>
-        <title>Регистрация | Windexs-Строй</title>
+        <title>Регистрация | СтройТендер</title>
         <meta
           name="description"
-          content="Зарегистрируйтесь в Windexs-Строй для участия в тендерах на строительные работы и торговли на маркетплейсе строительных материалов."
+          content="Зарегистрируйтесь на платформе СтройТендер для доступа к тендерам на строительные работы и маркетплейсу строительных материалов."
         />
       </Helmet>
 
@@ -32,8 +32,8 @@ export default function Register() {
           <CardHeader className="space-y-1">
             <div className="flex justify-center mb-6">
               <Link href="/" className="flex items-center gap-2">
-                <Construction className="h-6 w-6 text-green-600" />
-                <span className="font-bold text-xl text-green-600">Windexs-Строй</span>
+                <Construction className="h-6 w-6 text-primary" />
+                <span className="font-bold text-xl text-primary">СтройТендер</span>
               </Link>
             </div>
             <CardTitle className="text-2xl font-bold text-center">Регистрация</CardTitle>
