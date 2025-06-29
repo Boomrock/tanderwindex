@@ -184,6 +184,9 @@ The platform uses PostgreSQL with the following key entities:
   - Resolved SQL query compatibility problems with duplicate column names in users table
   - Created admin account with credentials: login: admin, password: admin123
   - Verified all API endpoints working correctly with proper data retrieval and admin access
+  - Fixed authentication system issues: resolved password hashing problems and recreated admin user
+  - Corrected field name mismatches in specialist and crew detail pages (hourly_rate, daily_rate, member_count)
+  - All detail pages now display data correctly without runtime errors
 
 ## User Preferences
 
