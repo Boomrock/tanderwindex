@@ -180,6 +180,10 @@ The platform uses PostgreSQL with the following key entities:
   - Created SQLite database tables for specialists and crews with moderation fields
   - Added detail pages with comprehensive profile information, portfolios, and contact options
   - Implemented proper data flow from creation forms through moderation to public listings
+  - Fixed database connection issues causing empty API responses by correcting database file path
+  - Resolved SQL query compatibility problems with duplicate column names in users table
+  - Created admin account with credentials: login: admin, password: admin123
+  - Verified all API endpoints working correctly with proper data retrieval and admin access
 
 ## User Preferences
 
