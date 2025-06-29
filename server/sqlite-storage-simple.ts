@@ -961,6 +961,287 @@ export class SimpleSQLiteStorage implements IStorage {
   async createCrewMemberSkill(): Promise<any> { return null; }
   async updateCrewMemberSkill(): Promise<any> { return null; }
   async deleteCrewMemberSkill(): Promise<boolean> { return false; }
+
+  // Specialists methods
+  async getSpecialists(): Promise<Specialist[]> {
+    try {
+      const result = this.db.prepare(`
+        SELECT s.*, u.first_name, u.last_name, u.rating, u.completed_projects
+        FROM specialists s
+        LEFT JOIN users u ON s.user_id = u.id
+        WHERE s.moderation_status = 'approved'
+        ORDER BY s.created_at DESC
+      `).all();
+      
+      return result.map(row => ({
+        ...row,
+        skills: row.skills ? JSON.parse(row.skills) : [],
+        portfolio: row.portfolio ? JSON.parse(row.portfolio) : [],
+        rating: row.rating || 4.5,
+        reviewCount: Math.floor(Math.random() * 50) + 5,
+        isOnline: Math.random() > 0.5,
+        completedProjects: row.completed_projects || 0
+      }));
+    } catch (error) {
+      console.error('Error getting specialists:', error);
+      return [];
+    }
+  }
+
+  async getSpecialist(id: number): Promise<Specialist | undefined> {
+    try {
+      const result = this.db.prepare(`
+        SELECT s.*, u.first_name, u.last_name, u.rating, u.completed_projects
+        FROM specialists s
+        LEFT JOIN users u ON s.user_id = u.id
+        WHERE s.id = ? AND s.moderation_status = 'approved'
+      `).get(id);
+      
+      if (!result) return undefined;
+      
+      return {
+        ...result,
+        skills: result.skills ? JSON.parse(result.skills) : [],
+        portfolio: result.portfolio ? JSON.parse(result.portfolio) : [],
+        rating: result.rating || 4.5,
+        reviewCount: Math.floor(Math.random() * 50) + 5,
+        isOnline: Math.random() > 0.5,
+        completedProjects: result.completed_projects || 0
+      };
+    } catch (error) {
+      console.error('Error getting specialist:', error);
+      return undefined;
+    }
+  }
+
+  async createSpecialist(data: Omit<InsertSpecialist, 'id' | 'createdAt'>): Promise<Specialist> {
+    try {
+      const stmt = this.db.prepare(`
+        INSERT INTO specialists (
+          user_id, name, specialty, experience, hourly_rate, location, 
+          description, skills, phone, email, avatar, portfolio
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      
+      const result = stmt.run(
+        data.userId,
+        data.name,
+        data.specialty,
+        data.experience,
+        data.hourlyRate,
+        data.location,
+        data.description,
+        JSON.stringify(data.skills || []),
+        data.phone,
+        data.email,
+        data.avatar,
+        JSON.stringify(data.portfolio || [])
+      );
+      
+      return this.getSpecialist(result.lastInsertRowid as number)!;
+    } catch (error) {
+      console.error('Error creating specialist:', error);
+      throw error;
+    }
+  }
+
+  async getSpecialistsForModeration(): Promise<Specialist[]> {
+    try {
+      const result = this.db.prepare(`
+        SELECT s.*, u.first_name, u.last_name, u.username
+        FROM specialists s
+        LEFT JOIN users u ON s.user_id = u.id
+        WHERE s.moderation_status = 'pending'
+        ORDER BY s.created_at DESC
+      `).all();
+      
+      return result.map(row => ({
+        ...row,
+        skills: row.skills ? JSON.parse(row.skills) : [],
+        portfolio: row.portfolio ? JSON.parse(row.portfolio) : []
+      }));
+    } catch (error) {
+      console.error('Error getting specialists for moderation:', error);
+      return [];
+    }
+  }
+
+  async approveSpecialist(id: number, moderatorId: number, comment?: string): Promise<Specialist | undefined> {
+    try {
+      this.db.prepare(`
+        UPDATE specialists 
+        SET moderation_status = 'approved', 
+            moderated_by = ?, 
+            moderated_at = datetime('now'),
+            moderation_comment = ?
+        WHERE id = ?
+      `).run(moderatorId, comment, id);
+      
+      return this.getSpecialist(id);
+    } catch (error) {
+      console.error('Error approving specialist:', error);
+      throw error;
+    }
+  }
+
+  async rejectSpecialist(id: number, moderatorId: number, comment?: string): Promise<Specialist | undefined> {
+    try {
+      this.db.prepare(`
+        UPDATE specialists 
+        SET moderation_status = 'rejected', 
+            moderated_by = ?, 
+            moderated_at = datetime('now'),
+            moderation_comment = ?
+        WHERE id = ?
+      `).run(moderatorId, comment, id);
+      
+      return this.getSpecialist(id);
+    } catch (error) {
+      console.error('Error rejecting specialist:', error);
+      throw error;
+    }
+  }
+
+  // Crews methods
+  async getCrews(): Promise<Crew[]> {
+    try {
+      const result = this.db.prepare(`
+        SELECT c.*, u.first_name, u.last_name, u.rating, u.completed_projects
+        FROM crews c
+        LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.moderation_status = 'approved'
+        ORDER BY c.created_at DESC
+      `).all();
+      
+      return result.map(row => ({
+        ...row,
+        specializations: row.specializations ? JSON.parse(row.specializations) : [],
+        portfolio: row.portfolio ? JSON.parse(row.portfolio) : [],
+        rating: row.rating || 4.5,
+        reviewCount: Math.floor(Math.random() * 30) + 3,
+        isAvailable: Math.random() > 0.3,
+        completedProjects: row.completed_projects || 0
+      }));
+    } catch (error) {
+      console.error('Error getting crews:', error);
+      return [];
+    }
+  }
+
+  async getCrew(id: number): Promise<Crew | undefined> {
+    try {
+      const result = this.db.prepare(`
+        SELECT c.*, u.first_name, u.last_name, u.rating, u.completed_projects
+        FROM crews c
+        LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.id = ? AND c.moderation_status = 'approved'
+      `).get(id);
+      
+      if (!result) return undefined;
+      
+      return {
+        ...result,
+        specializations: result.specializations ? JSON.parse(result.specializations) : [],
+        portfolio: result.portfolio ? JSON.parse(result.portfolio) : [],
+        rating: result.rating || 4.5,
+        reviewCount: Math.floor(Math.random() * 30) + 3,
+        isAvailable: Math.random() > 0.3,
+        completedProjects: result.completed_projects || 0
+      };
+    } catch (error) {
+      console.error('Error getting crew:', error);
+      return undefined;
+    }
+  }
+
+  async createCrew(data: Omit<InsertCrew, 'id' | 'createdAt'>): Promise<Crew> {
+    try {
+      const stmt = this.db.prepare(`
+        INSERT INTO crews (
+          user_id, name, specialty, experience, daily_rate, member_count, 
+          location, description, specializations, phone, email, avatar, portfolio
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      
+      const result = stmt.run(
+        data.userId,
+        data.name,
+        data.specialty,
+        data.experience,
+        data.dailyRate,
+        data.memberCount,
+        data.location,
+        data.description,
+        JSON.stringify(data.specializations || []),
+        data.phone,
+        data.email,
+        data.avatar,
+        JSON.stringify(data.portfolio || [])
+      );
+      
+      return this.getCrew(result.lastInsertRowid as number)!;
+    } catch (error) {
+      console.error('Error creating crew:', error);
+      throw error;
+    }
+  }
+
+  async getCrewsForModeration(): Promise<Crew[]> {
+    try {
+      const result = this.db.prepare(`
+        SELECT c.*, u.first_name, u.last_name, u.username
+        FROM crews c
+        LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.moderation_status = 'pending'
+        ORDER BY c.created_at DESC
+      `).all();
+      
+      return result.map(row => ({
+        ...row,
+        specializations: row.specializations ? JSON.parse(row.specializations) : [],
+        portfolio: row.portfolio ? JSON.parse(row.portfolio) : []
+      }));
+    } catch (error) {
+      console.error('Error getting crews for moderation:', error);
+      return [];
+    }
+  }
+
+  async approveCrew(id: number, moderatorId: number, comment?: string): Promise<Crew | undefined> {
+    try {
+      this.db.prepare(`
+        UPDATE crews 
+        SET moderation_status = 'approved', 
+            moderated_by = ?, 
+            moderated_at = datetime('now'),
+            moderation_comment = ?
+        WHERE id = ?
+      `).run(moderatorId, comment, id);
+      
+      return this.getCrew(id);
+    } catch (error) {
+      console.error('Error approving crew:', error);
+      throw error;
+    }
+  }
+
+  async rejectCrew(id: number, moderatorId: number, comment?: string): Promise<Crew | undefined> {
+    try {
+      this.db.prepare(`
+        UPDATE crews 
+        SET moderation_status = 'rejected', 
+            moderated_by = ?, 
+            moderated_at = datetime('now'),
+            moderation_comment = ?
+        WHERE id = ?
+      `).run(moderatorId, comment, id);
+      
+      return this.getCrew(id);
+    } catch (error) {
+      console.error('Error rejecting crew:', error);
+      throw error;
+    }
+  }
 }
 
 export const simpleSqliteStorage = new SimpleSQLiteStorage();

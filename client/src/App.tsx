@@ -54,8 +54,10 @@ function Router() {
           <Route path="/top-specialists" component={TopSpecialists} />
           <Route path="/specialists" component={Specialists} />
           <Route path="/specialists/create" component={SpecialistCreate} />
+          <Route path="/specialists/:id" component={() => import("@/pages/SpecialistDetail")} />
           <Route path="/crews" component={Crews} />
           <Route path="/crews/create" component={CrewCreate} />
+          <Route path="/crews/:id" component={() => import("@/pages/CrewDetail")} />
 
           <Route path="/how-it-works" component={HowItWorks} />
           <Route path="/help" component={Help} />
