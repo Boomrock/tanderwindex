@@ -171,7 +171,15 @@ The platform uses PostgreSQL with the following key entities:
   - Added specialist creation form with photo upload, skills, hourly rates, and portfolio
   - Added crew creation form with team photo, member count, daily rates, and specializations
   - Enhanced tender creation with expanded repair categories: house, apartment, commercial repair
-  - Implemented green accent colors throughout UI components and navigation
+- June 29, 2025. Fixed critical issues and completed specialist/crew functionality:
+  - Fixed 404 errors by adding proper routes for /specialists/:id and /crews/:id detail pages
+  - Implemented functional chat buttons that redirect to messaging system
+  - Created complete API for specialists and crews with CRUD operations
+  - Fixed creation forms to properly submit data to database via API calls
+  - Expanded admin panel with 4-tab moderation system for Tenders, Marketplace, Specialists, and Crews
+  - Created SQLite database tables for specialists and crews with moderation fields
+  - Added detail pages with comprehensive profile information, portfolios, and contact options
+  - Implemented proper data flow from creation forms through moderation to public listings
 
 ## User Preferences
 
