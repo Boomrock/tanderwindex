@@ -969,7 +969,7 @@ export class SimpleSQLiteStorage implements IStorage {
   async getSpecialists(): Promise<any[]> {
     try {
       const result = sqliteDb.prepare(`
-        SELECT s.*, u.first_name, u.last_name, u.rating, u.completed_projects
+        SELECT s.*, u.first_name, u.last_name, u.username, u.rating, u.completed_projects
         FROM specialists s
         LEFT JOIN users u ON s.user_id = u.id
         WHERE s.moderation_status = 'approved'
@@ -978,8 +978,8 @@ export class SimpleSQLiteStorage implements IStorage {
       
       return result.map((row: any) => ({
         ...row,
-        skills: row.skills ? JSON.parse(row.skills) : [],
-        portfolio: row.portfolio ? JSON.parse(row.portfolio) : [],
+        skills: row.skills ? row.skills.split(',') : [],
+        portfolio: row.portfolio ? row.portfolio.split(',') : [],
         rating: row.rating || 4.5,
         reviewCount: Math.floor(Math.random() * 50) + 5,
         isOnline: Math.random() > 0.5,
@@ -1004,8 +1004,8 @@ export class SimpleSQLiteStorage implements IStorage {
       
       return {
         ...result,
-        skills: typeof result.skills === 'string' ? result.skills.split(',') : [],
-        portfolio: typeof result.portfolio === 'string' ? result.portfolio.split(',') : [],
+        skills: result.skills ? result.skills.split(',') : [],
+        portfolio: result.portfolio ? result.portfolio.split(',').filter(Boolean) : [],
         rating: result.rating || 4.5,
         reviewCount: Math.floor(Math.random() * 50) + 5,
         isOnline: Math.random() > 0.5,
@@ -1109,7 +1109,7 @@ export class SimpleSQLiteStorage implements IStorage {
   async getCrews(): Promise<any[]> {
     try {
       const result = sqliteDb.prepare(`
-        SELECT c.*, u.first_name, u.last_name, u.rating, u.completed_projects
+        SELECT c.*, u.first_name, u.last_name, u.username, u.rating, u.completed_projects
         FROM crews c
         LEFT JOIN users u ON c.user_id = u.id
         WHERE c.moderation_status = 'approved'
@@ -1118,8 +1118,8 @@ export class SimpleSQLiteStorage implements IStorage {
       
       return result.map((row: any) => ({
         ...row,
-        specializations: row.specializations ? JSON.parse(row.specializations) : [],
-        portfolio: row.portfolio ? JSON.parse(row.portfolio) : [],
+        specializations: row.specializations ? row.specializations.split(',') : [],
+        portfolio: row.portfolio ? row.portfolio.split(',').filter(Boolean) : [],
         rating: row.rating || 4.5,
         reviewCount: Math.floor(Math.random() * 30) + 3,
         isAvailable: Math.random() > 0.3,
@@ -1144,8 +1144,8 @@ export class SimpleSQLiteStorage implements IStorage {
       
       return {
         ...result,
-        specializations: typeof result.specializations === 'string' ? result.specializations.split(',') : [],
-        portfolio: typeof result.portfolio === 'string' ? result.portfolio.split(',') : [],
+        specializations: result.specializations ? result.specializations.split(',') : [],
+        portfolio: result.portfolio ? result.portfolio.split(',').filter(Boolean) : [],
         rating: result.rating || 4.5,
         reviewCount: Math.floor(Math.random() * 30) + 3,
         isAvailable: Math.random() > 0.3,
