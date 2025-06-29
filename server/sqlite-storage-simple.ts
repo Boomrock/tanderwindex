@@ -3,13 +3,16 @@ import { db, sqliteDb } from './db-simple';
 import { IStorage } from './storage';
 import {
   users, tenders, tenderBids, marketplaceListings, messages, reviews, notifications,
+  specialists, crews,
   type User, type InsertUser,
   type Tender, type InsertTender,
   type TenderBid, type InsertTenderBid,
   type MarketplaceListing, type MarketplaceListingResponse, type InsertMarketplaceListing,
   type Message, type InsertMessage,
   type Review, type InsertReview,
-  type Notification, type InsertNotification
+  type Notification, type InsertNotification,
+  type Specialist, type InsertSpecialist,
+  type Crew, type InsertCrew
 } from '@shared/sqlite-schema';
 
 // Helper function to handle date strings properly
