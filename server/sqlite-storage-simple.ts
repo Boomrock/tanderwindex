@@ -991,10 +991,10 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async getSpecialist(id: number): Promise<Specialist | undefined> {
+  async getSpecialist(id: number): Promise<any | undefined> {
     try {
-      const result = this.db.prepare(`
-        SELECT s.*, u.first_name, u.last_name, u.rating, u.completed_projects
+      const result = sqliteDb.prepare(`
+        SELECT s.*, u.first_name, u.last_name, u.username, u.rating, u.completed_projects
         FROM specialists s
         LEFT JOIN users u ON s.user_id = u.id
         WHERE s.id = ? AND s.moderation_status = 'approved'
@@ -1004,8 +1004,8 @@ export class SimpleSQLiteStorage implements IStorage {
       
       return {
         ...result,
-        skills: result.skills ? JSON.parse(result.skills) : [],
-        portfolio: result.portfolio ? JSON.parse(result.portfolio) : [],
+        skills: typeof result.skills === 'string' ? result.skills.split(',') : [],
+        portfolio: typeof result.portfolio === 'string' ? result.portfolio.split(',') : [],
         rating: result.rating || 4.5,
         reviewCount: Math.floor(Math.random() * 50) + 5,
         isOnline: Math.random() > 0.5,
