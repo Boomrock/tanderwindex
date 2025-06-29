@@ -1017,9 +1017,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async createSpecialist(data: Omit<InsertSpecialist, 'id' | 'createdAt'>): Promise<Specialist> {
+  async createSpecialist(data: any): Promise<any> {
     try {
-      const stmt = this.db.prepare(`
+      const stmt = sqliteDb.prepare(`
         INSERT INTO specialists (
           user_id, name, specialty, experience, hourly_rate, location, 
           description, skills, phone, email, avatar, portfolio
@@ -1034,23 +1034,23 @@ export class SimpleSQLiteStorage implements IStorage {
         data.hourlyRate,
         data.location,
         data.description,
-        JSON.stringify(data.skills || []),
+        Array.isArray(data.skills) ? data.skills.join(',') : '',
         data.phone,
         data.email,
         data.avatar,
-        JSON.stringify(data.portfolio || [])
+        Array.isArray(data.portfolio) ? data.portfolio.join(',') : ''
       );
       
-      return this.getSpecialist(result.lastInsertRowid as number)!;
+      return this.getSpecialist(result.lastInsertRowid as number);
     } catch (error) {
       console.error('Error creating specialist:', error);
       throw error;
     }
   }
 
-  async getSpecialistsForModeration(): Promise<Specialist[]> {
+  async getSpecialistsForModeration(): Promise<any[]> {
     try {
-      const result = this.db.prepare(`
+      const result = sqliteDb.prepare(`
         SELECT s.*, u.first_name, u.last_name, u.username
         FROM specialists s
         LEFT JOIN users u ON s.user_id = u.id
@@ -1058,10 +1058,10 @@ export class SimpleSQLiteStorage implements IStorage {
         ORDER BY s.created_at DESC
       `).all();
       
-      return result.map(row => ({
+      return result.map((row: any) => ({
         ...row,
-        skills: row.skills ? JSON.parse(row.skills) : [],
-        portfolio: row.portfolio ? JSON.parse(row.portfolio) : []
+        skills: typeof row.skills === 'string' ? row.skills.split(',') : [],
+        portfolio: typeof row.portfolio === 'string' ? row.portfolio.split(',') : []
       }));
     } catch (error) {
       console.error('Error getting specialists for moderation:', error);
@@ -1069,9 +1069,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async approveSpecialist(id: number, moderatorId: number, comment?: string): Promise<Specialist | undefined> {
+  async approveSpecialist(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
     try {
-      this.db.prepare(`
+      sqliteDb.prepare(`
         UPDATE specialists 
         SET moderation_status = 'approved', 
             moderated_by = ?, 
@@ -1087,9 +1087,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async rejectSpecialist(id: number, moderatorId: number, comment?: string): Promise<Specialist | undefined> {
+  async rejectSpecialist(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
     try {
-      this.db.prepare(`
+      sqliteDb.prepare(`
         UPDATE specialists 
         SET moderation_status = 'rejected', 
             moderated_by = ?, 
@@ -1131,10 +1131,10 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async getCrew(id: number): Promise<Crew | undefined> {
+  async getCrew(id: number): Promise<any | undefined> {
     try {
-      const result = this.db.prepare(`
-        SELECT c.*, u.first_name, u.last_name, u.rating, u.completed_projects
+      const result = sqliteDb.prepare(`
+        SELECT c.*, u.first_name, u.last_name, u.username, u.rating, u.completed_projects
         FROM crews c
         LEFT JOIN users u ON c.user_id = u.id
         WHERE c.id = ? AND c.moderation_status = 'approved'
@@ -1144,8 +1144,8 @@ export class SimpleSQLiteStorage implements IStorage {
       
       return {
         ...result,
-        specializations: result.specializations ? JSON.parse(result.specializations) : [],
-        portfolio: result.portfolio ? JSON.parse(result.portfolio) : [],
+        specializations: typeof result.specializations === 'string' ? result.specializations.split(',') : [],
+        portfolio: typeof result.portfolio === 'string' ? result.portfolio.split(',') : [],
         rating: result.rating || 4.5,
         reviewCount: Math.floor(Math.random() * 30) + 3,
         isAvailable: Math.random() > 0.3,
@@ -1157,9 +1157,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async createCrew(data: Omit<InsertCrew, 'id' | 'createdAt'>): Promise<Crew> {
+  async createCrew(data: any): Promise<any> {
     try {
-      const stmt = this.db.prepare(`
+      const stmt = sqliteDb.prepare(`
         INSERT INTO crews (
           user_id, name, specialty, experience, daily_rate, member_count, 
           location, description, specializations, phone, email, avatar, portfolio
@@ -1175,23 +1175,23 @@ export class SimpleSQLiteStorage implements IStorage {
         data.memberCount,
         data.location,
         data.description,
-        JSON.stringify(data.specializations || []),
+        Array.isArray(data.specializations) ? data.specializations.join(',') : '',
         data.phone,
         data.email,
         data.avatar,
-        JSON.stringify(data.portfolio || [])
+        Array.isArray(data.portfolio) ? data.portfolio.join(',') : ''
       );
       
-      return this.getCrew(result.lastInsertRowid as number)!;
+      return this.getCrew(result.lastInsertRowid as number);
     } catch (error) {
       console.error('Error creating crew:', error);
       throw error;
     }
   }
 
-  async getCrewsForModeration(): Promise<Crew[]> {
+  async getCrewsForModeration(): Promise<any[]> {
     try {
-      const result = this.db.prepare(`
+      const result = sqliteDb.prepare(`
         SELECT c.*, u.first_name, u.last_name, u.username
         FROM crews c
         LEFT JOIN users u ON c.user_id = u.id
@@ -1199,10 +1199,10 @@ export class SimpleSQLiteStorage implements IStorage {
         ORDER BY c.created_at DESC
       `).all();
       
-      return result.map(row => ({
+      return result.map((row: any) => ({
         ...row,
-        specializations: row.specializations ? JSON.parse(row.specializations) : [],
-        portfolio: row.portfolio ? JSON.parse(row.portfolio) : []
+        specializations: typeof row.specializations === 'string' ? row.specializations.split(',') : [],
+        portfolio: typeof row.portfolio === 'string' ? row.portfolio.split(',') : []
       }));
     } catch (error) {
       console.error('Error getting crews for moderation:', error);
@@ -1210,9 +1210,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async approveCrew(id: number, moderatorId: number, comment?: string): Promise<Crew | undefined> {
+  async approveCrew(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
     try {
-      this.db.prepare(`
+      sqliteDb.prepare(`
         UPDATE crews 
         SET moderation_status = 'approved', 
             moderated_by = ?, 
@@ -1228,9 +1228,9 @@ export class SimpleSQLiteStorage implements IStorage {
     }
   }
 
-  async rejectCrew(id: number, moderatorId: number, comment?: string): Promise<Crew | undefined> {
+  async rejectCrew(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
     try {
-      this.db.prepare(`
+      sqliteDb.prepare(`
         UPDATE crews 
         SET moderation_status = 'rejected', 
             moderated_by = ?, 
