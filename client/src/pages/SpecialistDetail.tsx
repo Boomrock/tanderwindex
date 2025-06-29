@@ -11,7 +11,7 @@ interface Specialist {
   name: string;
   specialty: string;
   experience: number;
-  hourlyRate: number;
+  hourly_rate: number;
   rating: number;
   reviewCount: number;
   location: string;
@@ -151,7 +151,7 @@ export default function SpecialistDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-primary mb-4">
-                  от {specialist.hourlyRate.toLocaleString()} ₽/час
+                  от {specialist.hourly_rate.toLocaleString()} ₽/час
                 </div>
                 <div className="space-y-3">
                   <Button onClick={handleChatClick} className="w-full">

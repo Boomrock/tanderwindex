@@ -11,8 +11,8 @@ interface Crew {
   name: string;
   specialty: string;
   experience: number;
-  dailyRate: number;
-  memberCount: number;
+  daily_rate: number;
+  member_count: number;
   rating: number;
   reviewCount: number;
   location: string;
@@ -94,7 +94,7 @@ export default function CrewDetail() {
                       </div>
                       <div className="flex items-center gap-1 text-gray-600">
                         <Users className="h-4 w-4" />
-                        <span>{crew.memberCount} человек</span>
+                        <span>{crew.member_count} человек</span>
                       </div>
                     </div>
                   </div>
@@ -152,7 +152,7 @@ export default function CrewDetail() {
               </CardHeader>
               <CardContent>
                 <div className="text-3xl font-bold text-primary mb-4">
-                  от {crew.dailyRate.toLocaleString()} ₽/день
+                  от {crew.daily_rate.toLocaleString()} ₽/день
                 </div>
                 <div className="space-y-3">
                   <Button onClick={handleChatClick} className="w-full">
