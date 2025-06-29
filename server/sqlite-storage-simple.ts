@@ -966,9 +966,9 @@ export class SimpleSQLiteStorage implements IStorage {
   async deleteCrewMemberSkill(): Promise<boolean> { return false; }
 
   // Specialists methods
-  async getSpecialists(): Promise<Specialist[]> {
+  async getSpecialists(): Promise<any[]> {
     try {
-      const result = this.db.prepare(`
+      const result = sqliteDb.prepare(`
         SELECT s.*, u.first_name, u.last_name, u.rating, u.completed_projects
         FROM specialists s
         LEFT JOIN users u ON s.user_id = u.id
@@ -976,7 +976,7 @@ export class SimpleSQLiteStorage implements IStorage {
         ORDER BY s.created_at DESC
       `).all();
       
-      return result.map(row => ({
+      return result.map((row: any) => ({
         ...row,
         skills: row.skills ? JSON.parse(row.skills) : [],
         portfolio: row.portfolio ? JSON.parse(row.portfolio) : [],
@@ -1106,9 +1106,9 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   // Crews methods
-  async getCrews(): Promise<Crew[]> {
+  async getCrews(): Promise<any[]> {
     try {
-      const result = this.db.prepare(`
+      const result = sqliteDb.prepare(`
         SELECT c.*, u.first_name, u.last_name, u.rating, u.completed_projects
         FROM crews c
         LEFT JOIN users u ON c.user_id = u.id
@@ -1116,7 +1116,7 @@ export class SimpleSQLiteStorage implements IStorage {
         ORDER BY c.created_at DESC
       `).all();
       
-      return result.map(row => ({
+      return result.map((row: any) => ({
         ...row,
         specializations: row.specializations ? JSON.parse(row.specializations) : [],
         portfolio: row.portfolio ? JSON.parse(row.portfolio) : [],
