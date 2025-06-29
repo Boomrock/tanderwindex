@@ -968,6 +968,7 @@ export class SimpleSQLiteStorage implements IStorage {
   // Specialists methods
   async getSpecialists(): Promise<any[]> {
     try {
+      console.log('Executing getSpecialists query...');
       const result = sqliteDb.prepare(`
         SELECT s.*, u.first_name, u.last_name, u.username, u.rating, u.completed_projects
         FROM specialists s
@@ -975,6 +976,8 @@ export class SimpleSQLiteStorage implements IStorage {
         WHERE s.moderation_status = 'approved'
         ORDER BY s.created_at DESC
       `).all();
+      
+      console.log('Raw result from specialists query:', result.length, result);
       
       return result.map((row: any) => ({
         ...row,

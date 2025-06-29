@@ -998,9 +998,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Specialist routes
   apiRouter.get('/specialists', async (req: Request, res: Response) => {
     try {
+      console.log('API route: Getting specialists...');
       const specialists = await storage.getSpecialists();
+      console.log('API route: Got specialists:', specialists.length);
       res.status(200).json(specialists);
     } catch (error) {
+      console.error('API route error:', error);
       res.status(500).json({ message: "Server error", error: error.message });
     }
   });
