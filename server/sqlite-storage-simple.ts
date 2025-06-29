@@ -56,30 +56,81 @@ export class SimpleSQLiteStorage implements IStorage {
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    try {
+      const stmt = sqliteDb.prepare(`SELECT * FROM users WHERE id = ?`);
+      const user = stmt.get(id) as User | undefined;
+      return user;
+    } catch (error) {
+      console.error('Error getting user:', error);
+      return undefined;
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    try {
+      const stmt = sqliteDb.prepare(`SELECT * FROM users WHERE username = ?`);
+      const user = stmt.get(username) as User | undefined;
+      return user;
+    } catch (error) {
+      console.error('Error getting user by username:', error);
+      return undefined;
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    try {
+      const stmt = sqliteDb.prepare(`SELECT * FROM users WHERE email = ?`);
+      const user = stmt.get(email) as User | undefined;
+      return user;
+    } catch (error) {
+      console.error('Error getting user by email:', error);
+      return undefined;
+    }
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const now = new Date().toISOString();
-    const userData = {
-      ...insertUser,
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const [user] = await db.insert(users).values(userData).returning();
-    return user;
+    try {
+      const now = new Date().toISOString();
+      
+      const stmt = sqliteDb.prepare(`
+        INSERT INTO users (
+          username, email, password, user_type, firstName, lastName, 
+          phone, address, avatar, rating, isVerified, completedProjects,
+          inn, website, walletBalance, isAdmin, createdAt, updatedAt
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      
+      const result = stmt.run(
+        insertUser.username,
+        insertUser.email,
+        insertUser.password,
+        insertUser.userType || 'individual',
+        insertUser.firstName || null,
+        insertUser.lastName || null,
+        insertUser.phone || null,
+        insertUser.address || null,
+        insertUser.avatar || null,
+        insertUser.rating || 0,
+        insertUser.isVerified || 0,
+        insertUser.completedProjects || 0,
+        insertUser.inn || null,
+        insertUser.website || null,
+        insertUser.walletBalance || 0,
+        insertUser.isAdmin || 0,
+        now,
+        now
+      );
+      
+      const newUser = await this.getUser(result.lastInsertRowid as number);
+      if (!newUser) {
+        throw new Error('Failed to retrieve created user');
+      }
+      
+      return newUser;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   }
 
   async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
