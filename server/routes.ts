@@ -1315,6 +1315,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Specialists routes
+  apiRouter.get('/specialists', async (req: Request, res: Response) => {
+    try {
+      const { status = 'approved' } = req.query;
+      const specialists = await simpleSqliteStorage.getSpecialists({ status: status as string });
+      res.json(specialists);
+    } catch (error) {
+      console.error('Error fetching specialists:', error);
+      res.status(500).json({ error: 'Ошибка загрузки специалистов' });
+    }
+  });
+
+  apiRouter.post('/specialists', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const specialistData = {
+        ...req.body,
+        userId: req.user.id,
+        services: JSON.stringify(req.body.services || []),
+        status: 'pending'
+      };
+      const specialist = await simpleSqliteStorage.createSpecialist(specialistData);
+      res.status(201).json(specialist);
+    } catch (error) {
+      console.error('Error creating specialist:', error);
+      res.status(500).json({ error: 'Ошибка создания анкеты специалиста' });
+    }
+  });
+
+  // Crews routes
+  apiRouter.get('/crews', async (req: Request, res: Response) => {
+    try {
+      const { status = 'approved' } = req.query;
+      const crews = await simpleSqliteStorage.getCrews({ status: status as string });
+      res.json(crews);
+    } catch (error) {
+      console.error('Error fetching crews:', error);
+      res.status(500).json({ error: 'Ошибка загрузки бригад' });
+    }
+  });
+
+  apiRouter.post('/crews', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const crewData = {
+        ...req.body,
+        userId: req.user.id,
+        services: JSON.stringify(req.body.services || []),
+        status: 'pending'
+      };
+      const crew = await simpleSqliteStorage.createCrew(crewData);
+      res.status(201).json(crew);
+    } catch (error) {
+      console.error('Error creating crew:', error);
+      res.status(500).json({ error: 'Ошибка создания анкеты бригады' });
+    }
+  });
+
+  // Admin specialists moderation
+  apiRouter.get('/admin/moderation/specialists', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const specialists = await simpleSqliteStorage.getSpecialists({ status: 'pending' });
+      res.json(specialists);
+    } catch (error) {
+      console.error('Error fetching specialists for moderation:', error);
+      res.status(500).json({ error: 'Ошибка загрузки специалистов для модерации' });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/specialists/:id/approve', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { comment } = req.body;
+      const specialist = await simpleSqliteStorage.moderateSpecialist(parseInt(id), 'approved', req.user.id, comment);
+      res.json(specialist);
+    } catch (error) {
+      console.error('Error approving specialist:', error);
+      res.status(500).json({ error: 'Ошибка одобрения специалиста' });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/specialists/:id/reject', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { comment } = req.body;
+      const specialist = await simpleSqliteStorage.moderateSpecialist(parseInt(id), 'rejected', req.user.id, comment);
+      res.json(specialist);
+    } catch (error) {
+      console.error('Error rejecting specialist:', error);
+      res.status(500).json({ error: 'Ошибка отклонения специалиста' });
+    }
+  });
+
+  // Admin crews moderation
+  apiRouter.get('/admin/moderation/crews', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const crews = await simpleSqliteStorage.getCrews({ status: 'pending' });
+      res.json(crews);
+    } catch (error) {
+      console.error('Error fetching crews for moderation:', error);
+      res.status(500).json({ error: 'Ошибка загрузки бригад для модерации' });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/crews/:id/approve', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { comment } = req.body;
+      const crew = await simpleSqliteStorage.moderateCrew(parseInt(id), 'approved', req.user.id, comment);
+      res.json(crew);
+    } catch (error) {
+      console.error('Error approving crew:', error);
+      res.status(500).json({ error: 'Ошибка одобрения бригады' });
+    }
+  });
+
+  apiRouter.post('/admin/moderation/crews/:id/reject', adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { comment } = req.body;
+      const crew = await simpleSqliteStorage.moderateCrew(parseInt(id), 'rejected', req.user.id, comment);
+      res.json(crew);
+    } catch (error) {
+      console.error('Error rejecting crew:', error);
+      res.status(500).json({ error: 'Ошибка отклонения бригады' });
+    }
+  });
+
   // Mount the API router
   app.use('/api', apiRouter);
 

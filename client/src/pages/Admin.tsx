@@ -27,6 +27,7 @@ import { queryClient, apiRequest } from '@/lib/queryClient';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import SpecialistsModerationTab from '@/components/admin/SpecialistsModerationTab';
 
 // Типы пользователей
 type UserType = 'individual' | 'contractor' | 'company';
@@ -340,6 +341,7 @@ export default function Admin() {
           <TabsTrigger value="top-specialists">Лучшие специалисты</TabsTrigger>
           <TabsTrigger value="tender-moderation">Модерация тендеров</TabsTrigger>
           <TabsTrigger value="marketplace-moderation">Модерация маркетплейса</TabsTrigger>
+          <TabsTrigger value="specialists-moderation">Модерация специалистов</TabsTrigger>
           <TabsTrigger value="all-tenders">Все тендеры</TabsTrigger>
           <TabsTrigger value="all-marketplace">Все объявления</TabsTrigger>
         </TabsList>
@@ -676,6 +678,10 @@ export default function Admin() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="specialists-moderation">
+          <SpecialistsModerationTab />
         </TabsContent>
 
         <TabsContent value="top-specialists" className="space-y-6">

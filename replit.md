@@ -162,6 +162,15 @@ The platform uses PostgreSQL with the following key entities:
   - Enhanced file upload/download system with proper logging and error handling for real document delivery
   - Fixed Content-Disposition header encoding for files with non-ASCII characters by using ASCII-safe filenames
   - Updated project branding from "Windex-Строй" to "Windexs-Строй" across all headers, footers, and page titles
+- June 30, 2025. Implemented specialists and crews system with admin moderation:
+  - Added "Ремонт" category with subcategories for home, apartment, and commercial repairs
+  - Created separate navigation for "Специалисты" and "Бригады" in header
+  - Built specialist and crew profile creation forms with comprehensive validation
+  - Added database tables for specialists and crews with moderation fields (status, moderator, date, comment)
+  - Implemented admin moderation panel with dedicated tabs for specialists and crews approval/rejection
+  - Created API endpoints for specialists/crews CRUD operations and admin moderation workflows
+  - Enhanced routing with /specialists/create and /crews/create pages
+  - Integrated with existing authentication system requiring login for profile creation
 
 ## User Preferences
 
