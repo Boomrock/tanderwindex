@@ -173,6 +173,10 @@ The platform uses PostgreSQL with the following key entities:
   - Implemented SpecialistDetail.tsx with comprehensive specialist profiles, portfolios, and reviews
   - Added "Подробнее" and "Чат" buttons with proper routing to detailed pages and messaging
   - Enhanced NewMessage.tsx to support URL parameters for preselected specialist chat creation
+  - Created CreateSpecialistProfile.tsx form for users to create their own specialist profiles
+  - Added specialist profile creation API endpoint with JSON data storage for additional fields
+  - Fixed list alignment by removing centered container wrapping for proper grid display
+  - Added "Создать анкету специалиста" button for authenticated users
 
 ## User Preferences
 

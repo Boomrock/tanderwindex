@@ -49,6 +49,16 @@ export class SimpleSQLiteStorage implements IStorage {
 
   constructor() {
     this.sessionStore = null; // Placeholder for session store
+    this.addSpecialistDataColumn();
+  }
+
+  private addSpecialistDataColumn() {
+    try {
+      sqliteDb.prepare(`ALTER TABLE users ADD COLUMN specialist_data TEXT`).run();
+      console.log('specialist_data column added to users table');
+    } catch (error) {
+      // Column already exists or other error - ignore
+    }
   }
 
   // User methods
@@ -79,7 +89,7 @@ export class SimpleSQLiteStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
+  async updateUser(id: number, userData: Partial<User & { specialistData?: string }>): Promise<User | undefined> {
     const updateData = {
       ...userData,
       updatedAt: new Date().toISOString(),

@@ -380,14 +380,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         location
       } = req.body;
 
-      // Update user profile with specialist information
-      const updatedUser = await simpleSqliteStorage.updateUser(userId, {
+      // Update user profile with specialist information  
+      const updatedUser = await storage.updateUser(userId, {
         profession,
         bio,
         location,
         userType: 'individual',
-        isTopSpecialist: true,
-        // Store additional fields as JSON or separate fields
+        isTopSpecialist: 1,
         specialistData: JSON.stringify({
           experience_years,
           hourly_rate,
