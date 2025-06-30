@@ -187,6 +187,13 @@ The platform uses PostgreSQL with the following key entities:
   - Fixed authentication system issues: resolved password hashing problems and recreated admin user
   - Corrected field name mismatches in specialist and crew detail pages (hourly_rate, daily_rate, member_count)
   - All detail pages now display data correctly without runtime errors
+- June 30, 2025. Fixed chat system errors and specialist creation functionality:
+  - Resolved "undefined is not an object (evaluating 'u.fullName.toLowerCase')" error in chat system
+  - Added getUserDisplayName helper function to handle both fullName and full_name database fields
+  - Fixed SpecialistDetail and CrewDetail chat buttons to use correct user_id instead of specialist/crew id
+  - Updated Messages, ChatBox, and NewMessage components with proper name display handling
+  - Implemented actual API calls in SpecialistCreate form instead of console logging only
+  - Fixed specialist creation to properly submit data to /api/specialists endpoint with moderation workflow
 
 ## User Preferences
 
