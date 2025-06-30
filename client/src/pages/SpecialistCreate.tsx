@@ -91,8 +91,8 @@ export default function SpecialistCreate() {
       const specialistData = {
         name: data.name,
         specialty: data.specialty,
-        experience: data.experience,
-        hourly_rate: data.hourlyRate, // Note the field name change
+        experience: Number(data.experience),
+        hourlyRate: Number(data.hourlyRate), // Ensure it's a number
         location: data.location,
         description: data.description,
         skills: services.join(','), // Convert services array to comma-separated string
@@ -103,6 +103,8 @@ export default function SpecialistCreate() {
       };
       
       console.log("Создание объявления специалиста:", specialistData);
+      console.log("hourlyRate value:", data.hourlyRate, "type:", typeof data.hourlyRate);
+      console.log("converted hourlyRate:", Number(data.hourlyRate));
       
       const response = await apiRequest('POST', '/api/specialists', specialistData);
       return response.json();
