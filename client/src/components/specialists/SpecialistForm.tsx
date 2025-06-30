@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import ImageUpload from '@/components/ui/image-upload';
 import { X, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
@@ -65,6 +66,7 @@ export default function SpecialistForm() {
   const { toast } = useToast();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [newService, setNewService] = useState('');
+  const [images, setImages] = useState<string[]>([]);
 
   const form = useForm<SpecialistFormData>({
     resolver: zodResolver(specialistSchema),
@@ -88,6 +90,9 @@ export default function SpecialistForm() {
       return;
     }
 
+    // Здесь можно добавить отправку данных с изображениями
+    console.log('Form data:', { ...data, services: selectedServices, images });
+    
     toast({
       title: 'Анкета отправлена на модерацию',
       description: 'После проверки администратором ваша анкета будет опубликована',
