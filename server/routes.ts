@@ -1319,7 +1319,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get('/specialists', async (req: Request, res: Response) => {
     try {
       const { status = 'approved' } = req.query;
-      const specialists = await simpleSqliteStorage.getSpecialists({ status: status as string });
+      const specialists = await storage.getSpecialists({ status: status as string });
       res.json(specialists);
     } catch (error) {
       console.error('Error fetching specialists:', error);
@@ -1347,7 +1347,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get('/crews', async (req: Request, res: Response) => {
     try {
       const { status = 'approved' } = req.query;
-      const crews = await simpleSqliteStorage.getCrews({ status: status as string });
+      const crews = await storage.getCrews({ status: status as string });
       res.json(crews);
     } catch (error) {
       console.error('Error fetching crews:', error);
@@ -1374,7 +1374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin specialists moderation
   apiRouter.get('/admin/moderation/specialists', adminMiddleware, async (req: Request, res: Response) => {
     try {
-      const specialists = await simpleSqliteStorage.getSpecialists({ status: 'pending' });
+      const specialists = await storage.getSpecialists({ status: 'pending' });
       res.json(specialists);
     } catch (error) {
       console.error('Error fetching specialists for moderation:', error);
@@ -1386,7 +1386,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { comment } = req.body;
-      const specialist = await simpleSqliteStorage.moderateSpecialist(parseInt(id), 'approved', req.user.id, comment);
+      const specialist = await storage.moderateSpecialist(parseInt(id), 'approved', req.user.id, comment);
       res.json(specialist);
     } catch (error) {
       console.error('Error approving specialist:', error);
@@ -1409,7 +1409,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin crews moderation
   apiRouter.get('/admin/moderation/crews', adminMiddleware, async (req: Request, res: Response) => {
     try {
-      const crews = await simpleSqliteStorage.getCrews({ status: 'pending' });
+      const crews = await storage.getCrews({ status: 'pending' });
       res.json(crews);
     } catch (error) {
       console.error('Error fetching crews for moderation:', error);
@@ -1421,7 +1421,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { comment } = req.body;
-      const crew = await simpleSqliteStorage.moderateCrew(parseInt(id), 'approved', req.user.id, comment);
+      const crew = await storage.moderateCrew(parseInt(id), 'approved', req.user.id, comment);
       res.json(crew);
     } catch (error) {
       console.error('Error approving crew:', error);
