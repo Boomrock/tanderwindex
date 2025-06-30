@@ -3,16 +3,13 @@ import { db, sqliteDb } from './db-simple';
 import { IStorage } from './storage';
 import {
   users, tenders, tenderBids, marketplaceListings, messages, reviews, notifications,
-  specialists, crews,
   type User, type InsertUser,
   type Tender, type InsertTender,
   type TenderBid, type InsertTenderBid,
   type MarketplaceListing, type MarketplaceListingResponse, type InsertMarketplaceListing,
   type Message, type InsertMessage,
   type Review, type InsertReview,
-  type Notification, type InsertNotification,
-  type Specialist, type InsertSpecialist,
-  type Crew, type InsertCrew
+  type Notification, type InsertNotification
 } from '@shared/sqlite-schema';
 
 // Helper function to handle date strings properly
@@ -56,81 +53,30 @@ export class SimpleSQLiteStorage implements IStorage {
 
   // User methods
   async getUser(id: number): Promise<User | undefined> {
-    try {
-      const stmt = sqliteDb.prepare(`SELECT * FROM users WHERE id = ?`);
-      const user = stmt.get(id) as User | undefined;
-      return user;
-    } catch (error) {
-      console.error('Error getting user:', error);
-      return undefined;
-    }
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    try {
-      const stmt = sqliteDb.prepare(`SELECT * FROM users WHERE username = ?`);
-      const user = stmt.get(username) as User | undefined;
-      return user;
-    } catch (error) {
-      console.error('Error getting user by username:', error);
-      return undefined;
-    }
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    try {
-      const stmt = sqliteDb.prepare(`SELECT * FROM users WHERE email = ?`);
-      const user = stmt.get(email) as User | undefined;
-      return user;
-    } catch (error) {
-      console.error('Error getting user by email:', error);
-      return undefined;
-    }
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    try {
-      const now = new Date().toISOString();
-      
-      const stmt = sqliteDb.prepare(`
-        INSERT INTO users (
-          username, email, password, user_type, firstName, lastName, 
-          phone, address, avatar, rating, isVerified, completedProjects,
-          inn, website, walletBalance, isAdmin, createdAt, updatedAt
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      
-      const result = stmt.run(
-        insertUser.username,
-        insertUser.email,
-        insertUser.password,
-        insertUser.userType || 'individual',
-        insertUser.firstName || null,
-        insertUser.lastName || null,
-        insertUser.phone || null,
-        insertUser.address || null,
-        insertUser.avatar || null,
-        insertUser.rating || 0,
-        insertUser.isVerified || 0,
-        insertUser.completedProjects || 0,
-        insertUser.inn || null,
-        insertUser.website || null,
-        insertUser.walletBalance || 0,
-        insertUser.isAdmin || 0,
-        now,
-        now
-      );
-      
-      const newUser = await this.getUser(result.lastInsertRowid as number);
-      if (!newUser) {
-        throw new Error('Failed to retrieve created user');
-      }
-      
-      return newUser;
-    } catch (error) {
-      console.error('Error creating user:', error);
-      throw error;
-    }
+    const now = new Date().toISOString();
+    const userData = {
+      ...insertUser,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const [user] = await db.insert(users).values(userData).returning();
+    return user;
   }
 
   async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
@@ -1015,291 +961,6 @@ export class SimpleSQLiteStorage implements IStorage {
   async createCrewMemberSkill(): Promise<any> { return null; }
   async updateCrewMemberSkill(): Promise<any> { return null; }
   async deleteCrewMemberSkill(): Promise<boolean> { return false; }
-
-  // Specialists methods
-  async getSpecialists(): Promise<any[]> {
-    try {
-      console.log('=== STORAGE: getSpecialists called ===');
-      console.log('Database instance:', !!sqliteDb);
-      
-      const query = `
-        SELECT * FROM specialists
-        WHERE moderation_status = 'approved'
-        ORDER BY created_at DESC
-      `;
-      console.log('Executing query:', query);
-      
-      const result = sqliteDb.prepare(query).all();
-      console.log('Raw SQL result:', result);
-      console.log('Result count:', result.length);
-      
-      const processed = result.map((row: any) => ({
-        ...row,
-        skills: row.skills ? row.skills.split(',') : [],
-        portfolio: row.portfolio ? row.portfolio.split(',').filter(Boolean) : [],
-        rating: 4.5,
-        reviewCount: Math.floor(Math.random() * 50) + 5,
-        isOnline: Math.random() > 0.5,
-        completedProjects: Math.floor(Math.random() * 100) + 10
-      }));
-      
-      console.log('Processed result:', processed);
-      console.log('=== STORAGE: getSpecialists returning ===');
-      return processed;
-    } catch (error) {
-      console.error('=== ERROR in getSpecialists ===', error);
-      return [];
-    }
-  }
-
-  async getSpecialist(id: number): Promise<any | undefined> {
-    try {
-      const result = sqliteDb.prepare(`
-        SELECT * FROM specialists
-        WHERE id = ? AND moderation_status = 'approved'
-      `).get(id);
-      
-      if (!result) return undefined;
-      
-      return {
-        ...result,
-        skills: result.skills ? result.skills.split(',') : [],
-        portfolio: result.portfolio ? result.portfolio.split(',').filter(Boolean) : [],
-        rating: 4.5,
-        reviewCount: Math.floor(Math.random() * 50) + 5,
-        isOnline: Math.random() > 0.5,
-        completedProjects: Math.floor(Math.random() * 100) + 10
-      };
-    } catch (error) {
-      console.error('Error getting specialist:', error);
-      return undefined;
-    }
-  }
-
-  async createSpecialist(data: any): Promise<any> {
-    try {
-      const stmt = sqliteDb.prepare(`
-        INSERT INTO specialists (
-          user_id, name, specialty, experience, hourly_rate, location, 
-          description, skills, phone, email, avatar, portfolio
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      
-      const result = stmt.run(
-        data.userId,
-        data.name,
-        data.specialty,
-        data.experience,
-        data.hourlyRate,
-        data.location,
-        data.description,
-        Array.isArray(data.skills) ? data.skills.join(',') : '',
-        data.phone,
-        data.email,
-        data.avatar,
-        Array.isArray(data.portfolio) ? data.portfolio.join(',') : ''
-      );
-      
-      return this.getSpecialist(result.lastInsertRowid as number);
-    } catch (error) {
-      console.error('Error creating specialist:', error);
-      throw error;
-    }
-  }
-
-  async getSpecialistsForModeration(): Promise<any[]> {
-    try {
-      const result = sqliteDb.prepare(`
-        SELECT s.*, u.first_name, u.last_name, u.username
-        FROM specialists s
-        LEFT JOIN users u ON s.user_id = u.id
-        WHERE s.moderation_status = 'pending'
-        ORDER BY s.created_at DESC
-      `).all();
-      
-      return result.map((row: any) => ({
-        ...row,
-        skills: typeof row.skills === 'string' ? row.skills.split(',') : [],
-        portfolio: typeof row.portfolio === 'string' ? row.portfolio.split(',') : []
-      }));
-    } catch (error) {
-      console.error('Error getting specialists for moderation:', error);
-      return [];
-    }
-  }
-
-  async approveSpecialist(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
-    try {
-      sqliteDb.prepare(`
-        UPDATE specialists 
-        SET moderation_status = 'approved', 
-            moderated_by = ?, 
-            moderated_at = datetime('now'),
-            moderation_comment = ?
-        WHERE id = ?
-      `).run(moderatorId, comment, id);
-      
-      return this.getSpecialist(id);
-    } catch (error) {
-      console.error('Error approving specialist:', error);
-      throw error;
-    }
-  }
-
-  async rejectSpecialist(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
-    try {
-      sqliteDb.prepare(`
-        UPDATE specialists 
-        SET moderation_status = 'rejected', 
-            moderated_by = ?, 
-            moderated_at = datetime('now'),
-            moderation_comment = ?
-        WHERE id = ?
-      `).run(moderatorId, comment, id);
-      
-      return this.getSpecialist(id);
-    } catch (error) {
-      console.error('Error rejecting specialist:', error);
-      throw error;
-    }
-  }
-
-  // Crews methods
-  async getCrews(): Promise<any[]> {
-    try {
-      const result = sqliteDb.prepare(`
-        SELECT * FROM crews
-        WHERE moderation_status = 'approved'
-        ORDER BY created_at DESC
-      `).all();
-      
-      return result.map((row: any) => ({
-        ...row,
-        specializations: row.specializations ? row.specializations.split(',') : [],
-        portfolio: row.portfolio ? row.portfolio.split(',').filter(Boolean) : [],
-        rating: 4.5,
-        reviewCount: Math.floor(Math.random() * 30) + 3,
-        isAvailable: Math.random() > 0.3,
-        completedProjects: Math.floor(Math.random() * 50) + 5
-      }));
-    } catch (error) {
-      console.error('Error getting crews:', error);
-      return [];
-    }
-  }
-
-  async getCrew(id: number): Promise<any | undefined> {
-    try {
-      const result = sqliteDb.prepare(`
-        SELECT * FROM crews
-        WHERE id = ? AND moderation_status = 'approved'
-      `).get(id);
-      
-      if (!result) return undefined;
-      
-      return {
-        ...result,
-        specializations: result.specializations ? result.specializations.split(',') : [],
-        portfolio: result.portfolio ? result.portfolio.split(',').filter(Boolean) : [],
-        rating: 4.5,
-        reviewCount: Math.floor(Math.random() * 30) + 3,
-        isAvailable: Math.random() > 0.3,
-        completedProjects: Math.floor(Math.random() * 50) + 5
-      };
-    } catch (error) {
-      console.error('Error getting crew:', error);
-      return undefined;
-    }
-  }
-
-  async createCrew(data: any): Promise<any> {
-    try {
-      const stmt = sqliteDb.prepare(`
-        INSERT INTO crews (
-          user_id, name, specialty, experience, daily_rate, member_count, 
-          location, description, specializations, phone, email, avatar, portfolio
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `);
-      
-      const result = stmt.run(
-        data.userId,
-        data.name,
-        data.specialty,
-        data.experience,
-        data.dailyRate,
-        data.memberCount,
-        data.location,
-        data.description,
-        Array.isArray(data.specializations) ? data.specializations.join(',') : '',
-        data.phone,
-        data.email,
-        data.avatar,
-        Array.isArray(data.portfolio) ? data.portfolio.join(',') : ''
-      );
-      
-      return this.getCrew(result.lastInsertRowid as number);
-    } catch (error) {
-      console.error('Error creating crew:', error);
-      throw error;
-    }
-  }
-
-  async getCrewsForModeration(): Promise<any[]> {
-    try {
-      const result = sqliteDb.prepare(`
-        SELECT c.*, u.first_name, u.last_name, u.username
-        FROM crews c
-        LEFT JOIN users u ON c.user_id = u.id
-        WHERE c.moderation_status = 'pending'
-        ORDER BY c.created_at DESC
-      `).all();
-      
-      return result.map((row: any) => ({
-        ...row,
-        specializations: typeof row.specializations === 'string' ? row.specializations.split(',') : [],
-        portfolio: typeof row.portfolio === 'string' ? row.portfolio.split(',') : []
-      }));
-    } catch (error) {
-      console.error('Error getting crews for moderation:', error);
-      return [];
-    }
-  }
-
-  async approveCrew(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
-    try {
-      sqliteDb.prepare(`
-        UPDATE crews 
-        SET moderation_status = 'approved', 
-            moderated_by = ?, 
-            moderated_at = datetime('now'),
-            moderation_comment = ?
-        WHERE id = ?
-      `).run(moderatorId, comment, id);
-      
-      return this.getCrew(id);
-    } catch (error) {
-      console.error('Error approving crew:', error);
-      throw error;
-    }
-  }
-
-  async rejectCrew(id: number, moderatorId: number, comment?: string): Promise<any | undefined> {
-    try {
-      sqliteDb.prepare(`
-        UPDATE crews 
-        SET moderation_status = 'rejected', 
-            moderated_by = ?, 
-            moderated_at = datetime('now'),
-            moderation_comment = ?
-        WHERE id = ?
-      `).run(moderatorId, comment, id);
-      
-      return this.getCrew(id);
-    } catch (error) {
-      console.error('Error rejecting crew:', error);
-      throw error;
-    }
-  }
 }
 
 export const simpleSqliteStorage = new SimpleSQLiteStorage();

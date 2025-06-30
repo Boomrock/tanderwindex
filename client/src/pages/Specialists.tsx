@@ -82,13 +82,13 @@ export default function Specialists() {
       <div className="container py-12">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-4xl font-bold mb-4">Специалисты</h1>
+            <h1 className="text-4xl font-bold mb-4 text-green-600">Специалисты</h1>
             <p className="text-gray-600 text-lg">
               Найдите квалифицированных строительных специалистов
             </p>
           </div>
           <Link href="/specialists/create">
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-green-600 hover:bg-green-700">
               <Plus className="h-4 w-4 mr-2" />
               Добавить объявление
             </Button>
@@ -116,7 +116,7 @@ export default function Specialists() {
                         ({specialist.reviewCount})
                       </span>
                       {specialist.isOnline && (
-                        <div className="ml-2 h-2 w-2 bg-emerald-500 rounded-full"></div>
+                        <div className="ml-2 h-2 w-2 bg-green-500 rounded-full"></div>
                       )}
                     </div>
                   </div>
@@ -141,7 +141,7 @@ export default function Specialists() {
                   ))}
                 </div>
 
-                <div className="text-lg font-semibold text-primary">
+                <div className="text-lg font-semibold text-green-600">
                   от {specialist.hourlyRate.toLocaleString()} ₽/час
                 </div>
 
@@ -153,7 +153,7 @@ export default function Specialists() {
                   </Link>
                   <Button 
                     size="sm" 
-                    className="bg-primary hover:bg-primary/90"
+                    className="bg-green-600 hover:bg-green-700"
                     onClick={() => {
                       // Логика открытия чата
                       console.log(`Открыть чат с ${specialist.name}`);
