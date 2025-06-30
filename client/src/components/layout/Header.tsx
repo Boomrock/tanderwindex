@@ -52,7 +52,7 @@ const Header = () => {
   });
 
   // Calculate unread messages count
-  const unreadMessagesCount = isAuthenticated && messages 
+  const unreadMessagesCount = isAuthenticated && Array.isArray(messages)
     ? messages.filter((message: any) => !message.isRead && message.receiverId === user?.id).length 
     : 0;
 

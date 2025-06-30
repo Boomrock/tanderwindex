@@ -126,7 +126,7 @@ function SpecialistCard({ specialist }: SpecialistCardProps) {
       return specialist.userType === 'company' ? 'ЮЛ' : 'ФЛ';
     }
     const words = name.split(' ');
-    return words.map(word => word.charAt(0)).join('').toUpperCase().substring(0, 2);
+    return words.map((word: string) => word.charAt(0)).join('').toUpperCase().substring(0, 2);
   };
 
   const getDescription = () => {
