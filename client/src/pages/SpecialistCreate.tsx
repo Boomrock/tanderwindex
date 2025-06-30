@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { X, Plus, Upload } from "lucide-react";
 import { useLocation } from "wouter";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const specialistSchema = z.object({
   name: z.string().min(2, "Имя должно содержать минимум 2 символа"),
@@ -44,6 +47,7 @@ export default function SpecialistCreate() {
   const [services, setServices] = useState<string[]>([]);
   const [newService, setNewService] = useState("");
   const [avatar, setAvatar] = useState<string>("");
+  const { toast } = useToast();
 
   const form = useForm<SpecialistFormData>({
     resolver: zodResolver(specialistSchema),
@@ -81,20 +85,46 @@ export default function SpecialistCreate() {
     }
   };
 
-  const onSubmit = async (data: SpecialistFormData) => {
-    try {
-      // В реальном приложении здесь будет API запрос
-      console.log("Создание объявления специалиста:", {
-        ...data,
-        services,
-        avatar
-      });
+  // Mutation for creating specialist
+  const createSpecialistMutation = useMutation({
+    mutationFn: async (data: SpecialistFormData) => {
+      const specialistData = {
+        name: data.name,
+        specialty: data.specialty,
+        experience: data.experience,
+        hourly_rate: data.hourlyRate, // Note the field name change
+        location: data.location,
+        description: data.description,
+        skills: services.join(','), // Convert services array to comma-separated string
+        phone: data.phone,
+        email: data.email,
+        avatar: avatar || null,
+        portfolio: '' // Empty portfolio for now as string
+      };
       
-      // Перенаправление на страницу специалистов
+      console.log("Создание объявления специалиста:", specialistData);
+      
+      const response = await apiRequest('POST', '/api/specialists', specialistData);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Объявление создано',
+        description: 'Ваше объявление отправлено на модерацию и появится в списке после одобрения.',
+      });
       setLocation("/specialists");
-    } catch (error) {
-      console.error("Ошибка создания объявления:", error);
-    }
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Ошибка создания',
+        description: error.message || 'Не удалось создать объявление',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const onSubmit = (data: SpecialistFormData) => {
+    createSpecialistMutation.mutate(data);
   };
 
   return (
@@ -301,8 +331,8 @@ export default function SpecialistCreate() {
                 />
 
                 <div className="flex space-x-4">
-                  <Button type="submit" className="flex-1">
-                    Создать объявление
+                  <Button type="submit" className="flex-1" disabled={createSpecialistMutation.isPending}>
+                    {createSpecialistMutation.isPending ? 'Создание...' : 'Создать объявление'}
                   </Button>
                   <Button type="button" variant="outline" onClick={() => setLocation("/specialists")}>
                     Отмена
