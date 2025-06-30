@@ -90,13 +90,41 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   async updateUser(id: number, userData: Partial<User & { specialistData?: string }>): Promise<User | undefined> {
-    const updateData = {
-      ...userData,
-      updatedAt: new Date().toISOString(),
-    };
-
-    const [user] = await db.update(users).set(updateData).where(eq(users.id, id)).returning();
-    return user || undefined;
+    try {
+      // Handle specialistData separately for SQLite
+      const { specialistData, ...restUserData } = userData;
+      
+      let query = `UPDATE users SET updated_at = ? WHERE id = ?`;
+      const params: any[] = [new Date().toISOString(), id];
+      
+      // Build dynamic update query
+      const updateFields: string[] = [];
+      
+      Object.keys(restUserData).forEach(key => {
+        if (key !== 'id' && key !== 'createdAt' && key !== 'updatedAt') {
+          updateFields.push(`${key} = ?`);
+          params.splice(-1, 0, restUserData[key as keyof typeof restUserData]);
+        }
+      });
+      
+      if (specialistData) {
+        updateFields.push('specialist_data = ?');
+        params.splice(-1, 0, specialistData);
+      }
+      
+      if (updateFields.length > 0) {
+        query = `UPDATE users SET ${updateFields.join(', ')}, updated_at = ? WHERE id = ?`;
+      }
+      
+      sqliteDb.prepare(query).run(...params);
+      
+      // Return updated user
+      const updatedUser = sqliteDb.prepare('SELECT * FROM users WHERE id = ?').get(id);
+      return updatedUser as User;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw new Error('Ошибка обновления пользователя');
+    }
   }
 
   // Tender methods

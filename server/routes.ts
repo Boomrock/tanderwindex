@@ -386,7 +386,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bio,
         location,
         userType: 'individual',
-        isTopSpecialist: 1,
+        isTopSpecialist: true,
         specialistData: JSON.stringify({
           experience_years,
           hourly_rate,
