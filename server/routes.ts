@@ -361,6 +361,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Create specialist profile
+  apiRouter.post('/users/specialist-profile', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ error: 'Не авторизован' });
+      }
+
+      const {
+        profession,
+        bio,
+        experience_years,
+        hourly_rate,
+        project_rate,
+        services,
+        portfolio_items,
+        location
+      } = req.body;
+
+      // Update user profile with specialist information
+      const updatedUser = await simpleSqliteStorage.updateUser(userId, {
+        profession,
+        bio,
+        location,
+        userType: 'individual',
+        isTopSpecialist: true,
+        // Store additional fields as JSON or separate fields
+        specialistData: JSON.stringify({
+          experience_years,
+          hourly_rate,
+          project_rate,
+          services,
+          portfolio_items
+        })
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'Пользователь не найден' });
+      }
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error('Error creating specialist profile:', error);
+      res.status(500).json({ error: 'Ошибка создания анкеты специалиста' });
+    }
+  });
+
   apiRouter.put('/users/me', authMiddleware, async (req: Request, res: Response) => {
     try {
       // Exclude sensitive fields

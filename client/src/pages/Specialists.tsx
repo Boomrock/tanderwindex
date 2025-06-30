@@ -14,8 +14,11 @@ import { User as UserIcon, Star, Award, MapPin, Briefcase, MessageCircle, Eye } 
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Link } from "wouter";
+import { useAuth } from "@/lib/authContext";
 
 export default function Specialists() {
+  const { user, isAuthenticated } = useAuth();
+  
   const {
     data: specialists,
     isLoading,
@@ -59,6 +62,17 @@ export default function Specialists() {
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Проверенные индивидуальные мастера с высоким рейтингом и обширным портфолио выполненных проектов
           </p>
+          
+          {isAuthenticated && (
+            <div className="mt-6">
+              <Link href="/profile/create-specialist">
+                <Button size="lg" className="px-8">
+                  <UserIcon className="h-5 w-5 mr-2" />
+                  Создать анкету специалиста
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -66,7 +80,7 @@ export default function Specialists() {
             <SpecialistCard key={specialist.id} specialist={specialist} />
           ))}
           {(!specialists || specialists.length === 0) && (
-            <div className="col-span-full text-center p-8">
+            <div className="col-span-full">
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {/* Демонстрационные карточки специалистов */}
                 <SpecialistCard specialist={{
@@ -114,6 +128,19 @@ export default function Specialists() {
                   hourly_rate: 1800
                 }} />
               </div>
+              
+              {!isAuthenticated && (
+                <div className="text-center mt-8 p-6 bg-gray-50 rounded-lg">
+                  <p className="text-muted-foreground mb-4">
+                    Хотите разместить свою анкету специалиста?
+                  </p>
+                  <Link href="/login">
+                    <Button variant="outline">
+                      Войти в систему
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
