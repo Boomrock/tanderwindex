@@ -177,6 +177,11 @@ The platform uses PostgreSQL with the following key entities:
   - Added specialist profile creation API endpoint with JSON data storage for additional fields
   - Fixed list alignment by removing centered container wrapping for proper grid display
   - Added "Создать анкету специалиста" button for authenticated users
+- June 30, 2025. Fixed specialist profile creation system:
+  - Resolved "User not found" error in specialist profile creation by fixing database field mapping
+  - Added comprehensive logging to track user update operations
+  - Corrected camelCase to snake_case field conversion for SQLite database compatibility
+  - Enhanced error handling in user profile update functionality
 
 ## User Preferences
 

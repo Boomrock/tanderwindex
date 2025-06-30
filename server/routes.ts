@@ -382,12 +382,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update user profile with specialist information  
       const updatedUser = await storage.updateUser(userId, {
-        profession,
         bio,
         location,
         userType: 'individual',
         isTopSpecialist: true,
+        firstName: req.body.firstName || null,
+        lastName: req.body.lastName || null,
+        phone: req.body.phone || null,
         specialistData: JSON.stringify({
+          profession,
           experience_years,
           hourly_rate,
           project_rate,

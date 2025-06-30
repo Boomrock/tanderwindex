@@ -91,35 +91,57 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async updateUser(id: number, userData: Partial<User & { specialistData?: string }>): Promise<User | undefined> {
     try {
+      console.log('Updating user with ID:', id, 'Data:', userData);
+      
+      // First check if user exists
+      const existingUser = sqliteDb.prepare('SELECT * FROM users WHERE id = ?').get(id);
+      if (!existingUser) {
+        console.log('User not found with ID:', id);
+        return undefined;
+      }
+      
       // Handle specialistData separately for SQLite
       const { specialistData, ...restUserData } = userData;
       
-      let query = `UPDATE users SET updated_at = ? WHERE id = ?`;
-      const params: any[] = [new Date().toISOString(), id];
-      
-      // Build dynamic update query
       const updateFields: string[] = [];
+      const params: any[] = [];
       
+      // Add fields to update, converting camelCase to snake_case for database
       Object.keys(restUserData).forEach(key => {
         if (key !== 'id' && key !== 'createdAt' && key !== 'updatedAt') {
-          updateFields.push(`${key} = ?`);
-          params.splice(-1, 0, restUserData[key as keyof typeof restUserData]);
+          let dbFieldName = key;
+          // Convert camelCase to snake_case
+          if (key === 'firstName') dbFieldName = 'first_name';
+          else if (key === 'lastName') dbFieldName = 'last_name';
+          else if (key === 'userType') dbFieldName = 'user_type';
+          else if (key === 'isTopSpecialist') dbFieldName = 'is_top_specialist';
+          
+          updateFields.push(`${dbFieldName} = ?`);
+          params.push(restUserData[key as keyof typeof restUserData]);
         }
       });
       
       if (specialistData) {
         updateFields.push('specialist_data = ?');
-        params.splice(-1, 0, specialistData);
+        params.push(specialistData);
       }
       
-      if (updateFields.length > 0) {
-        query = `UPDATE users SET ${updateFields.join(', ')}, updated_at = ? WHERE id = ?`;
-      }
+      // Always update the updated_at field
+      updateFields.push('updated_at = ?');
+      params.push(new Date().toISOString());
       
-      sqliteDb.prepare(query).run(...params);
+      // Add ID for WHERE clause
+      params.push(id);
+      
+      const query = `UPDATE users SET ${updateFields.join(', ')} WHERE id = ?`;
+      console.log('Update query:', query, 'Params:', params);
+      
+      const result = sqliteDb.prepare(query).run(...params);
+      console.log('Update result:', result);
       
       // Return updated user
       const updatedUser = sqliteDb.prepare('SELECT * FROM users WHERE id = ?').get(id);
+      console.log('Updated user:', updatedUser);
       return updatedUser as User;
     } catch (error) {
       console.error('Error updating user:', error);
