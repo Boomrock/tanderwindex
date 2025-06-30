@@ -11,7 +11,7 @@ if (!existsSync(dataDir)) {
 }
 
 // Connect to SQLite database
-const sqlite = new Database(join(dataDir, 'construction-platform.db'));
+const sqlite = new Database(join(process.cwd(), 'database.db'));
 
 // Configure database
 sqlite.pragma('journal_mode = WAL');

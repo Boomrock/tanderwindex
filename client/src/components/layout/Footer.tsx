@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between">
           {/* Logo and Name */}
           <div className="flex items-center mb-4 md:mb-0">
-            <Construction className="h-6 w-6 text-primary mr-2" />
+            <Construction className="h-6 w-6 text-green-600 mr-2" />
             <span className="font-bold text-xl">Windexs-Строй</span>
           </div>
           

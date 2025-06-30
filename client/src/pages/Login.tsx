@@ -20,10 +20,10 @@ export default function Login() {
   return (
     <>
       <Helmet>
-        <title>Вход | СтройТендер</title>
+        <title>Вход | Windexs-Строй</title>
         <meta
           name="description"
-          content="Войдите в свой аккаунт СтройТендер для доступа к тендерам на строительные работы и маркетплейсу строительных материалов."
+          content="Войдите в свой аккаунт Windexs-Строй для доступа к тендерам на строительные работы и маркетплейсу строительных материалов."
         />
       </Helmet>
 
@@ -32,8 +32,8 @@ export default function Login() {
           <CardHeader className="space-y-1">
             <div className="flex justify-center mb-6">
               <Link href="/" className="flex items-center gap-2">
-                <Construction className="h-6 w-6 text-primary" />
-                <span className="font-bold text-xl text-primary">СтройТендер</span>
+                <Construction className="h-6 w-6 text-green-600" />
+                <span className="font-bold text-xl text-green-600">Windexs-Строй</span>
               </Link>
             </div>
             <CardTitle className="text-2xl font-bold text-center">Вход</CardTitle>

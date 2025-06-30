@@ -104,9 +104,6 @@ export const users = pgTable("users", {
   // Флаг администратора
   isAdmin: boolean("is_admin").default(false),
   
-  // Данные специалиста в JSON формате
-  specialistData: text("specialist_data"),
-  
   // Для SQLite мы не можем использовать defaultNow()
   createdAt: timestamp("created_at"),
   updatedAt: timestamp("updated_at"),

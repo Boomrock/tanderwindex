@@ -29,33 +29,16 @@ function authMiddleware(req: Request, res: Response, next: Function) {
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.log('No auth header or wrong format:', authHeader);
     return res.status(401).json({ message: "Authorization required" });
   }
   
   const token = authHeader.split(' ')[1];
   
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    console.log('Decoded JWT:', decoded);
-    
-    // Проверяем оба варианта для совместимости
-    const userId = decoded.userId || decoded.id;
-    if (!userId) {
-      console.log('No user ID in token:', decoded);
-      return res.status(401).json({ message: "Invalid token structure" });
-    }
-    
-    req.user = { 
-      id: userId,
-      username: decoded.username,
-      email: decoded.email,
-      isAdmin: decoded.isAdmin
-    };
-    console.log('User attached to request:', req.user);
+    const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
+    req.user = { id: decoded.id };
     next();
   } catch (error) {
-    console.log('JWT verification error:', error);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 }
@@ -283,14 +266,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid credentials" });
       }
       
-      // Generate JWT с правильной структурой
-      const token = jwt.sign({ 
-        userId: user.id,  // Добавляем userId для совместимости
-        id: user.id,      // Оставляем id для обратной совместимости
-        username: user.username,
-        email: user.email,
-        isAdmin: user.isAdmin
-      }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+      // Generate JWT
+      const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
       
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
@@ -384,77 +361,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Create specialist profile
-  apiRouter.post('/users/specialist-profile', authMiddleware, async (req: Request, res: Response) => {
-    try {
-      console.log('=== Creating specialist profile ===');
-      console.log('Request user:', req.user);
-      console.log('Request body:', req.body);
-      
-      const userId = req.user?.id;
-      if (!userId) {
-        console.log('No user ID found in request');
-        return res.status(401).json({ error: 'Не авторизован' });
-      }
-
-      console.log('User ID from token:', userId);
-
-      const {
-        profession,
-        bio,
-        experience_years,
-        hourly_rate,
-        project_rate,
-        services,
-        portfolio_items,
-        location
-      } = req.body;
-
-      console.log('Extracted fields:', {
-        profession,
-        bio,
-        experience_years,
-        hourly_rate,
-        project_rate,
-        services,
-        portfolio_items,
-        location
-      });
-
-      // Update user profile with specialist information  
-      const updatedUser = await storage.updateUser(userId, {
-        bio,
-        location,
-        userType: 'individual',
-        isTopSpecialist: true,
-        firstName: req.body.firstName || null,
-        lastName: req.body.lastName || null,
-        phone: req.body.phone || null,
-        specialistData: JSON.stringify({
-          profession,
-          experience_years,
-          hourly_rate,
-          project_rate,
-          services,
-          portfolio_items
-        })
-      });
-
-      console.log('Updated user result:', updatedUser);
-
-      if (!updatedUser) {
-        console.log('User update returned null/undefined');
-        return res.status(404).json({ error: 'Пользователь не найден' });
-      }
-
-      console.log('Specialist profile created successfully');
-      res.json(updatedUser);
-    } catch (error) {
-      console.error('Error creating specialist profile:', error);
-      res.status(500).json({ error: 'Ошибка создания анкеты специалиста' });
-    }
-  });
-
   apiRouter.put('/users/me', authMiddleware, async (req: Request, res: Response) => {
     try {
       // Exclude sensitive fields
@@ -1089,7 +995,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Specialist routes
+  apiRouter.get('/specialists', async (req: Request, res: Response) => {
+    try {
+      console.log('API route: Getting specialists...');
+      const specialists = await storage.getSpecialists();
+      console.log('API route: Got specialists:', specialists.length);
+      res.status(200).json(specialists);
+    } catch (error) {
+      console.error('API route error:', error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
 
+  apiRouter.get('/specialists/:id', async (req: Request, res: Response) => {
+    try {
+      const specialistId = parseInt(req.params.id);
+      if (isNaN(specialistId)) {
+        return res.status(400).json({ message: "Invalid specialist ID" });
+      }
+      
+      const specialist = await storage.getSpecialist(specialistId);
+      if (!specialist) {
+        return res.status(404).json({ message: "Specialist not found" });
+      }
+      
+      res.status(200).json(specialist);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  apiRouter.post('/specialists', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const specialistData = {
+        ...req.body,
+        userId: req.user.id
+      };
+      
+      const specialist = await storage.createSpecialist(specialistData);
+      res.status(201).json(specialist);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  // Crew routes
+  apiRouter.get('/crews', async (req: Request, res: Response) => {
+    try {
+      const crews = await storage.getCrews();
+      res.status(200).json(crews);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  apiRouter.get('/crews/:id', async (req: Request, res: Response) => {
+    try {
+      const crewId = parseInt(req.params.id);
+      if (isNaN(crewId)) {
+        return res.status(400).json({ message: "Invalid crew ID" });
+      }
+      
+      const crew = await storage.getCrew(crewId);
+      if (!crew) {
+        return res.status(404).json({ message: "Crew not found" });
+      }
+      
+      res.status(200).json(crew);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
+
+  apiRouter.post('/crews', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const crewData = {
+        ...req.body,
+        userId: req.user.id
+      };
+      
+      const crew = await storage.createCrew(crewData);
+      res.status(201).json(crew);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Validation error", errors: error.errors });
+      }
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  });
 
   // Административные маршруты
   apiRouter.get('/admin/stats', adminMiddleware, async (req: Request, res: Response) => {

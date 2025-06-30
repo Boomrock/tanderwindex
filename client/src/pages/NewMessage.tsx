@@ -26,15 +26,6 @@ export default function NewMessage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Check for preselected user ID from URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const userId = urlParams.get('userId');
-    if (userId) {
-      setSelectedUserId(parseInt(userId));
-    }
-  }, []);
-
   // Fetch all users
   const { data: users, isLoading: isUsersLoading } = useQuery<User[]>({
     queryKey: ['/api/users'],

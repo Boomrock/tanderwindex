@@ -53,7 +53,7 @@ const Header = () => {
   });
 
   // Calculate unread messages count
-  const unreadMessagesCount = isAuthenticated && Array.isArray(messages)
+  const unreadMessagesCount = isAuthenticated && messages 
     ? messages.filter((message: any) => !message.isRead && message.receiverId === user?.id).length 
     : 0;
 
@@ -64,8 +64,8 @@ const Header = () => {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center space-x-1">
-              <Construction className="h-6 w-6 text-primary" />
-              <span className="font-bold text-xl text-primary">Windexs-Строй</span>
+              <Construction className="h-6 w-6 text-green-600" />
+              <span className="font-bold text-xl text-green-600">Windexs-Строй</span>
             </Link>
           </div>
           

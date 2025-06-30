@@ -337,7 +337,7 @@ export default function Admin() {
         <TabsList className="mb-6">
           <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
           <TabsTrigger value="users">Пользователи</TabsTrigger>
-          <TabsTrigger value="top-specialists">Топ специалисты</TabsTrigger>
+          <TabsTrigger value="top-specialists">Лучшие специалисты</TabsTrigger>
           <TabsTrigger value="tender-moderation">Модерация тендеров</TabsTrigger>
           <TabsTrigger value="marketplace-moderation">Модерация маркетплейса</TabsTrigger>
           <TabsTrigger value="all-tenders">Все тендеры</TabsTrigger>
@@ -494,7 +494,7 @@ export default function Admin() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {Array.isArray(pendingTenders) && pendingTenders.length > 0 ? (
+                  {pendingTenders && pendingTenders.length > 0 ? (
                     pendingTenders.map((tender: any) => (
                       <Card key={tender.id} className="border-l-4 border-l-yellow-500">
                         <CardHeader>
@@ -593,7 +593,7 @@ export default function Admin() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {Array.isArray(pendingListings) && pendingListings.length > 0 ? (
+                  {pendingListings && pendingListings.length > 0 ? (
                     pendingListings.map((listing: any) => (
                       <Card key={listing.id} className="border-l-4 border-l-blue-500">
                         <CardHeader>
@@ -766,7 +766,7 @@ export default function Admin() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {Array.isArray(allTenders) && allTenders.length > 0 ? (
+                  {allTenders && allTenders.length > 0 ? (
                     allTenders.map((tender: any) => (
                       <Card key={tender.id} className="border-l-4 border-l-blue-500">
                         <CardHeader>
@@ -832,7 +832,7 @@ export default function Admin() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {Array.isArray(allListings) && allListings.length > 0 ? (
+                  {allListings && allListings.length > 0 ? (
                     allListings.map((listing: any) => (
                       <Card key={listing.id} className="border-l-4 border-l-green-500">
                         <CardHeader>

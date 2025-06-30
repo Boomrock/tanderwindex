@@ -47,7 +47,7 @@ export default function TopSpecialists() {
       <div className="container py-12">
         <div className="bg-red-50 p-6 rounded-lg">
           <h2 className="text-xl font-semibold text-red-800 mb-2">Ошибка</h2>
-          <p className="text-red-700">Не удалось загрузить данные о специалистах и бригадах</p>
+          <p className="text-red-700">Не удалось загрузить данные о лучших специалистах</p>
         </div>
       </div>
     );
@@ -56,16 +56,16 @@ export default function TopSpecialists() {
   return (
     <>
       <Helmet>
-        <title>Специалисты и Бригады | Windexs-Строй</title>
+        <title>Лучшие специалисты | Windexs-Строй</title>
         <meta
           name="description"
-          content="Специалисты и бригады в сфере строительства с высоким рейтингом и обширным портфолио выполненных проектов"
+          content="Лучшие специалисты и компании в сфере строительства с высоким рейтингом и обширным портфолио выполненных проектов"
         />
       </Helmet>
 
       <div className="container py-12">
         <div className="mb-10 text-center">
-          <h1 className="text-4xl font-bold mb-4">Специалисты и Бригады</h1>
+          <h1 className="text-4xl font-bold mb-4">Лучшие специалисты</h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Проверенные мастера и компании с высоким рейтингом и большим количеством выполненных проектов
           </p>
@@ -84,7 +84,7 @@ export default function TopSpecialists() {
               ))}
               {(!individuals || individuals.length === 0) && (
                 <div className="col-span-full text-center p-8">
-                  <p className="text-muted-foreground">Нет данных о специалистах</p>
+                  <p className="text-muted-foreground">Нет данных о лучших специалистах</p>
                 </div>
               )}
             </div>
@@ -126,7 +126,7 @@ function SpecialistCard({ specialist }: SpecialistCardProps) {
       return specialist.userType === 'company' ? 'ЮЛ' : 'ФЛ';
     }
     const words = name.split(' ');
-    return words.map((word: string) => word.charAt(0)).join('').toUpperCase().substring(0, 2);
+    return words.map(word => word.charAt(0)).join('').toUpperCase().substring(0, 2);
   };
 
   const getDescription = () => {
