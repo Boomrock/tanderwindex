@@ -8,10 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { User as UserIcon, Star, Award, MapPin, Briefcase } from "lucide-react";
+import { User as UserIcon, Star, Award, MapPin, Briefcase, MessageCircle, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Link } from "wouter";
 
 export default function Specialists() {
   const {
@@ -65,7 +67,53 @@ export default function Specialists() {
           ))}
           {(!specialists || specialists.length === 0) && (
             <div className="col-span-full text-center p-8">
-              <p className="text-muted-foreground">Нет данных о специалистах</p>
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {/* Демонстрационные карточки специалистов */}
+                <SpecialistCard specialist={{
+                  id: 1,
+                  username: "ivan_builder",
+                  first_name: "Иван",
+                  last_name: "Петров",
+                  profession: "Каменщик",
+                  bio: "Опытный каменщик с 15-летним стажем. Специализируюсь на кладке кирпича, блоков, декоративного камня.",
+                  location: "Москва",
+                  rating: 4.8,
+                  completed_projects: 127,
+                  is_verified: true,
+                  userType: "individual",
+                  hourly_rate: 2500
+                }} />
+                
+                <SpecialistCard specialist={{
+                  id: 2,
+                  username: "elena_design",
+                  first_name: "Елена",
+                  last_name: "Смирнова",
+                  profession: "Дизайнер интерьеров",
+                  bio: "Создаю уютные и функциональные интерьеры. Работаю в современном и классическом стилях.",
+                  location: "Санкт-Петербург",
+                  rating: 4.9,
+                  completed_projects: 89,
+                  is_verified: true,
+                  userType: "individual",
+                  project_rate: 50000
+                }} />
+                
+                <SpecialistCard specialist={{
+                  id: 3,
+                  username: "alex_electric",
+                  first_name: "Александр",
+                  last_name: "Кузнецов",
+                  profession: "Электрик",
+                  bio: "Электромонтажные работы любой сложности. Подключение, ремонт, модернизация электросетей.",
+                  location: "Екатеринбург",
+                  rating: 4.7,
+                  completed_projects: 203,
+                  is_verified: true,
+                  userType: "individual",
+                  hourly_rate: 1800
+                }} />
+              </div>
             </div>
           )}
         </div>
@@ -74,7 +122,7 @@ export default function Specialists() {
   );
 }
 
-function SpecialistCard({ specialist }: { specialist: User }) {
+function SpecialistCard({ specialist }: { specialist: User & { hourly_rate?: number; project_rate?: number } }) {
   const getDisplayName = () => {
     if (specialist.first_name && specialist.last_name) {
       return `${specialist.first_name} ${specialist.last_name}`;
@@ -101,17 +149,33 @@ function SpecialistCard({ specialist }: { specialist: User }) {
     return "Информация о специалисте отсутствует";
   };
 
+  const getPriceInfo = () => {
+    if (specialist.hourly_rate) {
+      return `${specialist.hourly_rate.toLocaleString()} ₽/час`;
+    }
+    if (specialist.project_rate) {
+      return `от ${specialist.project_rate.toLocaleString()} ₽/проект`;
+    }
+    return "Цена договорная";
+  };
+
   return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <div className="flex items-center space-x-4">
-          <Avatar className="h-16 w-16">
-            <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-              {getInitials(name)}
-            </AvatarFallback>
-          </Avatar>
+    <Card className="hover:shadow-lg transition-shadow overflow-hidden">
+      {/* Заглушка фотографии с градиентом */}
+      <div className="h-48 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 relative">
+        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+          <div className="text-white text-center">
+            <UserIcon className="h-16 w-16 mx-auto mb-2 opacity-80" />
+            <p className="text-sm opacity-90">Фото специалиста</p>
+          </div>
+        </div>
+      </div>
+
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
           <div className="flex-1">
             <CardTitle className="text-lg">{name}</CardTitle>
+            <p className="text-sm text-muted-foreground">{specialist.profession}</p>
             <div className="flex items-center space-x-2 mt-1">
               <Star className="h-4 w-4 text-yellow-500 fill-current" />
               <span className="text-sm text-muted-foreground">
@@ -119,14 +183,25 @@ function SpecialistCard({ specialist }: { specialist: User }) {
               </span>
             </div>
           </div>
+          <Badge variant={specialist.is_verified ? "default" : "secondary"} className="text-xs">
+            {specialist.is_verified ? (
+              <>
+                <Award className="h-3 w-3 mr-1" />
+                Проверен
+              </>
+            ) : (
+              "Не проверен"
+            )}
+          </Badge>
         </div>
       </CardHeader>
-      <CardContent>
-        <CardDescription className="mb-4">
+
+      <CardContent className="pt-0">
+        <CardDescription className="mb-4 line-clamp-3">
           {getDescription()}
         </CardDescription>
         
-        <div className="space-y-2 text-sm">
+        <div className="space-y-2 text-sm mb-4">
           {specialist.location && (
             <div className="flex items-center space-x-2 text-muted-foreground">
               <MapPin className="h-4 w-4" />
@@ -142,20 +217,27 @@ function SpecialistCard({ specialist }: { specialist: User }) {
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-4">
-          <Badge variant={specialist.is_verified ? "default" : "secondary"}>
-            {specialist.is_verified ? (
-              <>
-                <Award className="h-3 w-3 mr-1" />
-                Проверен
-              </>
-            ) : (
-              <>
-                <UserIcon className="h-3 w-3 mr-1" />
-                Не проверен
-              </>
-            )}
-          </Badge>
+        <div className="bg-gray-50 -mx-6 -mb-6 px-6 py-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="font-semibold text-lg text-primary">
+              {getPriceInfo()}
+            </span>
+          </div>
+          
+          <div className="flex space-x-2">
+            <Link href={`/specialists/${specialist.id}`} className="flex-1">
+              <Button variant="outline" size="sm" className="w-full">
+                <Eye className="h-4 w-4 mr-2" />
+                Подробнее
+              </Button>
+            </Link>
+            <Link href={`/messages/new?userId=${specialist.id}`} className="flex-1">
+              <Button size="sm" className="w-full">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Чат
+              </Button>
+            </Link>
+          </div>
         </div>
       </CardContent>
     </Card>

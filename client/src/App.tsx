@@ -18,6 +18,7 @@ import Login from "@/pages/Login";
 import TopSpecialists from "@/pages/TopSpecialists";
 import Specialists from "@/pages/Specialists";
 import Crews from "@/pages/Crews";
+import SpecialistDetail from "@/pages/SpecialistDetail";
 import HowItWorks from "@/pages/HowItWorks";
 import Help from "@/pages/Help";
 
@@ -51,6 +52,7 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/top-specialists" component={TopSpecialists} />
         <Route path="/specialists" component={Specialists} />
+        <Route path="/specialists/:id" component={SpecialistDetail} />
         <Route path="/crews" component={Crews} />
 
           <Route path="/how-it-works" component={HowItWorks} />
