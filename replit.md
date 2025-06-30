@@ -162,6 +162,10 @@ The platform uses PostgreSQL with the following key entities:
   - Enhanced file upload/download system with proper logging and error handling for real document delivery
   - Fixed Content-Disposition header encoding for files with non-ASCII characters by using ASCII-safe filenames
   - Updated project branding from "Windex-Строй" to "Windexs-Строй" across all headers, footers, and page titles
+- June 26, 2025. UI text updates:
+  - Changed "Лучшие специалисты" to "Специалисты и Бригады" in navigation and page titles
+  - Updated page descriptions and error messages to match new naming
+  - Fixed TypeScript compilation errors in TopSpecialists and Header components
 
 ## User Preferences
 

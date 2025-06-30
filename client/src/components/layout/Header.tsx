@@ -38,7 +38,7 @@ const Header = () => {
   const navLinks = [
     { href: "/tenders", label: "Тендеры" },
     { href: "/marketplace", label: "Маркетплейс" },
-    { href: "/top-specialists", label: "Лучшие специалисты" },
+    { href: "/top-specialists", label: "Специалисты и Бригады" },
   ];
 
   const toggleMobileMenu = () => {

@@ -337,7 +337,7 @@ export default function Admin() {
         <TabsList className="mb-6">
           <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
           <TabsTrigger value="users">Пользователи</TabsTrigger>
-          <TabsTrigger value="top-specialists">Лучшие специалисты</TabsTrigger>
+          <TabsTrigger value="top-specialists">Специалисты и Бригады</TabsTrigger>
           <TabsTrigger value="tender-moderation">Модерация тендеров</TabsTrigger>
           <TabsTrigger value="marketplace-moderation">Модерация маркетплейса</TabsTrigger>
           <TabsTrigger value="all-tenders">Все тендеры</TabsTrigger>
