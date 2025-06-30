@@ -4,6 +4,7 @@ export const TENDER_CATEGORIES = [
   { value: "materials", label: "Материалы" },
   { value: "tools", label: "Инструменты" },
   { value: "services", label: "Услуги" },
+  { value: "repair", label: "Ремонт" },
   { value: "property", label: "Недвижимость" },
   { value: "transport", label: "Транспорт" },
 ];
@@ -47,7 +48,22 @@ export const SUBCATEGORIES = {
     { value: "other", label: "Другое" }
   ],
   services: [
-    { value: "repair", label: "Ремонт" },
+    { value: "construction", label: "Строительство" },
+    { value: "design", label: "Проектирование" },
+    { value: "demolition", label: "Снос" },
+    { value: "cleaning", label: "Уборка" },
+    { value: "moving_services", label: "Переезды" },
+    { value: "consulting", label: "Консультации" },
+    { value: "installation", label: "Монтаж" },
+    { value: "plumbing", label: "Сантехника" },
+    { value: "electrical", label: "Электрика" },
+    { value: "other", label: "Другое" }
+  ],
+  repair: [
+    { value: "home_repair", label: "Ремонт дома" },
+    { value: "apartment_repair", label: "Ремонт квартиры" },
+    { value: "commercial_repair", label: "Ремонт коммерческого помещения" },
+    { value: "other", label: "Другое" }нт" },
     { value: "construction", label: "Строительство" },
     { value: "design", label: "Проектирование" },
     { value: "demolition", label: "Демонтаж" },

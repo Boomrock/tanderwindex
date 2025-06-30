@@ -7,7 +7,7 @@ export const userTypeValues = ['individual', 'contractor', 'company'] as const;
 export const personTypeValues = ['individual', 'legal'] as const;
 export const tenderStatusValues = ['open', 'in_progress', 'completed', 'canceled'] as const;
 export const listingTypeValues = ['sell', 'rent', 'buy'] as const;
-export const categoryValues = ['equipment', 'materials', 'tools', 'services', 'property', 'transport'] as const;
+export const categoryValues = ['equipment', 'materials', 'tools', 'services', 'repair', 'property', 'transport'] as const;
 export const subcategoryValues = [
   // Оборудование
   'excavators', 'loaders', 'cranes', 'trucks', 'concrete_mixers',
@@ -17,8 +17,10 @@ export const subcategoryValues = [
   // Инструменты
   'power_tools', 'hand_tools', 'measuring_tools', 'ladders', 'scaffolding',
   // Услуги
-  'repair', 'construction', 'design', 'demolition', 'cleaning',
+  'construction', 'design', 'demolition', 'cleaning',
   'moving_services', 'consulting', 'installation', 'plumbing', 'electrical',
+  // Ремонт
+  'home_repair', 'apartment_repair', 'commercial_repair',
   // Недвижимость
   'commercial', 'residential', 'land', 'industrial',
   // Транспорт
@@ -235,6 +237,51 @@ export const insertReviewSchema = createInsertSchema(reviews, {
   createdAt: true,
 });
 
+// Specialists table
+export const specialists = sqliteTable('specialists', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  specialty: text('specialty').notNull(),
+  experience: integer('experience').notNull(),
+  hourlyRate: integer('hourly_rate').notNull(),
+  services: text('services').notNull(), // JSON array of services
+  location: text('location').notNull(),
+  isAvailable: integer('is_available').default(1),
+  portfolio: text('portfolio'), // JSON array of portfolio items
+  avatar: text('avatar'),
+  status: text('status').default('pending'), // pending, approved, rejected
+  moderatedBy: integer('moderated_by').references(() => users.id),
+  moderatedAt: text('moderated_at'),
+  moderationComment: text('moderation_comment'),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
+});
+
+// Crews table
+export const crews = sqliteTable('crews', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  specialty: text('specialty').notNull(),
+  experience: integer('experience').notNull(),
+  dailyRate: integer('daily_rate').notNull(),
+  memberCount: integer('member_count').notNull(),
+  services: text('services').notNull(), // JSON array of services
+  location: text('location').notNull(),
+  isAvailable: integer('is_available').default(1),
+  portfolio: text('portfolio'), // JSON array of portfolio items
+  avatar: text('avatar'),
+  status: text('status').default('pending'), // pending, approved, rejected
+  moderatedBy: integer('moderated_by').references(() => users.id),
+  moderatedAt: text('moderated_at'),
+  moderationComment: text('moderation_comment'),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at').default(sql`CURRENT_TIMESTAMP`)
+});
+
 // Export type unions for validation
 export type UserType = typeof userTypeValues[number];
 export type PersonType = typeof personTypeValues[number];
@@ -242,3 +289,7 @@ export type TenderStatus = typeof tenderStatusValues[number];
 export type ListingType = typeof listingTypeValues[number];
 export type Category = typeof categoryValues[number];
 export type Subcategory = typeof subcategoryValues[number];
+export type Specialist = typeof specialists.$inferSelect;
+export type InsertSpecialist = typeof specialists.$inferInsert;
+export type Crew = typeof crews.$inferSelect;
+export type InsertCrew = typeof crews.$inferInsert;
