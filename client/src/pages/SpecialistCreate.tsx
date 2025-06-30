@@ -24,7 +24,9 @@ const specialistSchema = z.object({
   hourlyRate: z.number().min(100, "Минимальная ставка 100 рублей").max(50000, "Максимальная ставка 50,000 рублей"),
   description: z.string().min(50, "Описание должно содержать минимум 50 символов"),
   phone: z.string().optional(),
-  email: z.string().email("Некорректный email").optional()
+  email: z.string().optional().refine((val) => !val || z.string().email().safeParse(val).success, {
+    message: "Некорректный email"
+  })
 });
 
 type SpecialistFormData = z.infer<typeof specialistSchema>;
@@ -107,7 +109,13 @@ export default function SpecialistCreate() {
       console.log("converted hourlyRate:", Number(data.hourlyRate));
       
       const response = await apiRequest('POST', '/api/specialists', specialistData);
-      return response.json();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка создания специалиста');
+      }
+      const result = await response.json();
+      console.log("Ответ сервера:", result);
+      return result;
     },
     onSuccess: () => {
       toast({
@@ -117,6 +125,8 @@ export default function SpecialistCreate() {
       setLocation("/specialists");
     },
     onError: (error: any) => {
+      console.error("Полная ошибка:", error);
+      console.error("Стек ошибки:", error.stack);
       toast({
         title: 'Ошибка создания',
         description: error.message || 'Не удалось создать объявление',
