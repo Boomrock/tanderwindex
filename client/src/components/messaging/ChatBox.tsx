@@ -137,16 +137,16 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
         )}
         <Avatar>
           <AvatarImage src={otherUser.avatar || undefined} />
-          <AvatarFallback>{getUserInitials(otherUser.fullName || otherUser.username)}</AvatarFallback>
+          <AvatarFallback>{getUserInitials(getUserDisplayName(otherUser))}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <Link to={`/profile/${otherUser.id}`}>
             <h3 className="font-medium text-foreground hover:text-primary transition-colors">
-              {otherUser.fullName || otherUser.username}
+              {getUserDisplayName(otherUser)}
             </h3>
           </Link>
           <p className="text-sm text-muted-foreground">
-            {otherUser.profession || 'Пользователь'}
+            {otherUser.userType === 'contractor' ? 'Подрядчик' : otherUser.userType === 'company' ? 'Компания' : 'Пользователь'}
           </p>
         </div>
       </div>
