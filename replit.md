@@ -169,6 +169,10 @@ The platform uses PostgreSQL with the following key entities:
   - Split navigation into separate "Специалисты" and "Бригады" buttons with dedicated pages
   - Created individual Specialists.tsx and Crews.tsx pages for better user experience
   - Updated routing to support /specialists and /crews endpoints
+  - Added specialist cards with photos, pricing info, and detailed pages with chat functionality
+  - Implemented SpecialistDetail.tsx with comprehensive specialist profiles, portfolios, and reviews
+  - Added "Подробнее" and "Чат" buttons with proper routing to detailed pages and messaging
+  - Enhanced NewMessage.tsx to support URL parameters for preselected specialist chat creation
 
 ## User Preferences
 

@@ -183,11 +183,12 @@ export default function SpecialistDetail() {
   };
 
   const getPriceInfo = () => {
-    if ('hourly_rate' in specialist && specialist.hourly_rate) {
-      return `${specialist.hourly_rate.toLocaleString()} ₽/час`;
+    const spec = specialist as any;
+    if (spec.hourly_rate) {
+      return `${spec.hourly_rate.toLocaleString()} ₽/час`;
     }
-    if ('project_rate' in specialist && specialist.project_rate) {
-      return `от ${specialist.project_rate.toLocaleString()} ₽/проект`;
+    if (spec.project_rate) {
+      return `от ${spec.project_rate.toLocaleString()} ₽/проект`;
     }
     return "Цена договорная";
   };
