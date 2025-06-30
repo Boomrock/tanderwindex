@@ -29,16 +29,33 @@ function authMiddleware(req: Request, res: Response, next: Function) {
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('No auth header or wrong format:', authHeader);
     return res.status(401).json({ message: "Authorization required" });
   }
   
   const token = authHeader.split(' ')[1];
   
   try {
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
-    req.user = { id: decoded.id };
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    console.log('Decoded JWT:', decoded);
+    
+    // Проверяем оба варианта для совместимости
+    const userId = decoded.userId || decoded.id;
+    if (!userId) {
+      console.log('No user ID in token:', decoded);
+      return res.status(401).json({ message: "Invalid token structure" });
+    }
+    
+    req.user = { 
+      id: userId,
+      username: decoded.username,
+      email: decoded.email,
+      isAdmin: decoded.isAdmin
+    };
+    console.log('User attached to request:', req.user);
     next();
   } catch (error) {
+    console.log('JWT verification error:', error);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 }
@@ -266,8 +283,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid credentials" });
       }
       
-      // Generate JWT
-      const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
+      // Generate JWT с правильной структурой
+      const token = jwt.sign({ 
+        userId: user.id,  // Добавляем userId для совместимости
+        id: user.id,      // Оставляем id для обратной совместимости
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin
+      }, JWT_SECRET, { expiresIn: TOKEN_EXPIRY });
       
       // Remove password from response
       const { password: _, ...userWithoutPassword } = user;
