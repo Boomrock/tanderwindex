@@ -1335,7 +1335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         services: JSON.stringify(req.body.services || []),
         status: 'pending'
       };
-      const specialist = await simpleSqliteStorage.createSpecialist(specialistData);
+      const specialist = await storage.createSpecialist(specialistData);
       res.status(201).json(specialist);
     } catch (error) {
       console.error('Error creating specialist:', error);
@@ -1363,7 +1363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         services: JSON.stringify(req.body.services || []),
         status: 'pending'
       };
-      const crew = await simpleSqliteStorage.createCrew(crewData);
+      const crew = await storage.createCrew(crewData);
       res.status(201).json(crew);
     } catch (error) {
       console.error('Error creating crew:', error);
@@ -1398,7 +1398,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { comment } = req.body;
-      const specialist = await simpleSqliteStorage.moderateSpecialist(parseInt(id), 'rejected', req.user.id, comment);
+      const specialist = await storage.moderateSpecialist(parseInt(id), 'rejected', req.user.id, comment);
       res.json(specialist);
     } catch (error) {
       console.error('Error rejecting specialist:', error);
@@ -1433,7 +1433,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { comment } = req.body;
-      const crew = await simpleSqliteStorage.moderateCrew(parseInt(id), 'rejected', req.user.id, comment);
+      const crew = await storage.moderateCrew(parseInt(id), 'rejected', req.user.id, comment);
       res.json(crew);
     } catch (error) {
       console.error('Error rejecting crew:', error);
@@ -1445,7 +1445,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get('/specialists/:id/reviews', async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const reviews = await simpleSqliteStorage.getUserReviews(parseInt(id));
+      const reviews = await storage.getUserReviews(parseInt(id));
       res.json(reviews);
     } catch (error) {
       console.error('Error fetching specialist reviews:', error);
@@ -1459,7 +1459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         reviewerId: req.user.id,
       };
-      const review = await simpleSqliteStorage.createReview(reviewData);
+      const review = await storage.createReview(reviewData);
       res.status(201).json(review);
     } catch (error) {
       console.error('Error creating review:', error);

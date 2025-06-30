@@ -58,15 +58,28 @@ export default function ImageUpload({
           continue;
         }
 
-        const formData = new FormData();
-        formData.append('file', file);
+        // Преобразуем файл в base64
+        const reader = new FileReader();
+        const fileDataPromise = new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        const fileData = await fileDataPromise;
 
         const response = await fetch('/api/upload', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
           },
-          body: formData,
+          body: JSON.stringify({
+            filename: file.name,
+            fileData: fileData,
+            fileSize: file.size,
+            fileType: file.type,
+          }),
         });
 
         if (response.ok) {
