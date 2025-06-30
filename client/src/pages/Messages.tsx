@@ -95,12 +95,19 @@ export default function Messages() {
     return null; // Will redirect in useEffect
   }
 
+  // Helper function to get user display name
+  const getUserDisplayName = (user: User) => {
+    if (user.fullName) return user.fullName;
+    if ((user as any).full_name) return (user as any).full_name;
+    return user.username || "Неизвестный пользователь";
+  };
+
   return (
     <>
       <Helmet>
         <title>
           {selectedUser 
-            ? `Чат с ${selectedUser.fullName} | Windexs-Строй` 
+            ? `Чат с ${getUserDisplayName(selectedUser)} | Windexs-Строй` 
             : 'Сообщения | Windexs-Строй'}
         </title>
         <meta name="description" content="Общайтесь с заказчиками, подрядчиками и продавцами. Обсуждайте детали тендеров и объявлений." />

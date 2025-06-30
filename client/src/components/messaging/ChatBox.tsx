@@ -25,6 +25,13 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
+  // Helper function to get user display name
+  const getUserDisplayName = (user: User) => {
+    if (user.fullName) return user.fullName;
+    if ((user as any).full_name) return (user as any).full_name;
+    return user.username || "Неизвестный пользователь";
+  };
+
   // Fetch user details
   const { data: otherUser, isLoading: isUserLoading } = useQuery<User>({
     queryKey: [`/api/users/${userId}`],
