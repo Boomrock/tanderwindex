@@ -910,6 +910,198 @@ export class SimpleSQLiteStorage implements IStorage {
     });
   }
 
+  // Specialists methods
+  async getSpecialists(filters?: { status?: string }): Promise<any[]> {
+    try {
+      let query = `
+        SELECT s.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
+        FROM specialists s
+        LEFT JOIN users u ON s.user_id = u.id
+      `;
+      
+      const params: any[] = [];
+      
+      if (filters?.status) {
+        query += ' WHERE s.status = ?';
+        params.push(filters.status);
+      }
+      
+      query += ' ORDER BY s.created_at DESC';
+      
+      const stmt = this.db.prepare(query);
+      const specialists = stmt.all(...params) as any[];
+      
+      return specialists.map(specialist => ({
+        ...specialist,
+        images: this.parseImages(specialist.images),
+        specializations: this.parseImages(specialist.specializations),
+        user: {
+          id: specialist.user_id,
+          username: specialist.username,
+          fullName: specialist.first_name && specialist.last_name ? `${specialist.first_name} ${specialist.last_name}` : specialist.username,
+          rating: specialist.rating,
+          isVerified: Boolean(specialist.is_verified),
+          completedProjects: specialist.completed_projects
+        }
+      }));
+    } catch (error) {
+      console.error('Error getting specialists:', error);
+      return [];
+    }
+  }
+
+  async getSpecialist(id: number): Promise<any> {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT s.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
+        FROM specialists s
+        LEFT JOIN users u ON s.user_id = u.id
+        WHERE s.id = ?
+      `);
+      const specialist = stmt.get(id) as any;
+      
+      if (!specialist) return null;
+      
+      return {
+        ...specialist,
+        images: this.parseImages(specialist.images),
+        specializations: this.parseImages(specialist.specializations),
+        user: {
+          id: specialist.user_id,
+          username: specialist.username,
+          fullName: specialist.first_name && specialist.last_name ? `${specialist.first_name} ${specialist.last_name}` : specialist.username,
+          rating: specialist.rating,
+          isVerified: Boolean(specialist.is_verified),
+          completedProjects: specialist.completed_projects
+        }
+      };
+    } catch (error) {
+      console.error('Error getting specialist:', error);
+      return null;
+    }
+  }
+
+  async createSpecialist(specialistData: any): Promise<any> {
+    try {
+      const stmt = this.db.prepare(`
+        INSERT INTO specialists (
+          user_id, name, description, location, experience_years, 
+          hourly_rate, specializations, images, phone, status,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      
+      const now = new Date().toISOString();
+      const images = Array.isArray(specialistData.images) ? JSON.stringify(specialistData.images) : '[]';
+      const specializations = Array.isArray(specialistData.specializations) ? JSON.stringify(specialistData.specializations) : '[]';
+      
+      const result = stmt.run(
+        specialistData.user_id || specialistData.userId,
+        specialistData.name,
+        specialistData.description,
+        specialistData.location,
+        specialistData.experience_years || specialistData.experienceYears,
+        specialistData.hourly_rate || specialistData.hourlyRate,
+        specializations,
+        images,
+        specialistData.phone,
+        'pending',
+        now,
+        now
+      );
+      
+      return this.getSpecialist(result.lastInsertRowid as number);
+    } catch (error) {
+      console.error('Error creating specialist:', error);
+      throw error;
+    }
+  }
+
+  async updateSpecialist(id: number, specialistData: any): Promise<any> {
+    try {
+      const updates: string[] = [];
+      const params: any[] = [];
+      
+      if (specialistData.name) {
+        updates.push('name = ?');
+        params.push(specialistData.name);
+      }
+      if (specialistData.description) {
+        updates.push('description = ?');
+        params.push(specialistData.description);
+      }
+      if (specialistData.location) {
+        updates.push('location = ?');
+        params.push(specialistData.location);
+      }
+      if (specialistData.experience_years !== undefined) {
+        updates.push('experience_years = ?');
+        params.push(specialistData.experience_years);
+      }
+      if (specialistData.hourly_rate !== undefined) {
+        updates.push('hourly_rate = ?');
+        params.push(specialistData.hourly_rate);
+      }
+      if (specialistData.specializations) {
+        updates.push('specializations = ?');
+        params.push(Array.isArray(specialistData.specializations) ? JSON.stringify(specialistData.specializations) : specialistData.specializations);
+      }
+      if (specialistData.images) {
+        updates.push('images = ?');
+        params.push(Array.isArray(specialistData.images) ? JSON.stringify(specialistData.images) : specialistData.images);
+      }
+      if (specialistData.phone) {
+        updates.push('phone = ?');
+        params.push(specialistData.phone);
+      }
+      if (specialistData.status) {
+        updates.push('status = ?');
+        params.push(specialistData.status);
+      }
+      
+      updates.push('updated_at = ?');
+      params.push(new Date().toISOString());
+      params.push(id);
+      
+      const stmt = this.db.prepare(`UPDATE specialists SET ${updates.join(', ')} WHERE id = ?`);
+      stmt.run(...params);
+      
+      return this.getSpecialist(id);
+    } catch (error) {
+      console.error('Error updating specialist:', error);
+      throw error;
+    }
+  }
+
+  async deleteSpecialist(id: number): Promise<boolean> {
+    try {
+      const stmt = this.db.prepare('DELETE FROM specialists WHERE id = ?');
+      const result = stmt.run(id);
+      return result.changes > 0;
+    } catch (error) {
+      console.error('Error deleting specialist:', error);
+      return false;
+    }
+  }
+
+  async moderateSpecialist(id: number, status: string, moderatorId: number, comment?: string): Promise<any> {
+    try {
+      const stmt = this.db.prepare(`
+        UPDATE specialists 
+        SET status = ?, moderated_by = ?, moderated_at = ?, moderation_comment = ?, updated_at = ?
+        WHERE id = ?
+      `);
+      
+      const now = new Date().toISOString();
+      stmt.run(status, moderatorId, now, comment || null, now, id);
+      
+      return this.getSpecialist(id);
+    } catch (error) {
+      console.error('Error moderating specialist:', error);
+      throw error;
+    }
+  }
+
   // Add minimal implementations for other required methods
   async getUserDocuments(): Promise<any[]> { return []; }
   async getUserDocument(): Promise<any> { return null; }
@@ -941,11 +1133,194 @@ export class SimpleSQLiteStorage implements IStorage {
   async createDesignProject(): Promise<any> { return null; }
   async updateDesignProject(): Promise<any> { return null; }
   async deleteDesignProject(): Promise<boolean> { return false; }
-  async getCrews(): Promise<any[]> { return []; }
-  async getCrew(): Promise<any> { return null; }
-  async createCrew(): Promise<any> { return null; }
-  async updateCrew(): Promise<any> { return null; }
-  async deleteCrew(): Promise<boolean> { return false; }
+  async getCrews(filters?: { status?: string }): Promise<any[]> { 
+    try {
+      let query = `
+        SELECT c.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
+        FROM crews c
+        LEFT JOIN users u ON c.user_id = u.id
+      `;
+      
+      const params: any[] = [];
+      
+      if (filters?.status) {
+        query += ' WHERE c.status = ?';
+        params.push(filters.status);
+      }
+      
+      query += ' ORDER BY c.created_at DESC';
+      
+      const stmt = this.db.prepare(query);
+      const crews = stmt.all(...params) as any[];
+      
+      return crews.map(crew => ({
+        ...crew,
+        images: this.parseImages(crew.images),
+        user: {
+          id: crew.user_id,
+          username: crew.username,
+          fullName: crew.first_name && crew.last_name ? `${crew.first_name} ${crew.last_name}` : crew.username,
+          rating: crew.rating,
+          isVerified: Boolean(crew.is_verified),
+          completedProjects: crew.completed_projects
+        }
+      }));
+    } catch (error) {
+      console.error('Error getting crews:', error);
+      return [];
+    }
+  }
+
+  async getCrew(id: number): Promise<any> { 
+    try {
+      const stmt = this.db.prepare(`
+        SELECT c.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
+        FROM crews c
+        LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.id = ?
+      `);
+      const crew = stmt.get(id) as any;
+      
+      if (!crew) return null;
+      
+      return {
+        ...crew,
+        images: this.parseImages(crew.images),
+        user: {
+          id: crew.user_id,
+          username: crew.username,
+          fullName: crew.first_name && crew.last_name ? `${crew.first_name} ${crew.last_name}` : crew.username,
+          rating: crew.rating,
+          isVerified: Boolean(crew.is_verified),
+          completedProjects: crew.completed_projects
+        }
+      };
+    } catch (error) {
+      console.error('Error getting crew:', error);
+      return null;
+    }
+  }
+
+  async createCrew(crewData: any): Promise<any> { 
+    try {
+      const stmt = this.db.prepare(`
+        INSERT INTO crews (
+          user_id, name, description, location, experience_years, 
+          team_size, hourly_rate, specializations, images, status,
+          created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      
+      const now = new Date().toISOString();
+      const images = Array.isArray(crewData.images) ? JSON.stringify(crewData.images) : '[]';
+      const specializations = Array.isArray(crewData.specializations) ? JSON.stringify(crewData.specializations) : '[]';
+      
+      const result = stmt.run(
+        crewData.user_id || crewData.userId,
+        crewData.name,
+        crewData.description,
+        crewData.location,
+        crewData.experience_years || crewData.experienceYears,
+        crewData.team_size || crewData.teamSize,
+        crewData.hourly_rate || crewData.hourlyRate,
+        specializations,
+        images,
+        'pending',
+        now,
+        now
+      );
+      
+      return this.getCrew(result.lastInsertRowid as number);
+    } catch (error) {
+      console.error('Error creating crew:', error);
+      throw error;
+    }
+  }
+
+  async updateCrew(id: number, crewData: any): Promise<any> { 
+    try {
+      const updates: string[] = [];
+      const params: any[] = [];
+      
+      if (crewData.name) {
+        updates.push('name = ?');
+        params.push(crewData.name);
+      }
+      if (crewData.description) {
+        updates.push('description = ?');
+        params.push(crewData.description);
+      }
+      if (crewData.location) {
+        updates.push('location = ?');
+        params.push(crewData.location);
+      }
+      if (crewData.experience_years !== undefined) {
+        updates.push('experience_years = ?');
+        params.push(crewData.experience_years);
+      }
+      if (crewData.team_size !== undefined) {
+        updates.push('team_size = ?');
+        params.push(crewData.team_size);
+      }
+      if (crewData.hourly_rate !== undefined) {
+        updates.push('hourly_rate = ?');
+        params.push(crewData.hourly_rate);
+      }
+      if (crewData.specializations) {
+        updates.push('specializations = ?');
+        params.push(Array.isArray(crewData.specializations) ? JSON.stringify(crewData.specializations) : crewData.specializations);
+      }
+      if (crewData.images) {
+        updates.push('images = ?');
+        params.push(Array.isArray(crewData.images) ? JSON.stringify(crewData.images) : crewData.images);
+      }
+      if (crewData.status) {
+        updates.push('status = ?');
+        params.push(crewData.status);
+      }
+      
+      updates.push('updated_at = ?');
+      params.push(new Date().toISOString());
+      params.push(id);
+      
+      const stmt = this.db.prepare(`UPDATE crews SET ${updates.join(', ')} WHERE id = ?`);
+      stmt.run(...params);
+      
+      return this.getCrew(id);
+    } catch (error) {
+      console.error('Error updating crew:', error);
+      throw error;
+    }
+  }
+
+  async deleteCrew(id: number): Promise<boolean> { 
+    try {
+      const stmt = this.db.prepare('DELETE FROM crews WHERE id = ?');
+      const result = stmt.run(id);
+      return result.changes > 0;
+    } catch (error) {
+      console.error('Error deleting crew:', error);
+      return false;
+    }
+  }
+
+  async moderateCrew(id: number, status: string, moderatorId: number, comment?: string): Promise<any> {
+    try {
+      const stmt = this.db.prepare(`
+        UPDATE crews 
+        SET status = ?, moderated_by = ?, moderated_at = ?, moderation_comment = ?, updated_at = ?
+        WHERE id = ?
+      `);
+      
+      const now = new Date().toISOString();
+      stmt.run(status, moderatorId, now, comment || null, now, id);
+      
+      return this.getCrew(id);
+    } catch (error) {
+      console.error('Error moderating crew:', error);
+      throw error;
+    }
+  }
   async getCrewMembers(): Promise<any[]> { return []; }
   async getCrewMember(): Promise<any> { return null; }
   async createCrewMember(): Promise<any> { return null; }

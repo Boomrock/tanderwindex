@@ -239,6 +239,64 @@ export function addModerationFields() {
     console.log('is_verified column already exists in users table');
   }
 
+  // Создаем таблицу specialists
+  try {
+    sqlite.exec(`
+      CREATE TABLE IF NOT EXISTS specialists (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        location TEXT NOT NULL,
+        experience_years INTEGER NOT NULL,
+        hourly_rate REAL NOT NULL,
+        specializations TEXT NOT NULL DEFAULT '[]',
+        images TEXT NOT NULL DEFAULT '[]',
+        phone TEXT,
+        status TEXT DEFAULT 'pending',
+        moderated_by INTEGER,
+        moderated_at TEXT,
+        moderation_comment TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (moderated_by) REFERENCES users(id)
+      );
+    `);
+    console.log('Specialists table created or already exists');
+  } catch (error) {
+    console.log('Error creating specialists table:', error);
+  }
+
+  // Создаем таблицу crews
+  try {
+    sqlite.exec(`
+      CREATE TABLE IF NOT EXISTS crews (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        location TEXT NOT NULL,
+        experience_years INTEGER NOT NULL,
+        team_size INTEGER NOT NULL,
+        hourly_rate REAL NOT NULL,
+        specializations TEXT NOT NULL DEFAULT '[]',
+        images TEXT NOT NULL DEFAULT '[]',
+        status TEXT DEFAULT 'pending',
+        moderated_by INTEGER,
+        moderated_at TEXT,
+        moderation_comment TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (moderated_by) REFERENCES users(id)
+      );
+    `);
+    console.log('Crews table created or already exists');
+  } catch (error) {
+    console.log('Error creating crews table:', error);
+  }
+
   console.log('Moderation fields migration completed');
 }
 

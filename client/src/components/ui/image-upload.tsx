@@ -84,7 +84,7 @@ export default function ImageUpload({
 
         if (response.ok) {
           const result = await response.json();
-          newImages.push(result.filename);
+          newImages.push(result.url);
         } else {
           throw new Error(`Ошибка загрузки файла ${file.name}`);
         }
