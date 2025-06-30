@@ -8,7 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 
 interface Specialist {
   id: number;
-  user_id: number;
   name: string;
   specialty: string;
   experience: number;
@@ -43,7 +42,7 @@ export default function SpecialistDetail() {
   }
 
   const handleChatClick = () => {
-    setLocation(`/messages/new?userId=${specialist.user_id}`);
+    setLocation(`/messages/new?userId=${specialist.id}`);
   };
 
   return (

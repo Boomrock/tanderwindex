@@ -25,13 +25,6 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
-  // Helper function to get user display name
-  const getUserDisplayName = (user: User) => {
-    if (user.fullName) return user.fullName;
-    if ((user as any).full_name) return (user as any).full_name;
-    return user.username || "Неизвестный пользователь";
-  };
-
   // Fetch user details
   const { data: otherUser, isLoading: isUserLoading } = useQuery<User>({
     queryKey: [`/api/users/${userId}`],
@@ -137,16 +130,16 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
         )}
         <Avatar>
           <AvatarImage src={otherUser.avatar || undefined} />
-          <AvatarFallback>{getUserInitials(getUserDisplayName(otherUser))}</AvatarFallback>
+          <AvatarFallback>{getUserInitials(otherUser.fullName || otherUser.username)}</AvatarFallback>
         </Avatar>
         <div className="flex-1">
           <Link to={`/profile/${otherUser.id}`}>
             <h3 className="font-medium text-foreground hover:text-primary transition-colors">
-              {getUserDisplayName(otherUser)}
+              {otherUser.fullName || otherUser.username}
             </h3>
           </Link>
           <p className="text-sm text-muted-foreground">
-            {otherUser.userType === 'contractor' ? 'Подрядчик' : otherUser.userType === 'company' ? 'Компания' : 'Пользователь'}
+            {otherUser.profession || 'Пользователь'}
           </p>
         </div>
       </div>

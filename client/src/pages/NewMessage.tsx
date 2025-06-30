@@ -26,13 +26,6 @@ export default function NewMessage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Helper function to get user display name
-  const getUserDisplayName = (user: User) => {
-    if (user.fullName) return user.fullName;
-    if ((user as any).full_name) return (user as any).full_name;
-    return user.username || "Неизвестный пользователь";
-  };
-
   // Fetch all users
   const { data: users, isLoading: isUsersLoading } = useQuery<User[]>({
     queryKey: ['/api/users'],
@@ -41,7 +34,7 @@ export default function NewMessage() {
   // Filter users
   const filteredUsers = users?.filter(u => 
     u.id !== user?.id && 
-    (getUserDisplayName(u).toLowerCase().includes(searchQuery.toLowerCase()) || 
+    (u.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
      u.username.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
@@ -63,7 +56,7 @@ export default function NewMessage() {
     onSuccess: () => {
       toast({
         title: 'Сообщение отправлено',
-        description: `Ваше сообщение успешно отправлено ${selectedUser ? getUserDisplayName(selectedUser) : ''}`,
+        description: `Ваше сообщение успешно отправлено ${selectedUser?.fullName}`,
       });
       
       queryClient.invalidateQueries({ queryKey: ['/api/messages'] });
@@ -168,11 +161,11 @@ export default function NewMessage() {
                       onClick={() => setSelectedUserId(user.id)}
                     >
                       <Avatar>
-                        <AvatarImage src={user.avatar} alt={getUserDisplayName(user)} />
-                        <AvatarFallback>{getUserInitials(getUserDisplayName(user))}</AvatarFallback>
+                        <AvatarImage src={user.avatar} alt={user.fullName} />
+                        <AvatarFallback>{getUserInitials(user.fullName)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium">{getUserDisplayName(user)}</div>
+                        <div className="font-medium">{user.fullName}</div>
                         <div className="text-sm text-gray-500">
                           {user.userType === 'individual' ? 'Физическое лицо' : 
                            user.userType === 'contractor' ? 'Подрядчик' : 'Компания'}
@@ -196,7 +189,7 @@ export default function NewMessage() {
             <CardHeader>
               <CardTitle>
                 {selectedUser 
-                  ? `Сообщение для ${getUserDisplayName(selectedUser)}` 
+                  ? `Сообщение для ${selectedUser.fullName}` 
                   : 'Новое сообщение'}
               </CardTitle>
             </CardHeader>
@@ -205,11 +198,11 @@ export default function NewMessage() {
                 <>
                   <div className="flex items-center space-x-3 mb-4 p-2 bg-gray-50 rounded-md">
                     <Avatar>
-                      <AvatarImage src={selectedUser.avatar} alt={getUserDisplayName(selectedUser)} />
-                      <AvatarFallback>{getUserInitials(getUserDisplayName(selectedUser))}</AvatarFallback>
+                      <AvatarImage src={selectedUser.avatar} alt={selectedUser.fullName} />
+                      <AvatarFallback>{getUserInitials(selectedUser.fullName)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">{getUserDisplayName(selectedUser)}</div>
+                      <div className="font-medium">{selectedUser.fullName}</div>
                       <div className="text-sm text-gray-500">
                         {selectedUser.userType === 'individual' ? 'Физическое лицо' : 
                          selectedUser.userType === 'contractor' ? 'Подрядчик' : 'Компания'}

@@ -331,21 +331,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
       
-      // Remove password from response and convert snake_case to camelCase
-      const { password, is_admin, first_name, last_name, user_type, completed_projects, wallet_balance, ...rest } = user;
+      // Remove password from response
+      const { password, ...userWithoutPassword } = user;
       
-      const userResponse = {
-        ...rest,
-        isAdmin: is_admin || false,
-        firstName: first_name,
-        lastName: last_name,
-        userType: user_type,
-        completedProjects: completed_projects,
-        walletBalance: wallet_balance,
-        fullName: first_name && last_name ? `${first_name} ${last_name}` : user.username
-      };
-      
-      res.status(200).json(userResponse);
+      res.status(200).json(userWithoutPassword);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });
     }

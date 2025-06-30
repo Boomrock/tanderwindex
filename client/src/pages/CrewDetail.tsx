@@ -8,7 +8,6 @@ import { useQuery } from '@tanstack/react-query';
 
 interface Crew {
   id: number;
-  user_id: number;
   name: string;
   specialty: string;
   experience: number;
@@ -44,7 +43,7 @@ export default function CrewDetail() {
   }
 
   const handleChatClick = () => {
-    setLocation(`/messages/new?userId=${crew.user_id}`);
+    setLocation(`/messages/new?userId=${crew.id}`);
   };
 
   return (
