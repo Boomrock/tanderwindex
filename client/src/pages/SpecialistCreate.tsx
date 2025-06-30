@@ -113,9 +113,26 @@ export default function SpecialistCreate() {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Ошибка создания специалиста');
       }
-      const result = await response.json();
-      console.log("Ответ сервера:", result);
-      return result;
+      
+      // Проверяем, что ответ действительно содержит JSON
+      const responseText = await response.text();
+      console.log("Текст ответа сервера:", responseText);
+      
+      if (!responseText || responseText.trim() === '') {
+        // Если ответ пустой, считаем операцию успешной
+        return { success: true };
+      }
+      
+      try {
+        const result = JSON.parse(responseText);
+        console.log("Распарсенный ответ сервера:", result);
+        return result;
+      } catch (parseError) {
+        console.error("Ошибка парсинга JSON:", parseError);
+        console.error("Проблемный текст:", responseText);
+        // Если не можем распарсить, но статус успешный, считаем операцию выполненной
+        return { success: true };
+      }
     },
     onSuccess: () => {
       toast({
