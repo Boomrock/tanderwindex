@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { X, Plus } from 'lucide-react';
+import ImageUpload from '@/components/ui/image-upload';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
 
@@ -67,6 +68,7 @@ export default function CrewForm() {
   const { toast } = useToast();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [newService, setNewService] = useState('');
+  const [images, setImages] = useState<string[]>([]);
 
   const form = useForm<CrewFormData>({
     resolver: zodResolver(crewSchema),
@@ -91,6 +93,9 @@ export default function CrewForm() {
       return;
     }
 
+    // Здесь можно добавить отправку данных с изображениями
+    console.log('Crew form data:', { ...data, services: selectedServices, images });
+    
     toast({
       title: 'Анкета бригады отправлена на модерацию',
       description: 'После проверки администратором ваша анкета будет опубликована',
@@ -304,6 +309,13 @@ export default function CrewForm() {
                 )}
               </div>
             </div>
+
+            <ImageUpload
+              images={images}
+              onImagesChange={setImages}
+              maxImages={8}
+              label="Фотографии выполненных работ (портфолио бригады)"
+            />
 
             <FormField
               control={form.control}

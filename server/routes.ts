@@ -1441,6 +1441,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Reviews routes
+  apiRouter.get('/specialists/:id/reviews', async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const reviews = await simpleSqliteStorage.getUserReviews(parseInt(id));
+      res.json(reviews);
+    } catch (error) {
+      console.error('Error fetching specialist reviews:', error);
+      res.status(500).json({ error: 'Ошибка загрузки отзывов' });
+    }
+  });
+
+  apiRouter.post('/reviews', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const reviewData = {
+        ...req.body,
+        reviewerId: req.user.id,
+      };
+      const review = await simpleSqliteStorage.createReview(reviewData);
+      res.status(201).json(review);
+    } catch (error) {
+      console.error('Error creating review:', error);
+      res.status(500).json({ error: 'Ошибка создания отзыва' });
+    }
+  });
+
   // Mount the API router
   app.use('/api', apiRouter);
 

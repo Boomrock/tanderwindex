@@ -287,6 +287,13 @@ export default function SpecialistForm() {
               </div>
             </div>
 
+            <ImageUpload
+              images={images}
+              onImagesChange={setImages}
+              maxImages={5}
+              label="Фотографии работ (портфолио)"
+            />
+
             <FormField
               control={form.control}
               name="description"

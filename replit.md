@@ -171,6 +171,13 @@ The platform uses PostgreSQL with the following key entities:
   - Created API endpoints for specialists/crews CRUD operations and admin moderation workflows
   - Enhanced routing with /specialists/create and /crews/create pages
   - Integrated with existing authentication system requiring login for profile creation
+- June 30, 2025. Enhanced specialists and crews forms with photo upload and review system:
+  - Integrated ImageUpload component into SpecialistForm allowing up to 5 portfolio photos
+  - Added ImageUpload component to CrewForm supporting up to 8 work portfolio images
+  - Created ReviewForm component for clients to submit ratings and comments for specialists
+  - Implemented ReviewsList component to display existing reviews with reviewer information
+  - Added API endpoints for review creation and retrieval (/reviews, /specialists/:id/reviews)
+  - Enhanced forms with proper state management for images array and validation
 
 ## User Preferences
 
