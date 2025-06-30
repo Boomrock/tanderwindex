@@ -63,15 +63,6 @@ export const SUBCATEGORIES = {
     { value: "home_repair", label: "Ремонт дома" },
     { value: "apartment_repair", label: "Ремонт квартиры" },
     { value: "commercial_repair", label: "Ремонт коммерческого помещения" },
-    { value: "other", label: "Другое" }нт" },
-    { value: "construction", label: "Строительство" },
-    { value: "design", label: "Проектирование" },
-    { value: "demolition", label: "Демонтаж" },
-    { value: "cleaning", label: "Уборка" },
-    { value: "consulting", label: "Консультации" },
-    { value: "installation", label: "Монтаж" },
-    { value: "plumbing", label: "Сантехника" },
-    { value: "electrical", label: "Электрика" },
     { value: "other", label: "Другое" }
   ],
   property: [
