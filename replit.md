@@ -166,6 +166,9 @@ The platform uses PostgreSQL with the following key entities:
   - Changed "Лучшие специалисты" to "Специалисты и Бригады" in navigation and page titles
   - Updated page descriptions and error messages to match new naming
   - Fixed TypeScript compilation errors in TopSpecialists and Header components
+  - Split navigation into separate "Специалисты" and "Бригады" buttons with dedicated pages
+  - Created individual Specialists.tsx and Crews.tsx pages for better user experience
+  - Updated routing to support /specialists and /crews endpoints
 
 ## User Preferences
 
