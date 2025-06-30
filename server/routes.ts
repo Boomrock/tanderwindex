@@ -364,10 +364,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create specialist profile
   apiRouter.post('/users/specialist-profile', authMiddleware, async (req: Request, res: Response) => {
     try {
+      console.log('=== Creating specialist profile ===');
+      console.log('Request user:', req.user);
+      console.log('Request body:', req.body);
+      
       const userId = req.user?.id;
       if (!userId) {
+        console.log('No user ID found in request');
         return res.status(401).json({ error: 'Не авторизован' });
       }
+
+      console.log('User ID from token:', userId);
 
       const {
         profession,
@@ -379,6 +386,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         portfolio_items,
         location
       } = req.body;
+
+      console.log('Extracted fields:', {
+        profession,
+        bio,
+        experience_years,
+        hourly_rate,
+        project_rate,
+        services,
+        portfolio_items,
+        location
+      });
 
       // Update user profile with specialist information  
       const updatedUser = await storage.updateUser(userId, {
@@ -399,10 +417,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       });
 
+      console.log('Updated user result:', updatedUser);
+
       if (!updatedUser) {
+        console.log('User update returned null/undefined');
         return res.status(404).json({ error: 'Пользователь не найден' });
       }
 
+      console.log('Specialist profile created successfully');
       res.json(updatedUser);
     } catch (error) {
       console.error('Error creating specialist profile:', error);
