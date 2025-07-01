@@ -1145,10 +1145,12 @@ export class SimpleSQLiteStorage implements IStorage {
         user: {
           id: specialist.user_id,
           username: specialist.username,
+          firstName: specialist.first_name,
+          lastName: specialist.last_name,
           fullName: specialist.first_name && specialist.last_name ? `${specialist.first_name} ${specialist.last_name}` : specialist.username,
-          rating: specialist.rating,
+          rating: specialist.rating || 0,
           isVerified: Boolean(specialist.is_verified),
-          completedProjects: specialist.completed_projects
+          completedProjects: specialist.completed_projects || 0
         }
       };
     } catch (error) {

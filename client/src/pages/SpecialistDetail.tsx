@@ -190,9 +190,9 @@ export default function SpecialistDetail() {
                   <div className="flex-1">
                     <CardTitle className="text-2xl">{displayName}</CardTitle>
                     <div className="flex items-center mt-2">
-                      <StarRating rating={Math.round(specialist.user.rating)} />
+                      <StarRating rating={Math.round(specialist.user?.rating || 0)} />
                       <span className="text-sm ml-2 text-gray-600">
-                        {specialist.user.rating.toFixed(1)} ({reviews.length} отзывов)
+                        {(specialist.user?.rating || 0).toFixed(1)} ({reviews.length} отзывов)
                       </span>
                       {specialist.user.isVerified && (
                         <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
@@ -299,7 +299,7 @@ export default function SpecialistDetail() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Средний рейтинг:</span>
-                  <span className="font-semibold">{specialist.user.rating.toFixed(1)}</span>
+                  <span className="font-semibold">{(specialist.user?.rating || 0).toFixed(1)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Опыт работы:</span>
