@@ -203,6 +203,13 @@ The platform uses PostgreSQL with the following key entities:
   - Fixed search performance issues where single character input caused page loading
   - Enhanced user experience for both Specialists and Crews filtering systems
   - Maintained real-time filter functionality while optimizing search behavior
+- July 1, 2025. Redesigned filtering system with manual application:
+  - Changed from real-time filtering to button-based filter application
+  - Separated temporary filters (what user sets) from applied filters (what's active)
+  - Added "Применить фильтры" button that becomes enabled when changes are made
+  - Fixed SelectItem empty value errors by using "all" instead of empty strings
+  - Improved user control over when filtering occurs for better performance
+  - Applied changes to both SpecialistFilters and CrewFilters components
 
 ## User Preferences
 

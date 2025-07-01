@@ -1,16 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
-import { Search, Filter, X } from 'lucide-react';
-
-interface SpecialistFiltersProps {
-  onFiltersChange: (filters: SpecialistFilters) => void;
-  initialFilters?: SpecialistFilters;
-}
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Search, Filter, X } from "lucide-react";
 
 export interface SpecialistFilters {
   search: string;
@@ -25,22 +20,20 @@ export interface SpecialistFilters {
   sortOrder: 'asc' | 'desc';
 }
 
+interface SpecialistFiltersProps {
+  onFiltersChange: (filters: SpecialistFilters) => void;
+  initialFilters?: Partial<SpecialistFilters>;
+}
+
 const specializations = [
   'Строительство',
   'Ремонт',
-  'Электромонтаж',
   'Сантехника',
-  'Отделочные работы',
-  'Кровельные работы',
-  'Плитка и керамика',
-  'Малярные работы',
-  'Гипсокартон',
-  'Напольные покрытия',
-  'Окна и двери',
-  'Системы отопления',
-  'Кондиционирование',
-  'Ландшафтный дизайн',
-  'Другое'
+  'Электричество',
+  'Отделка',
+  'Кровля',
+  'Фундамент',
+  'Дизайн интерьера'
 ];
 
 const sortOptions = [
@@ -52,8 +45,9 @@ const sortOptions = [
 
 export default function SpecialistFilters({ onFiltersChange, initialFilters }: SpecialistFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [searchValue, setSearchValue] = useState(initialFilters?.search || '');
-  const [filters, setFilters] = useState<SpecialistFilters>({
+  
+  // Applied filters - what's currently active
+  const [appliedFilters, setAppliedFilters] = useState<SpecialistFilters>({
     search: initialFilters?.search || '',
     location: initialFilters?.location || '',
     specialization: initialFilters?.specialization || '',
@@ -65,22 +59,17 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
     sortBy: initialFilters?.sortBy || 'rating',
     sortOrder: initialFilters?.sortOrder || 'desc'
   });
+  
+  // Temporary filters - what user is setting up
+  const [tempFilters, setTempFilters] = useState<SpecialistFilters>(appliedFilters);
 
-  // Debounced search effect
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      const updatedFilters = { ...filters, search: searchValue };
-      setFilters(updatedFilters);
-      onFiltersChange(updatedFilters);
-    }, 500); // 500ms delay
+  const updateTempFilters = (newFilters: Partial<SpecialistFilters>) => {
+    setTempFilters(prev => ({ ...prev, ...newFilters }));
+  };
 
-    return () => clearTimeout(timeoutId);
-  }, [searchValue]);
-
-  const updateFilters = (newFilters: Partial<SpecialistFilters>) => {
-    const updatedFilters = { ...filters, ...newFilters };
-    setFilters(updatedFilters);
-    onFiltersChange(updatedFilters);
+  const applyFilters = () => {
+    setAppliedFilters(tempFilters);
+    onFiltersChange(tempFilters);
   };
 
   const clearFilters = () => {
@@ -96,27 +85,31 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
       sortBy: 'rating',
       sortOrder: 'desc'
     };
-    setSearchValue('');
-    setFilters(clearedFilters);
+    setTempFilters(clearedFilters);
+    setAppliedFilters(clearedFilters);
     onFiltersChange(clearedFilters);
   };
 
   const hasActiveFilters = () => {
-    return searchValue || filters.location || filters.specialization || 
-           filters.minExperience > 0 || filters.maxExperience < 20 ||
-           filters.minRate > 0 || filters.maxRate < 10000 || 
-           filters.verified !== null;
+    return appliedFilters.search || appliedFilters.location || appliedFilters.specialization || 
+           appliedFilters.minExperience > 0 || appliedFilters.maxExperience < 20 ||
+           appliedFilters.minRate > 0 || appliedFilters.maxRate < 10000 || 
+           appliedFilters.verified !== null;
   };
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (searchValue) count++;
-    if (filters.location) count++;
-    if (filters.specialization) count++;
-    if (filters.minExperience > 0 || filters.maxExperience < 20) count++;
-    if (filters.minRate > 0 || filters.maxRate < 10000) count++;
-    if (filters.verified !== null) count++;
+    if (appliedFilters.search) count++;
+    if (appliedFilters.location) count++;
+    if (appliedFilters.specialization) count++;
+    if (appliedFilters.minExperience > 0 || appliedFilters.maxExperience < 20) count++;
+    if (appliedFilters.minRate > 0 || appliedFilters.maxRate < 10000) count++;
+    if (appliedFilters.verified !== null) count++;
     return count;
+  };
+
+  const hasChanges = () => {
+    return JSON.stringify(tempFilters) !== JSON.stringify(appliedFilters);
   };
 
   return (
@@ -148,8 +141,8 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Поиск по названию, описанию, специализации..."
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            value={tempFilters.search}
+            onChange={(e) => updateTempFilters({ search: e.target.value })}
             className="pl-10"
           />
         </div>
@@ -157,44 +150,54 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
         {/* Quick Filters */}
         <div className="flex flex-wrap gap-2">
           <Button
-            variant={filters.verified === true ? "default" : "outline"}
+            variant={tempFilters.verified === true ? "default" : "outline"}
             size="sm"
-            onClick={() => updateFilters({ verified: filters.verified === true ? null : true })}
-            className={filters.verified === true ? "bg-green-600 hover:bg-green-700" : ""}
+            onClick={() => updateTempFilters({ verified: tempFilters.verified === true ? null : true })}
+            className={tempFilters.verified === true ? "bg-green-600 hover:bg-green-700" : ""}
           >
             Проверенные
           </Button>
           <Button
-            variant={filters.specialization === 'Строительство' ? "default" : "outline"}
+            variant={tempFilters.specialization === 'Строительство' ? "default" : "outline"}
             size="sm"
-            onClick={() => updateFilters({ 
-              specialization: filters.specialization === 'Строительство' ? '' : 'Строительство' 
+            onClick={() => updateTempFilters({ 
+              specialization: tempFilters.specialization === 'Строительство' ? '' : 'Строительство' 
             })}
-            className={filters.specialization === 'Строительство' ? "bg-green-600 hover:bg-green-700" : ""}
+            className={tempFilters.specialization === 'Строительство' ? "bg-green-600 hover:bg-green-700" : ""}
           >
             Строительство
           </Button>
           <Button
-            variant={filters.specialization === 'Ремонт' ? "default" : "outline"}
+            variant={tempFilters.specialization === 'Ремонт' ? "default" : "outline"}
             size="sm"
-            onClick={() => updateFilters({ 
-              specialization: filters.specialization === 'Ремонт' ? '' : 'Ремонт' 
+            onClick={() => updateTempFilters({ 
+              specialization: tempFilters.specialization === 'Ремонт' ? '' : 'Ремонт' 
             })}
-            className={filters.specialization === 'Ремонт' ? "bg-green-600 hover:bg-green-700" : ""}
+            className={tempFilters.specialization === 'Ремонт' ? "bg-green-600 hover:bg-green-700" : ""}
           >
             Ремонт
           </Button>
-          {hasActiveFilters() && (
+          <div className="flex gap-2 ml-auto">
+            {hasActiveFilters() && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearFilters}
+                className="text-red-600 hover:text-red-700"
+              >
+                <X className="h-3 w-3 mr-1" />
+                Очистить
+              </Button>
+            )}
             <Button
-              variant="outline"
+              onClick={applyFilters}
               size="sm"
-              onClick={clearFilters}
-              className="text-red-600 hover:text-red-700"
+              className="bg-green-600 hover:bg-green-700"
+              disabled={!hasChanges()}
             >
-              <X className="h-3 w-3 mr-1" />
-              Очистить
+              Применить фильтры
             </Button>
-          )}
+          </div>
         </div>
 
         {/* Advanced Filters */}
@@ -205,15 +208,15 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
               <label className="text-sm font-medium mb-2 block">Местоположение</label>
               <Input
                 placeholder="Город"
-                value={filters.location}
-                onChange={(e) => updateFilters({ location: e.target.value })}
+                value={tempFilters.location}
+                onChange={(e) => updateTempFilters({ location: e.target.value })}
               />
             </div>
 
             {/* Specialization */}
             <div>
               <label className="text-sm font-medium mb-2 block">Специализация</label>
-              <Select value={filters.specialization || "all"} onValueChange={(value) => updateFilters({ specialization: value === "all" ? "" : value })}>
+              <Select value={tempFilters.specialization || "all"} onValueChange={(value) => updateTempFilters({ specialization: value === "all" ? "" : value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Выберите специализацию" />
                 </SelectTrigger>
@@ -232,7 +235,7 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             <div>
               <label className="text-sm font-medium mb-2 block">Сортировка</label>
               <div className="flex gap-1">
-                <Select value={filters.sortBy} onValueChange={(value) => updateFilters({ sortBy: value })}>
+                <Select value={tempFilters.sortBy} onValueChange={(value) => updateTempFilters({ sortBy: value })}>
                   <SelectTrigger className="flex-1">
                     <SelectValue />
                   </SelectTrigger>
@@ -247,10 +250,10 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => updateFilters({ sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' })}
+                  onClick={() => updateTempFilters({ sortOrder: tempFilters.sortOrder === 'asc' ? 'desc' : 'asc' })}
                   className="px-2"
                 >
-                  {filters.sortOrder === 'asc' ? '↑' : '↓'}
+                  {tempFilters.sortOrder === 'asc' ? '↑' : '↓'}
                 </Button>
               </div>
             </div>
@@ -259,8 +262,8 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             <div>
               <label className="text-sm font-medium mb-2 block">Статус</label>
               <Select 
-                value={filters.verified === null ? 'all' : String(filters.verified)} 
-                onValueChange={(value) => updateFilters({ verified: value === 'all' ? null : value === 'true' })}
+                value={tempFilters.verified === null ? 'all' : String(tempFilters.verified)} 
+                onValueChange={(value) => updateTempFilters({ verified: value === 'all' ? null : value === 'true' })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Все" />
@@ -276,12 +279,12 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             {/* Experience Range */}
             <div className="md:col-span-2">
               <label className="text-sm font-medium mb-2 block">
-                Опыт работы: {filters.minExperience}-{filters.maxExperience} лет
+                Опыт работы: {tempFilters.minExperience}-{tempFilters.maxExperience} лет
               </label>
               <div className="px-3">
                 <Slider
-                  value={[filters.minExperience, filters.maxExperience]}
-                  onValueChange={([min, max]) => updateFilters({ minExperience: min, maxExperience: max })}
+                  value={[tempFilters.minExperience, tempFilters.maxExperience]}
+                  onValueChange={([min, max]) => updateTempFilters({ minExperience: min, maxExperience: max })}
                   min={0}
                   max={20}
                   step={1}
@@ -293,12 +296,12 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             {/* Price Range */}
             <div className="md:col-span-2">
               <label className="text-sm font-medium mb-2 block">
-                Стоимость: {filters.minRate.toLocaleString()}-{filters.maxRate.toLocaleString()} ₽/час
+                Стоимость: {tempFilters.minRate.toLocaleString()}-{tempFilters.maxRate.toLocaleString()} ₽/час
               </label>
               <div className="px-3">
                 <Slider
-                  value={[filters.minRate, filters.maxRate]}
-                  onValueChange={([min, max]) => updateFilters({ minRate: min, maxRate: max })}
+                  value={[tempFilters.minRate, tempFilters.maxRate]}
+                  onValueChange={([min, max]) => updateTempFilters({ minRate: min, maxRate: max })}
                   min={0}
                   max={10000}
                   step={100}
