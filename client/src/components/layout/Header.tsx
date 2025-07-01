@@ -65,7 +65,8 @@ const Header = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center space-x-1">
               <Construction className="h-6 w-6 text-green-600" />
-              <span className="font-bold text-xl text-green-600">Windexs-Строй</span>
+              <span className="font-bold text-xl text-green-600 hidden sm:inline">Windexs-Строй</span>
+              <span className="font-bold text-lg text-green-600 sm:hidden">W-S</span>
             </Link>
           </div>
           

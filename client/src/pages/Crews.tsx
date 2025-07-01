@@ -90,17 +90,18 @@ export default function Crews() {
       </Helmet>
 
       <div className="container py-12">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-4xl font-bold mb-4 text-green-600">Бригады</h1>
-            <p className="text-gray-600 text-lg">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 sm:mb-4 text-green-600">Бригады</h1>
+            <p className="text-gray-600 text-base sm:text-lg">
               Найдите профессиональные строительные бригады для ваших проектов
             </p>
           </div>
-          <Link href="/crews/create">
-            <Button className="bg-green-600 hover:bg-green-700">
+          <Link href="/crews/create" className="w-full sm:w-auto">
+            <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
-              Добавить бригаду
+              <span className="sm:inline">Добавить бригаду</span>
+              <span className="sm:hidden">Добавить</span>
             </Button>
           </Link>
         </div>
@@ -110,7 +111,7 @@ export default function Crews() {
           initialFilters={filters}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {crews.map((crew) => (
             <Link key={crew.id} href={`/crews/${crew.id}`}>
               <Card className="hover:shadow-lg transition-shadow cursor-pointer">
