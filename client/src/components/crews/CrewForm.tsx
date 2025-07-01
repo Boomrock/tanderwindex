@@ -116,14 +116,15 @@ export default function CrewForm() {
       return;
     }
 
-    // Здесь можно добавить отправку данных с изображениями
-    console.log('Crew form data:', { ...data, services: selectedServices, images });
-    
-    toast({
-      title: 'Анкета бригады отправлена на модерацию',
-      description: 'После проверки администратором ваша анкета будет опубликована',
-    });
-    navigate('/crews');
+    const crewData = {
+      ...data,
+      name: data.title, // API expects 'name' field
+      specializations: selectedServices, // Правильное поле для API
+      images,
+    };
+
+    console.log('Sending crew data:', crewData);
+    createCrewMutation.mutate(crewData);
   };
 
   const addService = () => {
@@ -372,8 +373,9 @@ export default function CrewForm() {
               <Button
                 type="submit"
                 className="bg-green-600 hover:bg-green-700"
+                disabled={createCrewMutation.isPending}
               >
-                Отправить на модерацию
+                {createCrewMutation.isPending ? 'Отправка...' : 'Отправить на модерацию'}
               </Button>
             </div>
           </form>
