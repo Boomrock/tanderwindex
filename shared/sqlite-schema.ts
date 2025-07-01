@@ -123,6 +123,8 @@ export const reviews = sqliteTable("reviews", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   reviewerId: integer("reviewerId").notNull(),
   revieweeId: integer("revieweeId").notNull(),
+  specialistId: integer("specialistId").references(() => specialists.id, { onDelete: 'cascade' }),
+  crewId: integer("crewId").references(() => crews.id, { onDelete: 'cascade' }),
   rating: integer("rating").notNull(),
   comment: text("comment"),
   createdAt: text("createdAt"), // ISO string

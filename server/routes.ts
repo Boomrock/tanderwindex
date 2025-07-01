@@ -980,11 +980,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Prevent self-reviews
-      if (reviewData.reviewerId === reviewData.recipientId) {
+      if (reviewData.reviewerId === reviewData.revieweeId) {
         return res.status(400).json({ message: "You cannot review yourself" });
       }
       
       const review = await storage.createReview(reviewData);
+      
+      // If this is a review for a specialist, update their rating
+      if (reviewData.specialistId) {
+        await storage.updateUserRating(reviewData.revieweeId);
+      }
       
       res.status(201).json(review);
     } catch (error) {

@@ -322,6 +322,28 @@ export function addBidStatusFields() {
   console.log('Bid status fields migration completed');
 }
 
+export function addSpecialistReviewFields() {
+  console.log('Adding specialist and crew review fields to database...');
+  
+  try {
+    sqlite.exec(`
+      ALTER TABLE reviews ADD COLUMN specialistId INTEGER REFERENCES specialists(id) ON DELETE CASCADE;
+    `);
+  } catch (error) {
+    console.log('specialistId column already exists in reviews table');
+  }
+
+  try {
+    sqlite.exec(`
+      ALTER TABLE reviews ADD COLUMN crewId INTEGER REFERENCES crews(id) ON DELETE CASCADE;
+    `);
+  } catch (error) {
+    console.log('crewId column already exists in reviews table');
+  }
+
+  console.log('Specialist and crew review fields migration completed');
+}
+
 // Seed database with basic data
 export function seedDatabaseIfEmpty() {
   const userCount = sqlite.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
