@@ -1,33 +1,16 @@
-import { useState } from 'react';
 import { Link } from 'wouter';
-import { Heart, MessageCircle, MapPin } from 'lucide-react';
+import { MessageCircle, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MarketplaceListing } from '@/lib/types';
 import { getStatusColor } from '@/lib/utils';
 import { getImageUrl } from '@/lib/gradient-generator';
-import { useToast } from '@/hooks/use-toast';
 
 interface MarketplaceItemCardProps {
   listing: MarketplaceListing;
 }
 
 export default function MarketplaceItemCard({ listing }: MarketplaceItemCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
-  const { toast } = useToast();
-
-  const handleFavoriteToggle = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsFavorite(!isFavorite);
-    
-    toast({
-      title: isFavorite ? 'Удалено из избранного' : 'Добавлено в избранное',
-      description: isFavorite 
-        ? 'Объявление удалено из избранного' 
-        : 'Объявление добавлено в избранное',
-    });
-  };
 
   const getListingTypeLabel = (type: string) => {
     switch (type) {
@@ -60,12 +43,7 @@ export default function MarketplaceItemCard({ listing }: MarketplaceItemCardProp
             {getListingTypeLabel(listing.listingType)}
           </Badge>
         </div>
-        <button 
-          className="absolute top-0 right-0 m-2 p-1 rounded-full bg-white text-gray-500 hover:text-primary focus:outline-none"
-          onClick={handleFavoriteToggle}
-        >
-          <Heart className={`h-4 w-4 ${isFavorite ? 'fill-primary text-primary' : ''}`} />
-        </button>
+
       </div>
       <div className="p-4">
         <Link href={`/marketplace/${listing.id}`}>
@@ -76,7 +54,7 @@ export default function MarketplaceItemCard({ listing }: MarketplaceItemCardProp
           {listing.location}
         </div>
         <div className="mt-4 flex items-center justify-between">
-          <div className="text-xl font-bold text-black">
+          <div className="text-xl font-bold text-gray-900">
             {formatPrice(listing.price, listing.listingType)}
           </div>
           <Link href={`/messages?userId=${listing.userId}`}>

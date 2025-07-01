@@ -615,16 +615,7 @@ ${bidTimeframe ? `• Срок выполнения: ${bidTimeframe} дней` :
             </Card>
           )}
           
-          <Card className="mt-6">
-            <CardHeader>
-              <CardTitle>Похожие тендеры</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-gray-500 py-3">
-                Функция "Похожие тендеры" будет доступна в ближайшее время.
-              </p>
-            </CardContent>
-          </Card>
+
         </div>
       </div>
       
