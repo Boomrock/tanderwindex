@@ -155,9 +155,9 @@ export default function CrewDetail() {
     );
   }
 
-  const displayName = crew.user.firstName && crew.user.lastName 
+  const displayName = crew.user?.firstName && crew.user?.lastName 
     ? `${crew.user.firstName} ${crew.user.lastName}` 
-    : crew.user.username;
+    : crew.user?.username || 'Пользователь';
 
   return (
     <>
@@ -183,11 +183,11 @@ export default function CrewDetail() {
                     <CardTitle className="text-2xl">{crew.name}</CardTitle>
                     <p className="text-gray-600 mt-1">Руководитель: {displayName}</p>
                     <div className="flex items-center mt-2">
-                      <StarRating rating={Math.round(crew.user.rating)} />
+                      <StarRating rating={Math.round(crew.user?.rating || 0)} />
                       <span className="text-sm ml-2 text-gray-600">
-                        {crew.user.rating.toFixed(1)} ({reviews.length} отзывов)
+                        {(crew.user?.rating || 0).toFixed(1)} ({reviews.length} отзывов)
                       </span>
-                      {crew.user.isVerified && (
+                      {crew.user?.isVerified && (
                         <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Проверена
@@ -293,11 +293,11 @@ export default function CrewDetail() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Завершенных проектов:</span>
-                  <span className="font-semibold">{crew.user.completedProjects}</span>
+                  <span className="font-semibold">{crew.user?.completedProjects || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Средний рейтинг:</span>
-                  <span className="font-semibold">{crew.user.rating.toFixed(1)}</span>
+                  <span className="font-semibold">{(crew.user?.rating || 0).toFixed(1)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Опыт работы:</span>
@@ -326,7 +326,7 @@ export default function CrewDetail() {
                   Написать сообщение
                 </Button>
 
-                {user && user.id !== crew.user.id && (
+                {user && user.id !== crew.user?.id && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full">
