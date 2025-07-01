@@ -1276,7 +1276,8 @@ export class SimpleSQLiteStorage implements IStorage {
         user: {
           id: crew.user_id,
           username: crew.username,
-          fullName: crew.first_name && crew.last_name ? `${crew.first_name} ${crew.last_name}` : crew.username,
+          firstName: crew.first_name,
+          lastName: crew.last_name,
           rating: crew.rating,
           isVerified: Boolean(crew.is_verified),
           completedProjects: crew.completed_projects
@@ -1307,7 +1308,8 @@ export class SimpleSQLiteStorage implements IStorage {
         user: {
           id: crew.user_id,
           username: crew.username,
-          fullName: crew.first_name && crew.last_name ? `${crew.first_name} ${crew.last_name}` : crew.username,
+          firstName: crew.first_name,
+          lastName: crew.last_name,
           rating: crew.rating,
           isVerified: Boolean(crew.is_verified),
           completedProjects: crew.completed_projects
