@@ -713,9 +713,9 @@ export class SimpleSQLiteStorage implements IStorage {
       const stmt = this.db.prepare(`
         SELECT r.*, u.username, u.first_name, u.last_name
         FROM reviews r
-        LEFT JOIN users u ON r.reviewer_id = u.id
-        WHERE r.reviewee_id = ?
-        ORDER BY r.created_at DESC
+        LEFT JOIN users u ON r.reviewerId = u.id
+        WHERE r.revieweeId = ?
+        ORDER BY r.createdAt DESC
       `);
       const reviews = stmt.all(userId) as any[];
       
@@ -740,12 +740,29 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   async createReview(insertReview: InsertReview): Promise<Review> {
-    const reviewData = {
-      ...insertReview,
-      createdAt: new Date().toISOString(),
+    const stmt = this.db.prepare(`
+      INSERT INTO reviews (reviewerId, revieweeId, rating, comment, createdAt)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    
+    const createdAt = new Date().toISOString();
+    const result = stmt.run(
+      insertReview.reviewerId,
+      insertReview.revieweeId,
+      insertReview.rating,
+      insertReview.comment || null,
+      createdAt
+    );
+
+    const review: Review = {
+      id: result.lastInsertRowid as number,
+      reviewerId: insertReview.reviewerId,
+      revieweeId: insertReview.revieweeId,
+      rating: insertReview.rating,
+      comment: insertReview.comment || null,
+      createdAt
     };
 
-    const [review] = await db.insert(reviews).values(reviewData).returning();
     return review;
   }
 
