@@ -126,7 +126,7 @@ export default function SpecialistDetail() {
   const reviewForm = useForm<z.infer<typeof reviewSchema>>({
     resolver: zodResolver(reviewSchema),
     defaultValues: {
-      rating: 5,
+      rating: 0,
       comment: "",
     },
   });

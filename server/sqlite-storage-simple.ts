@@ -709,7 +709,34 @@ export class SimpleSQLiteStorage implements IStorage {
 
   // Review methods
   async getUserReviews(userId: number): Promise<Review[]> {
-    return await db.select().from(reviews).where(eq(reviews.revieweeId, userId));
+    try {
+      const stmt = this.db.prepare(`
+        SELECT r.*, u.username, u.first_name, u.last_name
+        FROM reviews r
+        LEFT JOIN users u ON r.reviewer_id = u.id
+        WHERE r.reviewee_id = ?
+        ORDER BY r.created_at DESC
+      `);
+      const reviews = stmt.all(userId) as any[];
+      
+      return reviews.map(review => ({
+        id: review.id,
+        rating: review.rating,
+        comment: review.comment,
+        reviewerId: review.reviewer_id,
+        revieweeId: review.reviewee_id,
+        createdAt: review.created_at,
+        reviewer: {
+          username: review.username,
+          fullName: review.first_name && review.last_name 
+            ? `${review.first_name} ${review.last_name}` 
+            : review.username
+        }
+      }));
+    } catch (error) {
+      console.error('Error getting user reviews:', error);
+      return [];
+    }
   }
 
   async createReview(insertReview: InsertReview): Promise<Review> {
