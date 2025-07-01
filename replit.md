@@ -190,6 +190,13 @@ The platform uses PostgreSQL with the following key entities:
   - Implemented recalculate-ratings.ts script to update existing user ratings
   - Ratings now display accurate averages with one decimal place precision
   - Fixed image display issues in specialist and crew cards using correct /api/files/ path
+- July 1, 2025. Major UI cleanup - removed placeholder content and favorites functionality:
+  - Completely removed favorites functionality from marketplace listings and detail pages
+  - Removed "Новое сообщение" button from Messages page interface  
+  - Eliminated placeholder sections: "Похожие тендеры" from tender details and "Похожие объявления" from marketplace details
+  - Streamlined marketplace item cards and detail components for cleaner interface
+  - Removed unused imports and state management related to favorites system
+  - Updated message interface to show only existing conversations without ability to create new ones directly
 
 ## User Preferences
 

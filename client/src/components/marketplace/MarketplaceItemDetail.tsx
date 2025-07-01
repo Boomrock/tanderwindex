@@ -77,8 +77,6 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
     },
   });
 
-;
-
   const handleShare = () => {
     // In a real app, this would use the Web Share API or copy to clipboard
     navigator.clipboard.writeText(window.location.href);
