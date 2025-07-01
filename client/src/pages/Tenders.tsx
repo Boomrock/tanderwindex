@@ -101,7 +101,7 @@ export default function Tenders() {
               Произошла ошибка при загрузке тендеров. Пожалуйста, попробуйте позже.
             </div>
           ) : tenders && tenders.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {tenders.map((tender) => (
                 <TenderCard key={tender.id} tender={tender} />
               ))}

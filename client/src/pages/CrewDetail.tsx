@@ -168,8 +168,8 @@ export default function CrewDetail() {
         <meta name="description" content={`Профиль бригады ${crew.name || 'Бригада'}. ${crew.description || ''}`} />
       </Helmet>
 
-      <div className="container py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="container py-6 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Профиль бригады */}
           <div className="lg:col-span-2">
             <Card>

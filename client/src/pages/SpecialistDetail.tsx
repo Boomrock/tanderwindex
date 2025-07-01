@@ -187,8 +187,8 @@ export default function SpecialistDetail() {
         <meta name="description" content={`Профиль специалиста ${displayName}. ${specialist.description || ''}`} />
       </Helmet>
 
-      <div className="container py-12 mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      <div className="container py-6 sm:py-12 mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 max-w-6xl mx-auto">
           {/* Профиль специалиста */}
           <div className="lg:col-span-2">
             <Card>
@@ -250,13 +250,13 @@ export default function SpecialistDetail() {
                 {specialist.images && specialist.images.length > 0 && (
                   <div>
                     <h3 className="font-semibold mb-2">Фотографии работ</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                       {specialist.images.map((image, index) => (
                         <img
                           key={index}
                           src={image.startsWith('/api/files/') ? image : `/api/files/${image}`}
                           alt={`Работа ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
+                          className="w-full h-24 sm:h-32 object-cover rounded-lg"
                         />
                       ))}
                     </div>
