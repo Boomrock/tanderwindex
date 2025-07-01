@@ -336,7 +336,7 @@ export default function SpecialistDetail() {
                       {specialist.images.map((image, index) => (
                         <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                           <img
-                            src={`/api/files/${image}`}
+                            src={image}
                             alt={`Работа ${index + 1}`}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
                           />

@@ -62,9 +62,13 @@ export default function MessagesList({ selectedUserId, onSelectUser }: MessagesL
       const messageTime = new Date(message.createdAt);
       
       if (!existingConversation || new Date(existingConversation.lastMessageTime) < messageTime) {
+        const fullName = otherUser.firstName && otherUser.lastName 
+          ? `${otherUser.firstName} ${otherUser.lastName}` 
+          : otherUser.username;
+        
         conversationMap.set(otherUserId, {
           id: otherUserId,
-          fullName: otherUser.fullName,
+          fullName: fullName,
           avatar: otherUser.avatar,
           lastMessage: message.content,
           lastMessageTime: message.createdAt,
