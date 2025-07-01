@@ -80,7 +80,7 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
     }, 500); // 500ms delay
 
     return () => clearTimeout(timeoutId);
-  }, [searchValue, filters, onFiltersChange]);
+  }, [searchValue]);
 
   const updateFilters = (newFilters: Partial<CrewFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };

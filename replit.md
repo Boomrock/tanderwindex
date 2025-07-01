@@ -197,6 +197,12 @@ The platform uses PostgreSQL with the following key entities:
   - Streamlined marketplace item cards and detail components for cleaner interface
   - Removed unused imports and state management related to favorites system
   - Updated message interface to show only existing conversations without ability to create new ones directly
+- July 1, 2025. Implemented search debouncing to fix aggressive search behavior:
+  - Added 500ms delay to search input preventing requests after each character
+  - Created separate searchValue state for immediate UI updates with delayed API calls
+  - Fixed search performance issues where single character input caused page loading
+  - Enhanced user experience for both Specialists and Crews filtering systems
+  - Maintained real-time filter functionality while optimizing search behavior
 
 ## User Preferences
 
