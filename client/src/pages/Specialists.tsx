@@ -11,57 +11,28 @@ import { Link } from "wouter";
 interface Specialist {
   id: number;
   name: string;
-  avatar?: string;
-  specialty: string;
-  experience: number;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  hourlyRate: number;
-  services: string[];
-  isOnline: boolean;
   description: string;
+  location: string;
+  experience_years: number;
+  hourly_rate: number;
+  specializations: string[];
+  images: string[];
+  status: string;
+  user: {
+    id: number;
+    username: string;
+    fullName: string;
+    rating: number;
+    isVerified: boolean;
+    completedProjects: number;
+  };
 }
 
 export default function Specialists() {
   const [filter, setFilter] = useState<string>("all");
 
-  // В реальном приложении здесь будет запрос к API
   const { data: specialists = [], isLoading } = useQuery<Specialist[]>({
-    queryKey: ["/api/specialists", filter],
-    queryFn: async () => {
-      // Временные данные для демонстрации
-      return [
-        {
-          id: 1,
-          name: "Иван Петров",
-          avatar: "",
-          specialty: "Электрик",
-          experience: 8,
-          rating: 4.9,
-          reviewCount: 127,
-          location: "Москва",
-          hourlyRate: 2500,
-          services: ["Проводка", "Освещение", "Розетки"],
-          isOnline: true,
-          description: "Профессиональный электрик с 8-летним опытом работы..."
-        },
-        {
-          id: 2,
-          name: "Сергей Иванов",
-          avatar: "",
-          specialty: "Сантехник",
-          experience: 12,
-          rating: 4.8,
-          reviewCount: 89,
-          location: "Санкт-Петербург",
-          hourlyRate: 3000,
-          services: ["Водопровод", "Отопление", "Канализация"],
-          isOnline: false,
-          description: "Опытный сантехник, специализируюсь на сложных системах..."
-        }
-      ];
-    }
+    queryKey: ["/api/specialists"],
   });
 
   if (isLoading) {
@@ -101,21 +72,21 @@ export default function Specialists() {
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={specialist.avatar} />
+                    <AvatarImage src={specialist.images?.[0]} />
                     <AvatarFallback>
                       <User className="h-6 w-6" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <CardTitle className="text-lg">{specialist.name}</CardTitle>
-                    <p className="text-sm text-gray-600">{specialist.specialty}</p>
+                    <p className="text-sm text-gray-600">{specialist.user.username}</p>
                     <div className="flex items-center mt-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm ml-1">{specialist.rating}</span>
+                      <span className="text-sm ml-1">{specialist.user.rating}</span>
                       <span className="text-sm text-gray-500 ml-1">
-                        ({specialist.reviewCount})
+                        ({specialist.user.completedProjects})
                       </span>
-                      {specialist.isOnline && (
+                      {specialist.user.isVerified && (
                         <div className="ml-2 h-2 w-2 bg-green-500 rounded-full"></div>
                       )}
                     </div>
@@ -130,11 +101,11 @@ export default function Specialists() {
                 
                 <div className="flex items-center text-sm text-gray-600">
                   <Clock className="h-4 w-4 mr-1" />
-                  Опыт: {specialist.experience} лет
+                  Опыт: {specialist.experience_years} лет
                 </div>
 
                 <div className="flex flex-wrap gap-1">
-                  {specialist.services.slice(0, 3).map((service) => (
+                  {specialist.specializations.slice(0, 3).map((service) => (
                     <Badge key={service} variant="secondary" className="text-xs">
                       {service}
                     </Badge>
@@ -142,7 +113,7 @@ export default function Specialists() {
                 </div>
 
                 <div className="text-lg font-semibold text-green-600">
-                  от {specialist.hourlyRate.toLocaleString()} ₽/час
+                  от {specialist.hourly_rate.toLocaleString()} ₽/час
                 </div>
 
                 <div className="flex space-x-2 pt-2">
