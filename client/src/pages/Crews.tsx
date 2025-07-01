@@ -114,14 +114,14 @@ export default function Crews() {
                 </div>
 
                 <div className="flex flex-wrap gap-1">
-                  {crew.specializations.slice(0, 3).map((service) => (
+                  {(crew.specializations || []).slice(0, 3).map((service) => (
                     <Badge key={service} variant="secondary" className="text-xs">
                       {service}
                     </Badge>
                   ))}
-                  {crew.specializations.length > 3 && (
+                  {(crew.specializations || []).length > 3 && (
                     <Badge variant="secondary" className="text-xs">
-                      +{crew.specializations.length - 3}
+                      +{(crew.specializations || []).length - 3}
                     </Badge>
                   )}
                 </div>

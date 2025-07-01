@@ -1156,6 +1156,7 @@ export class SimpleSQLiteStorage implements IStorage {
       return crews.map(crew => ({
         ...crew,
         images: this.parseImages(crew.images),
+        specializations: this.parseImages(crew.specializations),
         user: {
           id: crew.user_id,
           username: crew.username,
