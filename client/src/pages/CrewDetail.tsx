@@ -90,11 +90,11 @@ export default function CrewDetail() {
   const queryClient = useQueryClient();
 
   const { data: crew, isLoading: crewLoading } = useQuery<Crew>({
-    queryKey: ["/api/crews", id],
+    queryKey: [`/api/crews/${id}`],
   });
 
   const { data: reviews = [], isLoading: reviewsLoading } = useQuery<Review[]>({
-    queryKey: ["/api/crews", id, "reviews"],
+    queryKey: [`/api/crews/${id}/reviews`],
   });
 
   const { data: user } = useQuery<User>({
@@ -123,8 +123,8 @@ export default function CrewDetail() {
         description: "Отзыв добавлен",
       });
       reviewForm.reset();
-      queryClient.invalidateQueries({ queryKey: ["/api/crews", id, "reviews"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/crews", id] });
+      queryClient.invalidateQueries({ queryKey: [`/api/crews/${id}/reviews`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/crews/${id}`] });
     },
     onError: (error: Error) => {
       toast({
