@@ -89,6 +89,7 @@ function StarRating({ rating, onChange, readOnly = true }: {
 
 export default function SpecialistDetail() {
   const { id } = useParams();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -315,8 +316,7 @@ export default function SpecialistDetail() {
                 <Button 
                   className="w-full bg-green-600 hover:bg-green-700"
                   onClick={() => {
-                    // Логика отправки сообщения
-                    console.log(`Отправить сообщение специалисту ${specialist.id}`);
+                    navigate(`/messages?userId=${specialist.user.id}`);
                   }}
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
