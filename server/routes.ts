@@ -1327,6 +1327,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  apiRouter.get('/specialists/:id', async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const specialist = await storage.getSpecialist(parseInt(id));
+      if (!specialist) {
+        return res.status(404).json({ error: 'Специалист не найден' });
+      }
+      res.json(specialist);
+    } catch (error) {
+      console.error('Error fetching specialist:', error);
+      res.status(500).json({ error: 'Ошибка загрузки специалиста' });
+    }
+  });
+
   apiRouter.post('/specialists', authMiddleware, async (req: Request, res: Response) => {
     try {
       console.log('Creating specialist with data:', req.body);
@@ -1357,6 +1371,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching crews:', error);
       res.status(500).json({ error: 'Ошибка загрузки бригад' });
+    }
+  });
+
+  apiRouter.get('/crews/:id', async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const crew = await storage.getCrew(parseInt(id));
+      if (!crew) {
+        return res.status(404).json({ error: 'Бригада не найдена' });
+      }
+      res.json(crew);
+    } catch (error) {
+      console.error('Error fetching crew:', error);
+      res.status(500).json({ error: 'Ошибка загрузки бригады' });
     }
   });
 
