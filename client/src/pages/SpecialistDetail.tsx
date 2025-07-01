@@ -93,12 +93,14 @@ export default function SpecialistDetail() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: specialist, isLoading: specialistLoading } = useQuery<Specialist>({
-    queryKey: ["/api/specialists", id],
+  const { data: specialist, isLoading: specialistLoading, error } = useQuery<Specialist>({
+    queryKey: [`/api/specialists/${id}`],
+    enabled: !!id,
   });
 
   const { data: reviews = [], isLoading: reviewsLoading } = useQuery<Review[]>({
-    queryKey: ["/api/specialists", id, "reviews"],
+    queryKey: [`/api/specialists/${id}/reviews`],
+    enabled: !!id,
   });
 
   const { data: user } = useQuery<User>({
@@ -143,10 +145,21 @@ export default function SpecialistDetail() {
     reviewMutation.mutate(data);
   };
 
+  console.log('SpecialistDetail render:', { id, specialist, specialistLoading, error });
+
   if (specialistLoading || reviewsLoading) {
     return (
       <div className="container py-12">
         <div className="text-center">Загрузка...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error('Error loading specialist:', error);
+    return (
+      <div className="container py-12">
+        <div className="text-center">Ошибка загрузки: {error.message}</div>
       </div>
     );
   }
