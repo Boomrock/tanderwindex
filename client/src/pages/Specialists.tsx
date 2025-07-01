@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MessageCircle, Plus, User, MapPin, Clock } from "lucide-react";
 import { Link } from "wouter";
+import SpecialistFilters, { SpecialistFilters as SpecialistFiltersType } from "@/components/specialists/SpecialistFilters";
 
 interface Specialist {
   id: number;
@@ -29,10 +30,43 @@ interface Specialist {
 }
 
 export default function Specialists() {
-  const [filter, setFilter] = useState<string>("all");
+  const [filters, setFilters] = useState<SpecialistFiltersType>({
+    search: '',
+    location: '',
+    specialization: '',
+    minExperience: 0,
+    maxExperience: 20,
+    minRate: 0,
+    maxRate: 10000,
+    verified: null,
+    sortBy: 'rating',
+    sortOrder: 'desc'
+  });
+
+  const buildQueryString = (filters: SpecialistFiltersType) => {
+    const params = new URLSearchParams();
+    if (filters.search) params.append('search', filters.search);
+    if (filters.location) params.append('location', filters.location);
+    if (filters.specialization) params.append('specialization', filters.specialization);
+    if (filters.minExperience > 0) params.append('minExperience', filters.minExperience.toString());
+    if (filters.maxExperience < 20) params.append('maxExperience', filters.maxExperience.toString());
+    if (filters.minRate > 0) params.append('minRate', filters.minRate.toString());
+    if (filters.maxRate < 10000) params.append('maxRate', filters.maxRate.toString());
+    if (filters.verified !== null) params.append('verified', filters.verified.toString());
+    if (filters.sortBy) params.append('sortBy', filters.sortBy);
+    if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+    
+    return params.toString() ? `?${params.toString()}` : '';
+  };
 
   const { data: specialists = [], isLoading } = useQuery<Specialist[]>({
-    queryKey: ["/api/specialists"],
+    queryKey: ["/api/specialists", filters],
+    queryFn: async () => {
+      const queryString = buildQueryString(filters);
+      const response = await fetch(`/api/specialists${queryString}`);
+      if (!response.ok) throw new Error('Failed to fetch specialists');
+      return response.json();
+    },
   });
 
   if (isLoading) {
@@ -65,6 +99,11 @@ export default function Specialists() {
             </Button>
           </Link>
         </div>
+
+        <SpecialistFilters 
+          onFiltersChange={setFilters}
+          initialFilters={filters}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {specialists.map((specialist) => (

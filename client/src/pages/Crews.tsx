@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, MessageCircle, Plus, Users, MapPin, Clock } from "lucide-react";
 import { Link } from "wouter";
+import CrewFilters, { CrewFilters as CrewFiltersType } from "@/components/crews/CrewFilters";
 
 interface Crew {
   id: number;
@@ -30,11 +31,47 @@ interface Crew {
 }
 
 export default function Crews() {
-  const [filter, setFilter] = useState<string>("all");
+  const [filters, setFilters] = useState<CrewFiltersType>({
+    search: '',
+    location: '',
+    specialization: '',
+    minExperience: 0,
+    maxExperience: 20,
+    minRate: 0,
+    maxRate: 10000,
+    minTeamSize: 2,
+    maxTeamSize: 50,
+    verified: null,
+    sortBy: 'rating',
+    sortOrder: 'desc'
+  });
 
-  // В реальном приложении здесь будет запрос к API
+  const buildQueryString = (filters: CrewFiltersType) => {
+    const params = new URLSearchParams();
+    if (filters.search) params.append('search', filters.search);
+    if (filters.location) params.append('location', filters.location);
+    if (filters.specialization) params.append('specialization', filters.specialization);
+    if (filters.minExperience > 0) params.append('minExperience', filters.minExperience.toString());
+    if (filters.maxExperience < 20) params.append('maxExperience', filters.maxExperience.toString());
+    if (filters.minRate > 0) params.append('minRate', filters.minRate.toString());
+    if (filters.maxRate < 10000) params.append('maxRate', filters.maxRate.toString());
+    if (filters.minTeamSize > 2) params.append('minTeamSize', filters.minTeamSize.toString());
+    if (filters.maxTeamSize < 50) params.append('maxTeamSize', filters.maxTeamSize.toString());
+    if (filters.verified !== null) params.append('verified', filters.verified.toString());
+    if (filters.sortBy) params.append('sortBy', filters.sortBy);
+    if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
+    
+    return params.toString() ? `?${params.toString()}` : '';
+  };
+
   const { data: crews = [], isLoading } = useQuery<Crew[]>({
-    queryKey: ["/api/crews"],
+    queryKey: ["/api/crews", filters],
+    queryFn: async () => {
+      const queryString = buildQueryString(filters);
+      const response = await fetch(`/api/crews${queryString}`);
+      if (!response.ok) throw new Error('Failed to fetch crews');
+      return response.json();
+    },
   });
 
   if (isLoading) {
@@ -67,6 +104,11 @@ export default function Crews() {
             </Button>
           </Link>
         </div>
+
+        <CrewFilters 
+          onFiltersChange={setFilters}
+          initialFilters={filters}
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {crews.map((crew) => (
