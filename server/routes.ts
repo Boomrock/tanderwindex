@@ -1336,7 +1336,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user_id: req.user.id,
         specializations: req.body.specializations || [],
         images: req.body.images || [],
-        status: 'pending'
+        status: 'approved'
       };
       console.log('Processed specialist data:', specialistData);
       const specialist = await storage.createSpecialist(specialistData);
@@ -1368,7 +1368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user_id: req.user.id,
         specializations: req.body.specializations || [],
         images: req.body.images || [],
-        status: 'pending'
+        status: 'approved'
       };
       const crew = await storage.createCrew(crewData);
       res.status(201).json(crew);
