@@ -1323,8 +1323,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Specialists routes
   apiRouter.get('/specialists', async (req: Request, res: Response) => {
     try {
-      const { status = 'approved' } = req.query;
-      const specialists = await storage.getSpecialists({ status: status as string });
+      const {
+        status = 'approved',
+        search,
+        location,
+        specialization,
+        minExperience,
+        maxExperience,
+        minRate,
+        maxRate,
+        verified,
+        sortBy = 'rating',
+        sortOrder = 'desc'
+      } = req.query;
+      
+      const filters = {
+        status: status as string,
+        search: search as string,
+        location: location as string,
+        specialization: specialization as string,
+        minExperience: minExperience ? parseInt(minExperience as string) : undefined,
+        maxExperience: maxExperience ? parseInt(maxExperience as string) : undefined,
+        minRate: minRate ? parseInt(minRate as string) : undefined,
+        maxRate: maxRate ? parseInt(maxRate as string) : undefined,
+        verified: verified ? verified === 'true' : undefined,
+        sortBy: sortBy as string,
+        sortOrder: sortOrder as 'asc' | 'desc'
+      };
+      
+      const specialists = await storage.getSpecialists(filters);
       res.json(specialists);
     } catch (error) {
       console.error('Error fetching specialists:', error);
@@ -1385,8 +1412,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Crews routes
   apiRouter.get('/crews', async (req: Request, res: Response) => {
     try {
-      const { status = 'approved' } = req.query;
-      const crews = await storage.getCrews({ status: status as string });
+      const {
+        status = 'approved',
+        search,
+        location,
+        specialization,
+        minExperience,
+        maxExperience,
+        minRate,
+        maxRate,
+        minTeamSize,
+        maxTeamSize,
+        verified,
+        sortBy = 'rating',
+        sortOrder = 'desc'
+      } = req.query;
+      
+      const filters = {
+        status: status as string,
+        search: search as string,
+        location: location as string,
+        specialization: specialization as string,
+        minExperience: minExperience ? parseInt(minExperience as string) : undefined,
+        maxExperience: maxExperience ? parseInt(maxExperience as string) : undefined,
+        minRate: minRate ? parseInt(minRate as string) : undefined,
+        maxRate: maxRate ? parseInt(maxRate as string) : undefined,
+        minTeamSize: minTeamSize ? parseInt(minTeamSize as string) : undefined,
+        maxTeamSize: maxTeamSize ? parseInt(maxTeamSize as string) : undefined,
+        verified: verified ? verified === 'true' : undefined,
+        sortBy: sortBy as string,
+        sortOrder: sortOrder as 'asc' | 'desc'
+      };
+      
+      const crews = await storage.getCrews(filters);
       res.json(crews);
     } catch (error) {
       console.error('Error fetching crews:', error);

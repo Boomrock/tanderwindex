@@ -1029,7 +1029,19 @@ export class SimpleSQLiteStorage implements IStorage {
   }
 
   // Specialists methods
-  async getSpecialists(filters?: { status?: string }): Promise<any[]> {
+  async getSpecialists(filters?: { 
+    status?: string;
+    search?: string;
+    location?: string;
+    specialization?: string;
+    minExperience?: number;
+    maxExperience?: number;
+    minRate?: number;
+    maxRate?: number;
+    verified?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<any[]> {
     try {
       let query = `
         SELECT s.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
@@ -1040,7 +1052,57 @@ export class SimpleSQLiteStorage implements IStorage {
       
       const params: any[] = [];
       
-      query += ' ORDER BY s.created_at DESC';
+      // Apply filters
+      if (filters?.search) {
+        query += ` AND (s.name LIKE ? OR s.description LIKE ? OR s.specializations LIKE ?)`;
+        const searchPattern = `%${filters.search}%`;
+        params.push(searchPattern, searchPattern, searchPattern);
+      }
+      
+      if (filters?.location) {
+        query += ` AND s.location LIKE ?`;
+        params.push(`%${filters.location}%`);
+      }
+      
+      if (filters?.specialization) {
+        query += ` AND s.specializations LIKE ?`;
+        params.push(`%${filters.specialization}%`);
+      }
+      
+      if (filters?.minExperience !== undefined) {
+        query += ` AND s.experience_years >= ?`;
+        params.push(filters.minExperience);
+      }
+      
+      if (filters?.maxExperience !== undefined) {
+        query += ` AND s.experience_years <= ?`;
+        params.push(filters.maxExperience);
+      }
+      
+      if (filters?.minRate !== undefined) {
+        query += ` AND s.hourly_rate >= ?`;
+        params.push(filters.minRate);
+      }
+      
+      if (filters?.maxRate !== undefined) {
+        query += ` AND s.hourly_rate <= ?`;
+        params.push(filters.maxRate);
+      }
+      
+      if (filters?.verified !== undefined) {
+        query += ` AND u.is_verified = ?`;
+        params.push(filters.verified ? 1 : 0);
+      }
+      
+      // Apply sorting
+      let orderColumn = 's.created_at';
+      if (filters?.sortBy === 'rating') orderColumn = 'u.rating';
+      else if (filters?.sortBy === 'hourly_rate') orderColumn = 's.hourly_rate';
+      else if (filters?.sortBy === 'experience_years') orderColumn = 's.experience_years';
+      else if (filters?.sortBy === 'name') orderColumn = 's.name';
+      
+      const sortOrder = filters?.sortOrder === 'asc' ? 'ASC' : 'DESC';
+      query += ` ORDER BY ${orderColumn} ${sortOrder}`;
       
       const stmt = this.db.prepare(query);
       const specialists = stmt.all(...params) as any[];
@@ -1253,7 +1315,21 @@ export class SimpleSQLiteStorage implements IStorage {
   async createDesignProject(): Promise<any> { return null; }
   async updateDesignProject(): Promise<any> { return null; }
   async deleteDesignProject(): Promise<boolean> { return false; }
-  async getCrews(filters?: { status?: string }): Promise<any[]> { 
+  async getCrews(filters?: { 
+    status?: string;
+    search?: string;
+    location?: string;
+    specialization?: string;
+    minExperience?: number;
+    maxExperience?: number;
+    minRate?: number;
+    maxRate?: number;
+    minTeamSize?: number;
+    maxTeamSize?: number;
+    verified?: boolean;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<any[]> { 
     try {
       let query = `
         SELECT c.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
@@ -1264,7 +1340,68 @@ export class SimpleSQLiteStorage implements IStorage {
       
       const params: any[] = [];
       
-      query += ' ORDER BY c.created_at DESC';
+      // Apply filters
+      if (filters?.search) {
+        query += ` AND (c.name LIKE ? OR c.description LIKE ? OR c.specializations LIKE ?)`;
+        const searchPattern = `%${filters.search}%`;
+        params.push(searchPattern, searchPattern, searchPattern);
+      }
+      
+      if (filters?.location) {
+        query += ` AND c.location LIKE ?`;
+        params.push(`%${filters.location}%`);
+      }
+      
+      if (filters?.specialization) {
+        query += ` AND c.specializations LIKE ?`;
+        params.push(`%${filters.specialization}%`);
+      }
+      
+      if (filters?.minExperience !== undefined) {
+        query += ` AND c.experience_years >= ?`;
+        params.push(filters.minExperience);
+      }
+      
+      if (filters?.maxExperience !== undefined) {
+        query += ` AND c.experience_years <= ?`;
+        params.push(filters.maxExperience);
+      }
+      
+      if (filters?.minRate !== undefined) {
+        query += ` AND c.hourly_rate >= ?`;
+        params.push(filters.minRate);
+      }
+      
+      if (filters?.maxRate !== undefined) {
+        query += ` AND c.hourly_rate <= ?`;
+        params.push(filters.maxRate);
+      }
+      
+      if (filters?.minTeamSize !== undefined) {
+        query += ` AND c.team_size >= ?`;
+        params.push(filters.minTeamSize);
+      }
+      
+      if (filters?.maxTeamSize !== undefined) {
+        query += ` AND c.team_size <= ?`;
+        params.push(filters.maxTeamSize);
+      }
+      
+      if (filters?.verified !== undefined) {
+        query += ` AND u.is_verified = ?`;
+        params.push(filters.verified ? 1 : 0);
+      }
+      
+      // Apply sorting
+      let orderColumn = 'c.created_at';
+      if (filters?.sortBy === 'rating') orderColumn = 'u.rating';
+      else if (filters?.sortBy === 'hourly_rate') orderColumn = 'c.hourly_rate';
+      else if (filters?.sortBy === 'experience_years') orderColumn = 'c.experience_years';
+      else if (filters?.sortBy === 'team_size') orderColumn = 'c.team_size';
+      else if (filters?.sortBy === 'name') orderColumn = 'c.name';
+      
+      const sortOrder = filters?.sortOrder === 'asc' ? 'ASC' : 'DESC';
+      query += ` ORDER BY ${orderColumn} ${sortOrder}`;
       
       const stmt = this.db.prepare(query);
       const crews = stmt.all(...params) as any[];
@@ -1276,8 +1413,7 @@ export class SimpleSQLiteStorage implements IStorage {
         user: {
           id: crew.user_id,
           username: crew.username,
-          firstName: crew.first_name,
-          lastName: crew.last_name,
+          fullName: crew.first_name && crew.last_name ? `${crew.first_name} ${crew.last_name}` : crew.username,
           rating: crew.rating,
           isVerified: Boolean(crew.is_verified),
           completedProjects: crew.completed_projects
