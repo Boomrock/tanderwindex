@@ -919,14 +919,10 @@ export class SimpleSQLiteStorage implements IStorage {
         SELECT s.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
         FROM specialists s
         LEFT JOIN users u ON s.user_id = u.id
+        WHERE s.status = 'approved'
       `;
       
       const params: any[] = [];
-      
-      if (filters?.status) {
-        query += ' WHERE s.status = ?';
-        params.push(filters.status);
-      }
       
       query += ' ORDER BY s.created_at DESC';
       
@@ -1013,7 +1009,7 @@ export class SimpleSQLiteStorage implements IStorage {
         specializations,
         images,
         phone,
-        'pending',
+        'approved',
         now,
         now
       );
@@ -1147,14 +1143,10 @@ export class SimpleSQLiteStorage implements IStorage {
         SELECT c.*, u.username, u.first_name, u.last_name, u.rating, u.is_verified, u.completed_projects
         FROM crews c
         LEFT JOIN users u ON c.user_id = u.id
+        WHERE c.status = 'approved'
       `;
       
       const params: any[] = [];
-      
-      if (filters?.status) {
-        query += ' WHERE c.status = ?';
-        params.push(filters.status);
-      }
       
       query += ' ORDER BY c.created_at DESC';
       
@@ -1239,7 +1231,7 @@ export class SimpleSQLiteStorage implements IStorage {
         hourlyRate,
         specializations,
         images,
-        'pending',
+        'approved',
         now,
         now
       );

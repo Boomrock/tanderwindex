@@ -178,6 +178,11 @@ The platform uses PostgreSQL with the following key entities:
   - Implemented ReviewsList component to display existing reviews with reviewer information
   - Added API endpoints for review creation and retrieval (/reviews, /specialists/:id/reviews)
   - Enhanced forms with proper state management for images array and validation
+- July 1, 2025. Removed moderation system for specialists and crews:
+  - Changed status from 'pending' to 'approved' for new specialist and crew registrations
+  - Updated getSpecialists and getCrews methods to only show approved profiles
+  - Eliminated admin approval workflow - profiles now go directly to public listing
+  - Simplified user experience by removing moderation delay
 
 ## User Preferences
 
