@@ -134,12 +134,9 @@ export default function Messages() {
                   <div className="h-full flex flex-col items-center justify-center p-4 text-center">
                     <MessageCircle className="h-16 w-16 text-gray-300 mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">Выберите диалог</h3>
-                    <p className="text-gray-500 mb-4">
-                      Выберите диалог из списка или начните новый разговор
+                    <p className="text-gray-500">
+                      Выберите диалог из списка для продолжения разговора
                     </p>
-                    <Link href="/messages/new">
-                      <Button>Новое сообщение</Button>
-                    </Link>
                   </div>
                 )}
               </div>

@@ -5,7 +5,6 @@ import {
   Clock, 
   MapPin, 
   Eye, 
-  Heart, 
   Share2, 
   ChevronLeft, 
   ChevronRight, 
@@ -40,7 +39,6 @@ interface MarketplaceItemDetailProps {
 }
 
 export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDetailProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   
@@ -79,15 +77,7 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
     },
   });
 
-  const handleToggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-    toast({
-      title: isFavorite ? 'Удалено из избранного' : 'Добавлено в избранное',
-      description: isFavorite 
-        ? 'Объявление удалено из избранного' 
-        : 'Объявление добавлено в избранное',
-    });
-  };
+;
 
   const handleShare = () => {
     // In a real app, this would use the Web Share API or copy to clipboard
@@ -377,25 +367,14 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
               </Button>
             )}
             
-            <div className="flex gap-2">
-              <Button 
-                className="flex-1" 
-                variant="outline"
-                onClick={handleToggleFavorite}
-              >
-                <Heart className={`mr-2 h-4 w-4 ${isFavorite ? 'fill-primary text-primary' : ''}`} />
-                {isFavorite ? 'В избранном' : 'В избранное'}
-              </Button>
-              
-              <Button 
-                className="flex-1" 
-                variant="outline"
-                onClick={handleShare}
-              >
-                <Share2 className="mr-2 h-4 w-4" />
-                Поделиться
-              </Button>
-            </div>
+            <Button 
+              className="w-full" 
+              variant="outline"
+              onClick={handleShare}
+            >
+              <Share2 className="mr-2 h-4 w-4" />
+              Поделиться
+            </Button>
           </Card>
           
           {/* Safety tips */}
@@ -409,13 +388,7 @@ export default function MarketplaceItemDetail({ listingId }: MarketplaceItemDeta
             </ul>
           </Card>
           
-          {/* Similar listings */}
-          <Card className="p-6 mt-4">
-            <h3 className="font-semibold mb-2">Похожие объявления</h3>
-            <p className="text-center text-gray-500 py-3">
-              Функция "Похожие объявления" будет доступна в ближайшее время.
-            </p>
-          </Card>
+
         </div>
       </div>
       
