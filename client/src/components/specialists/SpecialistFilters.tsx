@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -52,6 +52,7 @@ const sortOptions = [
 
 export default function SpecialistFilters({ onFiltersChange, initialFilters }: SpecialistFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [searchValue, setSearchValue] = useState(initialFilters?.search || '');
   const [filters, setFilters] = useState<SpecialistFilters>({
     search: initialFilters?.search || '',
     location: initialFilters?.location || '',
@@ -64,6 +65,17 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
     sortBy: initialFilters?.sortBy || 'rating',
     sortOrder: initialFilters?.sortOrder || 'desc'
   });
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const updatedFilters = { ...filters, search: searchValue };
+      setFilters(updatedFilters);
+      onFiltersChange(updatedFilters);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timeoutId);
+  }, [searchValue]);
 
   const updateFilters = (newFilters: Partial<SpecialistFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };
@@ -84,12 +96,13 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
       sortBy: 'rating',
       sortOrder: 'desc'
     };
+    setSearchValue('');
     setFilters(clearedFilters);
     onFiltersChange(clearedFilters);
   };
 
   const hasActiveFilters = () => {
-    return filters.search || filters.location || filters.specialization || 
+    return searchValue || filters.location || filters.specialization || 
            filters.minExperience > 0 || filters.maxExperience < 20 ||
            filters.minRate > 0 || filters.maxRate < 10000 || 
            filters.verified !== null;
@@ -97,7 +110,7 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (filters.search) count++;
+    if (searchValue) count++;
     if (filters.location) count++;
     if (filters.specialization) count++;
     if (filters.minExperience > 0 || filters.maxExperience < 20) count++;
@@ -135,8 +148,8 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Поиск по названию, описанию, специализации..."
-            value={filters.search}
-            onChange={(e) => updateFilters({ search: e.target.value })}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             className="pl-10"
           />
         </div>
