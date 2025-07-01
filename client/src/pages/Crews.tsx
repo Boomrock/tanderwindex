@@ -11,17 +11,22 @@ import { Link } from "wouter";
 interface Crew {
   id: number;
   name: string;
-  avatar?: string;
-  specialty: string;
-  experience: number;
-  rating: number;
-  reviewCount: number;
-  location: string;
-  dailyRate: number;
-  memberCount: number;
-  services: string[];
-  isAvailable: boolean;
   description: string;
+  location: string;
+  experience_years: number;
+  team_size: number;
+  hourly_rate: number;
+  specializations: string[];
+  images: string[];
+  status: string;
+  user: {
+    id: number;
+    username: string;
+    fullName: string;
+    rating: number;
+    isVerified: boolean;
+    completedProjects: number;
+  };
 }
 
 export default function Crews() {
@@ -29,42 +34,7 @@ export default function Crews() {
 
   // В реальном приложении здесь будет запрос к API
   const { data: crews = [], isLoading } = useQuery<Crew[]>({
-    queryKey: ["/api/crews", filter],
-    queryFn: async () => {
-      // Временные данные для демонстрации
-      return [
-        {
-          id: 1,
-          name: "Бригада \"Строймастер\"",
-          avatar: "",
-          specialty: "Отделочные работы",
-          experience: 15,
-          rating: 4.9,
-          reviewCount: 84,
-          location: "Москва",
-          dailyRate: 25000,
-          memberCount: 6,
-          services: ["Штукатурка", "Покраска", "Обои", "Плитка"],
-          isAvailable: true,
-          description: "Профессиональная бригада отделочников с большим опытом..."
-        },
-        {
-          id: 2,
-          name: "Строительная бригада \"Мастер+\"",
-          avatar: "",
-          specialty: "Общестроительные работы",
-          experience: 20,
-          rating: 4.8,
-          reviewCount: 156,
-          location: "Санкт-Петербург",
-          dailyRate: 35000,
-          memberCount: 8,
-          services: ["Кирпичная кладка", "Бетонные работы", "Кровля"],
-          isAvailable: false,
-          description: "Опытная строительная бригада, выполняем работы любой сложности..."
-        }
-      ];
-    }
+    queryKey: ["/api/crews"],
   });
 
   if (isLoading) {
@@ -104,23 +74,23 @@ export default function Crews() {
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={crew.avatar} />
+                    <AvatarImage src={crew.images?.[0]} />
                     <AvatarFallback>
                       <Users className="h-6 w-6" />
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
                     <CardTitle className="text-lg">{crew.name}</CardTitle>
-                    <p className="text-sm text-gray-600">{crew.specialty}</p>
+                    <p className="text-sm text-gray-600">{crew.user.username}</p>
                     <div className="flex items-center mt-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm ml-1">{crew.rating}</span>
+                      <span className="text-sm ml-1">{crew.user.rating}</span>
                       <span className="text-sm text-gray-500 ml-1">
-                        ({crew.reviewCount})
+                        ({crew.user.completedProjects})
                       </span>
-                      {crew.isAvailable && (
+                      {crew.user.isVerified && (
                         <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
-                          Доступна
+                          Проверена
                         </Badge>
                       )}
                     </div>
@@ -135,29 +105,29 @@ export default function Crews() {
                 
                 <div className="flex items-center text-sm text-gray-600">
                   <Clock className="h-4 w-4 mr-1" />
-                  Опыт: {crew.experience} лет
+                  Опыт: {crew.experience_years} лет
                 </div>
 
                 <div className="flex items-center text-sm text-gray-600">
                   <Users className="h-4 w-4 mr-1" />
-                  {crew.memberCount} специалистов
+                  {crew.team_size} специалистов
                 </div>
 
                 <div className="flex flex-wrap gap-1">
-                  {crew.services.slice(0, 3).map((service) => (
+                  {crew.specializations.slice(0, 3).map((service) => (
                     <Badge key={service} variant="secondary" className="text-xs">
                       {service}
                     </Badge>
                   ))}
-                  {crew.services.length > 3 && (
+                  {crew.specializations.length > 3 && (
                     <Badge variant="secondary" className="text-xs">
-                      +{crew.services.length - 3}
+                      +{crew.specializations.length - 3}
                     </Badge>
                   )}
                 </div>
 
                 <div className="text-lg font-semibold text-green-600">
-                  от {crew.dailyRate.toLocaleString()} ₽/день
+                  от {crew.hourly_rate.toLocaleString()} ₽/час
                 </div>
 
                 <div className="flex space-x-2 pt-2">
