@@ -158,9 +158,9 @@ export default function SpecialistDetail() {
     );
   }
 
-  const displayName = specialist.user.firstName && specialist.user.lastName 
+  const displayName = specialist.user?.firstName && specialist.user?.lastName 
     ? `${specialist.user.firstName} ${specialist.user.lastName}` 
-    : specialist.user.username;
+    : specialist.user?.username || 'Специалист';
 
   const averageRating = reviews.length > 0 
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
@@ -170,7 +170,7 @@ export default function SpecialistDetail() {
     <>
       <Helmet>
         <title>{displayName} - Windexs-Строй</title>
-        <meta name="description" content={`Профиль специалиста ${displayName}. ${specialist.description}`} />
+        <meta name="description" content={`Профиль специалиста ${displayName}. ${specialist.description || ''}`} />
       </Helmet>
 
       <div className="container py-12">

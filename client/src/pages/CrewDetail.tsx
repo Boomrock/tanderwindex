@@ -162,8 +162,8 @@ export default function CrewDetail() {
   return (
     <>
       <Helmet>
-        <title>{crew.name} - Windexs-Строй</title>
-        <meta name="description" content={`Профиль бригады ${crew.name}. ${crew.description}`} />
+        <title>{crew.name || 'Бригада'} - Windexs-Строй</title>
+        <meta name="description" content={`Профиль бригады ${crew.name || 'Бригада'}. ${crew.description || ''}`} />
       </Helmet>
 
       <div className="container py-12">
