@@ -316,14 +316,14 @@ export default function SpecialistDetail() {
                 <Button 
                   className="w-full bg-green-600 hover:bg-green-700"
                   onClick={() => {
-                    navigate(`/messages?userId=${specialist.user.id}`);
+                    navigate(`/messages?userId=${specialist.user?.id}`);
                   }}
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Написать сообщение
                 </Button>
 
-                {user && user.id !== specialist.user.id && (
+                {user && user.id !== specialist.user?.id && (
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="outline" className="w-full">
