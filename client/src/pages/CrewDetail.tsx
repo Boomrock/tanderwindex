@@ -219,17 +219,17 @@ export default function CrewDetail() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h3 className="font-semibold mb-1">Опыт работы</h3>
-                    <p className="text-gray-700">{crew.experience_years} лет</p>
+                    <p className="text-gray-700">{crew.experience_years || 0} лет</p>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Размер команды</h3>
-                    <p className="text-gray-700">{crew.team_size} человек</p>
+                    <p className="text-gray-700">{crew.team_size || 0} человек</p>
                   </div>
                 </div>
 
                 <div>
                   <h3 className="font-semibold mb-1">Стоимость работ</h3>
-                  <p className="text-gray-700">{crew.hourly_rate.toLocaleString()} ₽/час</p>
+                  <p className="text-gray-700">{crew.hourly_rate ? crew.hourly_rate.toLocaleString() : 'Не указано'} ₽/час</p>
                 </div>
 
                 {crew.images && crew.images.length > 0 && (
@@ -301,11 +301,11 @@ export default function CrewDetail() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Опыт работы:</span>
-                  <span className="font-semibold">{crew.experience_years} лет</span>
+                  <span className="font-semibold">{crew.experience_years || 0} лет</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Размер команды:</span>
-                  <span className="font-semibold">{crew.team_size} чел.</span>
+                  <span className="font-semibold">{crew.team_size || 0} чел.</span>
                 </div>
               </CardContent>
             </Card>
