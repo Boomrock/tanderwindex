@@ -145,7 +145,7 @@ export default function SpecialistDetail() {
     reviewMutation.mutate(data);
   };
 
-  console.log('SpecialistDetail render:', { id, specialist, specialistLoading, error });
+
 
   if (specialistLoading || reviewsLoading) {
     return (
@@ -195,7 +195,7 @@ export default function SpecialistDetail() {
               <CardHeader>
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-16 w-16">
-                    <AvatarImage src={specialist.images?.[0] ? `/api/files/${specialist.images[0]}` : undefined} />
+                    <AvatarImage src={specialist.images?.[0] ? (specialist.images[0].startsWith('/api/files/') ? specialist.images[0] : `/api/files/${specialist.images[0]}`) : undefined} />
                     <AvatarFallback>
                       <User className="h-8 w-8" />
                     </AvatarFallback>
@@ -254,7 +254,7 @@ export default function SpecialistDetail() {
                       {specialist.images.map((image, index) => (
                         <img
                           key={index}
-                          src={`/api/files/${image}`}
+                          src={image.startsWith('/api/files/') ? image : `/api/files/${image}`}
                           alt={`Работа ${index + 1}`}
                           className="w-full h-32 object-cover rounded-lg"
                         />

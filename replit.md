@@ -210,6 +210,12 @@ The platform uses PostgreSQL with the following key entities:
   - Fixed SelectItem empty value errors by using "all" instead of empty strings
   - Improved user control over when filtering occurs for better performance
   - Applied changes to both SpecialistFilters and CrewFilters components
+- July 1, 2025. Fixed critical issues with specialist detail page and image display:
+  - Resolved undefined errors in SpecialistDetail component by adding proper null safety checks
+  - Fixed useQuery queryKey format from array to string for proper API calls
+  - Corrected image URL double-path issue (/api/files//api/files/) by checking if path already contains /api/files/
+  - Applied image path fixes to both SpecialistDetail and CrewDetail components
+  - Added proper error handling and loading states for specialist data
 
 ## User Preferences
 
