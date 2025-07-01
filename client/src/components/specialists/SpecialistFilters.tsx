@@ -213,12 +213,12 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             {/* Specialization */}
             <div>
               <label className="text-sm font-medium mb-2 block">Специализация</label>
-              <Select value={filters.specialization} onValueChange={(value) => updateFilters({ specialization: value })}>
+              <Select value={filters.specialization || "all"} onValueChange={(value) => updateFilters({ specialization: value === "all" ? "" : value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Выберите специализацию" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Все специализации</SelectItem>
+                  <SelectItem value="all">Все специализации</SelectItem>
                   {specializations.map((spec) => (
                     <SelectItem key={spec} value={spec}>
                       {spec}
@@ -259,14 +259,14 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             <div>
               <label className="text-sm font-medium mb-2 block">Статус</label>
               <Select 
-                value={filters.verified === null ? '' : String(filters.verified)} 
-                onValueChange={(value) => updateFilters({ verified: value === '' ? null : value === 'true' })}
+                value={filters.verified === null ? 'all' : String(filters.verified)} 
+                onValueChange={(value) => updateFilters({ verified: value === 'all' ? null : value === 'true' })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Все" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Все</SelectItem>
+                  <SelectItem value="all">Все</SelectItem>
                   <SelectItem value="true">Проверенные</SelectItem>
                   <SelectItem value="false">Не проверенные</SelectItem>
                 </SelectContent>
