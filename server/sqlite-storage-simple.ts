@@ -985,6 +985,8 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async createSpecialist(specialistData: any): Promise<any> {
     try {
+      console.log('Received specialist data:', specialistData);
+      
       const stmt = this.db.prepare(`
         INSERT INTO specialists (
           user_id, name, description, location, experience_years, 
@@ -997,16 +999,34 @@ export class SimpleSQLiteStorage implements IStorage {
       const images = Array.isArray(specialistData.images) ? JSON.stringify(specialistData.images) : '[]';
       const specializations = Array.isArray(specialistData.specializations) ? JSON.stringify(specialistData.specializations) : '[]';
       
+      // Map frontend field names to database field names
+      const userId = specialistData.user_id || specialistData.userId;
+      const experienceYears = specialistData.experience_years || specialistData.experience;
+      const hourlyRate = specialistData.hourly_rate || specialistData.hourlyRate;
+      const phone = specialistData.phone || null;
+      
+      console.log('Mapped values:', {
+        userId, 
+        name: specialistData.name,
+        description: specialistData.description,
+        location: specialistData.location,
+        experienceYears,
+        hourlyRate,
+        specializations,
+        images,
+        phone
+      });
+      
       const result = stmt.run(
-        specialistData.user_id || specialistData.userId,
+        userId,
         specialistData.name,
         specialistData.description,
         specialistData.location,
-        specialistData.experience_years || specialistData.experienceYears,
-        specialistData.hourly_rate || specialistData.hourlyRate,
+        experienceYears,
+        hourlyRate,
         specializations,
         images,
-        specialistData.phone,
+        phone,
         'pending',
         now,
         now
