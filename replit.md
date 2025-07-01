@@ -183,6 +183,13 @@ The platform uses PostgreSQL with the following key entities:
   - Updated getSpecialists and getCrews methods to only show approved profiles
   - Eliminated admin approval workflow - profiles now go directly to public listing
   - Simplified user experience by removing moderation delay
+- July 1, 2025. Implemented automatic rating calculation system:
+  - Added automatic calculation of specialist ratings based on review scores
+  - Created updateUserRating method that calculates average from all user reviews
+  - Modified createReview to automatically update user rating after each new review
+  - Implemented recalculate-ratings.ts script to update existing user ratings
+  - Ratings now display accurate averages with one decimal place precision
+  - Fixed image display issues in specialist and crew cards using correct /api/files/ path
 
 ## User Preferences
 

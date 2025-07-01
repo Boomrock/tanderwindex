@@ -763,16 +763,22 @@ export class SimpleSQLiteStorage implements IStorage {
       createdAt
     };
 
+    // Автоматически обновляем рейтинг пользователя
+    await this.updateUserRating(insertReview.revieweeId);
+
     return review;
   }
 
   async updateUserRating(userId: number): Promise<number> {
     const userReviews = await this.getUserReviews(userId);
     const avgRating = userReviews.length > 0 
-      ? Math.round(userReviews.reduce((sum, review) => sum + review.rating, 0) / userReviews.length)
+      ? Math.round((userReviews.reduce((sum, review) => sum + review.rating, 0) / userReviews.length) * 10) / 10
       : 0;
 
-    await this.updateUser(userId, { rating: avgRating });
+    // Обновляем рейтинг пользователя в базе данных
+    const stmt = this.db.prepare(`UPDATE users SET rating = ? WHERE id = ?`);
+    stmt.run(avgRating, userId);
+    
     return avgRating;
   }
 
