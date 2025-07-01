@@ -231,7 +231,7 @@ export default function CrewDetail() {
 
                 <div>
                   <h3 className="font-semibold mb-1">Стоимость работ</h3>
-                  <p className="text-gray-700">{crew.hourly_rate ? crew.hourly_rate.toLocaleString() : 'Не указано'} ₽/час</p>
+                  <p className="text-gray-700">{crew.hourly_rate ? crew.hourly_rate.toLocaleString() : 'Не указано'} ₽/услуги</p>
                 </div>
 
                 {crew.images && crew.images.length > 0 && (

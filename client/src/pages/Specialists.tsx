@@ -152,7 +152,7 @@ export default function Specialists() {
                 </div>
 
                 <div className="text-lg font-semibold text-green-600">
-                  от {specialist.hourly_rate.toLocaleString()} ₽/час
+                  от {specialist.hourly_rate.toLocaleString()} ₽/услуги
                 </div>
 
                 <div className="flex space-x-2 pt-2">

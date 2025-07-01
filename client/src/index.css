@@ -56,3 +56,58 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  /* Adjust text sizes for mobile */
+  h1 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.75rem !important;
+  }
+  
+  /* Adjust padding for mobile */
+  .py-12 {
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  
+  .py-8 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Better image sizing on mobile */
+  .h-64 {
+    height: 12rem !important;
+  }
+  
+  /* Adjust avatar sizes */
+  .h-16.w-16 {
+    height: 3rem !important;
+    width: 3rem !important;
+  }
+  
+  /* Better card spacing */
+  .gap-8 {
+    gap: 1rem !important;
+  }
+  
+  .gap-6 {
+    gap: 0.75rem !important;
+  }
+  
+  /* Mobile-friendly buttons */
+  .mobile-full-width {
+    width: 100% !important;
+  }
+}

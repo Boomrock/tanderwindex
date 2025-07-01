@@ -170,7 +170,7 @@ export default function Crews() {
                 </div>
 
                 <div className="text-lg font-semibold text-green-600">
-                  от {crew.hourly_rate.toLocaleString()} ₽/час
+                  от {crew.hourly_rate.toLocaleString()} ₽/услуги
                 </div>
 
                 <div className="flex space-x-2 pt-2">
