@@ -1,4 +1,4 @@
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,6 +86,7 @@ function StarRating({ rating, onChange, readOnly = true }: {
 
 export default function CrewDetail() {
   const { id } = useParams();
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -319,8 +320,7 @@ export default function CrewDetail() {
                 <Button 
                   className="w-full bg-green-600 hover:bg-green-700"
                   onClick={() => {
-                    // Логика отправки сообщения
-                    console.log(`Отправить сообщение бригаде ${crew.id}`);
+                    navigate(`/messages?userId=${crew.user?.id}`);
                   }}
                 >
                   <MessageCircle className="h-4 w-4 mr-2" />
