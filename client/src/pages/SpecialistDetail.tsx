@@ -194,7 +194,7 @@ export default function SpecialistDetail() {
                       <span className="text-sm ml-2 text-gray-600">
                         {(specialist.user?.rating || 0).toFixed(1)} ({reviews.length} отзывов)
                       </span>
-                      {specialist.user.isVerified && (
+                      {specialist.user?.isVerified && (
                         <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Проверен
@@ -217,7 +217,7 @@ export default function SpecialistDetail() {
                 <div>
                   <h3 className="font-semibold mb-2">Специализации</h3>
                   <div className="flex flex-wrap gap-2">
-                    {specialist.specializations.map((spec, index) => (
+                    {(specialist.specializations || []).map((spec, index) => (
                       <Badge key={index} variant="secondary">{spec}</Badge>
                     ))}
                   </div>
@@ -295,7 +295,7 @@ export default function SpecialistDetail() {
               <CardContent className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Завершенных проектов:</span>
-                  <span className="font-semibold">{specialist.user.completedProjects}</span>
+                  <span className="font-semibold">{specialist.user?.completedProjects || 0}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Средний рейтинг:</span>
