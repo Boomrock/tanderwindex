@@ -70,7 +70,8 @@ export default function Crews() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {crews.map((crew) => (
-            <Card key={crew.id} className="hover:shadow-lg transition-shadow">
+            <Link key={crew.id} href={`/crews/${crew.id}`}>
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-12 w-12">
@@ -149,6 +150,7 @@ export default function Crews() {
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
 

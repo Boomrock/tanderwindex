@@ -1508,6 +1508,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  apiRouter.get('/crews/:id/reviews', async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const reviews = await storage.getCrewReviews(parseInt(id));
+      res.json(reviews);
+    } catch (error) {
+      console.error('Error fetching crew reviews:', error);
+      res.status(500).json({ error: 'Ошибка загрузки отзывов' });
+    }
+  });
+
   apiRouter.post('/reviews', authMiddleware, async (req: Request, res: Response) => {
     try {
       const reviewData = {

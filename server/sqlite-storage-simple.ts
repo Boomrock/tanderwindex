@@ -759,14 +759,46 @@ export class SimpleSQLiteStorage implements IStorage {
         specialistId: review.specialistId,
         createdAt: review.createdAt,
         reviewer: {
+          id: review.reviewerId,
           username: review.username,
-          fullName: review.first_name && review.last_name 
-            ? `${review.first_name} ${review.last_name}` 
-            : review.username
+          firstName: review.first_name,
+          lastName: review.last_name
         }
       }));
     } catch (error) {
       console.error('Error getting specialist reviews:', error);
+      return [];
+    }
+  }
+
+  async getCrewReviews(crewId: number): Promise<Review[]> {
+    try {
+      const stmt = this.db.prepare(`
+        SELECT r.*, u.username, u.first_name, u.last_name
+        FROM reviews r
+        LEFT JOIN users u ON r.reviewerId = u.id
+        WHERE r.crewId = ?
+        ORDER BY r.createdAt DESC
+      `);
+      const reviews = stmt.all(crewId) as any[];
+      
+      return reviews.map(review => ({
+        id: review.id,
+        rating: review.rating,
+        comment: review.comment,
+        reviewerId: review.reviewerId,
+        revieweeId: review.revieweeId,
+        crewId: review.crewId,
+        createdAt: review.createdAt,
+        reviewer: {
+          id: review.reviewerId,
+          username: review.username,
+          firstName: review.first_name,
+          lastName: review.last_name
+        }
+      }));
+    } catch (error) {
+      console.error('Error getting crew reviews:', error);
       return [];
     }
   }
