@@ -1500,7 +1500,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get('/specialists/:id/reviews', async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      const reviews = await storage.getUserReviews(parseInt(id));
+      const reviews = await storage.getSpecialistReviews(parseInt(id));
       res.json(reviews);
     } catch (error) {
       console.error('Error fetching specialist reviews:', error);

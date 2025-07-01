@@ -161,6 +161,7 @@ export default function SpecialistDetail() {
         rating: data.rating,
         comment: data.comment,
         revieweeId: specialist?.user.id,
+        specialistId: parseInt(specialistId!),
       });
     },
     onSuccess: () => {
