@@ -249,7 +249,7 @@ export default function SpecialistDetail() {
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-shrink-0">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src={specialist.images[0] ? `/api/files/${specialist.images[0]}` : undefined} alt={specialist.name} />
+                        <AvatarImage src={specialist.images[0] || undefined} alt={specialist.name} />
                         <AvatarFallback className="text-lg">
                           {specialist.name.charAt(0)}
                         </AvatarFallback>
