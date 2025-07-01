@@ -805,8 +805,8 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async createReview(insertReview: InsertReview): Promise<Review> {
     const stmt = this.db.prepare(`
-      INSERT INTO reviews (reviewerId, revieweeId, rating, comment, createdAt)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO reviews (reviewerId, revieweeId, rating, comment, specialistId, crewId, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `);
     
     const createdAt = new Date().toISOString();
@@ -815,6 +815,8 @@ export class SimpleSQLiteStorage implements IStorage {
       insertReview.revieweeId,
       insertReview.rating,
       insertReview.comment || null,
+      insertReview.specialistId || null,
+      insertReview.crewId || null,
       createdAt
     );
 

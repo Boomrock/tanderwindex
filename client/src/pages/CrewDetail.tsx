@@ -1,27 +1,19 @@
-import { useState } from "react";
 import { useParams } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Helmet } from "react-helmet";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { MapPin, Star, MessageCircle, Users, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { 
-  Users, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
-  Award, 
-  MessageCircle, 
-  Star 
-} from "lucide-react";
+import { Helmet } from "react-helmet";
 
 interface Crew {
   id: number;
@@ -66,9 +58,8 @@ interface User {
 }
 
 const reviewSchema = z.object({
-  rating: z.number().min(1).max(5),
-  comment: z.string().min(10, "Комментарий должен содержать минимум 10 символов"),
-  crewId: z.number(),
+  rating: z.number().min(1, "Выберите рейтинг").max(5, "Максимальный рейтинг 5"),
+  comment: z.string().min(1, "Добавьте комментарий к отзыву"),
 });
 
 type ReviewFormData = z.infer<typeof reviewSchema>;
@@ -115,13 +106,15 @@ export default function CrewDetail() {
     defaultValues: {
       rating: 5,
       comment: "",
-      crewId: parseInt(id!),
     },
   });
 
   const reviewMutation = useMutation({
     mutationFn: async (data: ReviewFormData) => {
-      const response = await apiRequest("POST", "/api/reviews", data);
+      const response = await apiRequest("POST", "/api/reviews", {
+        ...data,
+        crewId: parseInt(id!),
+      });
       return response.json();
     },
     onSuccess: () => {
@@ -170,147 +163,181 @@ export default function CrewDetail() {
     <>
       <Helmet>
         <title>{crew.name} - Windexs-Строй</title>
-        <meta name="description" content={`Профиль бригады ${crew.name}. Опыт: ${crew.experience_years} лет, команда из ${crew.team_size} специалистов.`} />
+        <meta name="description" content={`Профиль бригады ${crew.name}. ${crew.description}`} />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50">
-        <div className="container py-8">
-          <div className="max-w-4xl mx-auto space-y-6">
-            {/* Основная информация */}
-            <div className="space-y-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-shrink-0">
-                      <Avatar className="h-24 w-24">
-                        <AvatarImage src={crew.images[0] || undefined} alt={crew.name} />
-                        <AvatarFallback className="text-lg">
-                          {crew.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+      <div className="container py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Профиль бригады */}
+          <div className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={crew.images?.[0] ? `/api/files/${crew.images[0]}` : undefined} />
+                    <AvatarFallback>
+                      <Users className="h-8 w-8" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <CardTitle className="text-2xl">{crew.name}</CardTitle>
+                    <p className="text-gray-600 mt-1">Руководитель: {displayName}</p>
+                    <div className="flex items-center mt-2">
+                      <StarRating rating={Math.round(crew.user.rating)} />
+                      <span className="text-sm ml-2 text-gray-600">
+                        {crew.user.rating.toFixed(1)} ({reviews.length} отзывов)
+                      </span>
+                      {crew.user.isVerified && (
+                        <Badge variant="outline" className="ml-2 text-xs bg-green-50 text-green-700 border-green-200">
+                          <CheckCircle className="h-3 w-3 mr-1" />
+                          Проверена
+                        </Badge>
+                      )}
                     </div>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between">
-                        <div>
-                          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                            {crew.name}
-                          </h1>
-                          <div className="flex items-center space-x-4 mb-3">
-                            <div className="flex items-center">
-                              <StarRating rating={crew.user.rating} />
-                              <span className="ml-2 text-sm text-gray-600">
-                                ({reviews.length} отзывов)
-                              </span>
-                            </div>
-                            {crew.user.isVerified && (
-                              <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                <Award className="h-3 w-3 mr-1" />
-                                Проверена
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {crew.location}
-                            </div>
-                            <div className="flex items-center">
-                              <Clock className="h-4 w-4 mr-1" />
-                              {crew.experience_years} лет опыта
-                            </div>
-                            <div className="flex items-center">
-                              <Users className="h-4 w-4 mr-1" />
-                              {crew.team_size} специалистов
-                            </div>
-                            <div className="flex items-center">
-                              <DollarSign className="h-4 w-4 mr-1" />
-                              {crew.hourly_rate} ₽/час
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col space-y-2">
-                          <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700">
-                            <MessageCircle className="h-4 w-4 mr-2" />
-                            Написать сообщение
-                          </Button>
-                        </div>
-                      </div>
+                    <div className="flex items-center mt-1 text-gray-600">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      <span className="text-sm">{crew.location}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <h3 className="font-semibold mb-2">Описание</h3>
+                  <p className="text-gray-700">{crew.description}</p>
+                </div>
 
-              {/* Специализации */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Специализации</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <div>
+                  <h3 className="font-semibold mb-2">Специализации</h3>
                   <div className="flex flex-wrap gap-2">
-                    {crew.specializations.map((specialization, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="bg-emerald-50 text-emerald-700 border-emerald-200"
-                      >
-                        {specialization}
-                      </Badge>
+                    {crew.specializations.map((spec, index) => (
+                      <Badge key={index} variant="secondary">{spec}</Badge>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
+                </div>
 
-              {/* Описание */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>О бригаде</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-700 leading-relaxed">
-                    {crew.description}
-                  </p>
-                </CardContent>
-              </Card>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-semibold mb-1">Опыт работы</h3>
+                    <p className="text-gray-700">{crew.experience_years} лет</p>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold mb-1">Размер команды</h3>
+                    <p className="text-gray-700">{crew.team_size} человек</p>
+                  </div>
+                </div>
 
-              {/* Портфолио */}
-              {crew.images.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Портфолио</CardTitle>
-                  </CardHeader>
-                  <CardContent>
+                <div>
+                  <h3 className="font-semibold mb-1">Стоимость работ</h3>
+                  <p className="text-gray-700">{crew.hourly_rate.toLocaleString()} ₽/час</p>
+                </div>
+
+                {crew.images && crew.images.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-2">Фотографии работ</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {crew.images.map((image, index) => (
-                        <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                          <img
-                            src={image}
-                            alt={`Работа ${index + 1}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                          />
-                        </div>
+                        <img
+                          key={index}
+                          src={`/api/files/${image}`}
+                          alt={`Работа ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Секция отзывов */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Отзывы</CardTitle>
-                    <div className="flex items-center space-x-2">
-                      <StarRating rating={crew.user.rating || 0} />
-                      <span className="text-sm text-gray-600">({reviews.length} отзывов)</span>
-                    </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  {user && (
-                    <div className="mb-6 p-4 border rounded-lg bg-gray-50">
-                      <h4 className="font-semibold mb-3">Оставить отзыв</h4>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Отзывы */}
+            <Card className="mt-6">
+              <CardHeader>
+                <CardTitle>Отзывы ({reviews.length})</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {reviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="border-b pb-4 last:border-b-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium">
+                              {review.reviewer.firstName && review.reviewer.lastName 
+                                ? `${review.reviewer.firstName} ${review.reviewer.lastName}` 
+                                : review.reviewer.username}
+                            </span>
+                            <StarRating rating={review.rating} />
+                          </div>
+                          <span className="text-sm text-gray-500">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-gray-700">{review.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-center py-4">Отзывов пока нет</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Сайдбар с контактами и действиями */}
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Статистика</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Завершенных проектов:</span>
+                  <span className="font-semibold">{crew.user.completedProjects}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Средний рейтинг:</span>
+                  <span className="font-semibold">{crew.user.rating.toFixed(1)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Опыт работы:</span>
+                  <span className="font-semibold">{crew.experience_years} лет</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Размер команды:</span>
+                  <span className="font-semibold">{crew.team_size} чел.</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Действия</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  onClick={() => {
+                    // Логика отправки сообщения
+                    console.log(`Отправить сообщение бригаде ${crew.id}`);
+                  }}
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Написать сообщение
+                </Button>
+
+                {user && user.id !== crew.user.id && (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full">
+                        <Star className="h-4 w-4 mr-2" />
+                        Оставить отзыв
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Оставить отзыв</DialogTitle>
+                      </DialogHeader>
                       <Form {...reviewForm}>
                         <form onSubmit={reviewForm.handleSubmit(onReviewSubmit)} className="space-y-4">
                           <FormField
@@ -318,7 +345,7 @@ export default function CrewDetail() {
                             name="rating"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Оценка</FormLabel>
+                                <FormLabel>Рейтинг</FormLabel>
                                 <FormControl>
                                   <StarRating 
                                     rating={field.value} 
@@ -337,9 +364,8 @@ export default function CrewDetail() {
                               <FormItem>
                                 <FormLabel>Комментарий</FormLabel>
                                 <FormControl>
-                                  <Textarea
-                                    placeholder="Поделитесь своим опытом работы с этой бригадой..."
-                                    className="min-h-[80px]"
+                                  <Textarea 
+                                    placeholder="Опишите свой опыт работы с этой бригадой..."
                                     {...field}
                                   />
                                 </FormControl>
@@ -349,55 +375,18 @@ export default function CrewDetail() {
                           />
                           <Button 
                             type="submit" 
+                            className="w-full"
                             disabled={reviewMutation.isPending}
-                            className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
                           >
                             {reviewMutation.isPending ? "Отправка..." : "Отправить отзыв"}
                           </Button>
                         </form>
                       </Form>
-                    </div>
-                  )}
-
-                  {/* Список отзывов */}
-                  <div className="space-y-4">
-                    {reviews.length === 0 ? (
-                      <p className="text-gray-500 text-center py-4">Пока нет отзывов</p>
-                    ) : (
-                      reviews.map((review) => {
-                        const reviewerName = review.reviewer.firstName && review.reviewer.lastName 
-                          ? `${review.reviewer.firstName} ${review.reviewer.lastName}` 
-                          : review.reviewer.username;
-                        
-                        return (
-                          <div key={review.id} className="border-b border-gray-200 pb-4 last:border-b-0">
-                            <div className="flex items-start justify-between mb-2">
-                              <div className="flex items-center space-x-2">
-                                <Avatar className="h-8 w-8">
-                                  <AvatarFallback className="text-xs">
-                                    {reviewerName.charAt(0)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <div>
-                                  <p className="font-medium text-sm">{reviewerName}</p>
-                                  <div className="flex items-center">
-                                    <StarRating rating={review.rating} />
-                                  </div>
-                                </div>
-                              </div>
-                              <span className="text-xs text-gray-500">
-                                {new Date(review.createdAt).toLocaleDateString('ru-RU')}
-                              </span>
-                            </div>
-                            <p className="text-gray-700 text-sm">{review.comment}</p>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
