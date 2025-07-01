@@ -54,7 +54,7 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
     minSize: initialFilters?.minSize || 2,
     maxSize: initialFilters?.maxSize || 20,
     minRate: initialFilters?.minRate || 0,
-    maxRate: initialFilters?.maxRate || 10000,
+    maxRate: initialFilters?.maxRate || 100000,
     verified: initialFilters?.verified || null,
     sortBy: initialFilters?.sortBy || 'rating',
     sortOrder: initialFilters?.sortOrder || 'desc'
@@ -80,7 +80,7 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
       minSize: 2,
       maxSize: 20,
       minRate: 0,
-      maxRate: 10000,
+      maxRate: 100000,
       verified: null,
       sortBy: 'rating',
       sortOrder: 'desc'
@@ -93,7 +93,7 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
   const hasActiveFilters = () => {
     return appliedFilters.search || appliedFilters.location || appliedFilters.specialization || 
            appliedFilters.minSize > 2 || appliedFilters.maxSize < 20 ||
-           appliedFilters.minRate > 0 || appliedFilters.maxRate < 10000 || 
+           appliedFilters.minRate > 0 || appliedFilters.maxRate < 100000 || 
            appliedFilters.verified !== null;
   };
 
@@ -103,7 +103,7 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
     if (appliedFilters.location) count++;
     if (appliedFilters.specialization) count++;
     if (appliedFilters.minSize > 2 || appliedFilters.maxSize < 20) count++;
-    if (appliedFilters.minRate > 0 || appliedFilters.maxRate < 10000) count++;
+    if (appliedFilters.minRate > 0 || appliedFilters.maxRate < 100000) count++;
     if (appliedFilters.verified !== null) count++;
     return count;
   };
@@ -296,14 +296,14 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
             {/* Price Range */}
             <div className="md:col-span-2">
               <label className="text-sm font-medium mb-2 block">
-                Стоимость: {tempFilters.minRate.toLocaleString()}-{tempFilters.maxRate.toLocaleString()} ₽/час
+                Стоимость: {tempFilters.minRate.toLocaleString()}-{tempFilters.maxRate.toLocaleString()} ₽/услугу
               </label>
               <div className="px-3">
                 <Slider
                   value={[tempFilters.minRate, tempFilters.maxRate]}
                   onValueChange={([min, max]) => updateTempFilters({ minRate: min, maxRate: max })}
                   min={0}
-                  max={10000}
+                  max={100000}
                   step={100}
                   className="w-full"
                 />

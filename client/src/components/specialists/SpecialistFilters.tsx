@@ -296,7 +296,7 @@ export default function SpecialistFilters({ onFiltersChange, initialFilters }: S
             {/* Price Range */}
             <div className="md:col-span-2">
               <label className="text-sm font-medium mb-2 block">
-                Стоимость: {tempFilters.minRate.toLocaleString()}-{tempFilters.maxRate.toLocaleString()} ₽/час
+                Стоимость: {tempFilters.minRate.toLocaleString()}-{tempFilters.maxRate.toLocaleString()} ₽/услугу
               </label>
               <div className="px-3">
                 <Slider
