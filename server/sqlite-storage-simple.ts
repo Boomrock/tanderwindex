@@ -985,8 +985,6 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async createSpecialist(specialistData: any): Promise<any> {
     try {
-      console.log('Received specialist data:', specialistData);
-      
       const stmt = this.db.prepare(`
         INSERT INTO specialists (
           user_id, name, description, location, experience_years, 
@@ -1225,6 +1223,8 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async createCrew(crewData: any): Promise<any> { 
     try {
+      console.log('Received crew data:', crewData);
+      
       const stmt = this.db.prepare(`
         INSERT INTO crews (
           user_id, name, description, location, experience_years, 
@@ -1237,14 +1237,32 @@ export class SimpleSQLiteStorage implements IStorage {
       const images = Array.isArray(crewData.images) ? JSON.stringify(crewData.images) : '[]';
       const specializations = Array.isArray(crewData.specializations) ? JSON.stringify(crewData.specializations) : '[]';
       
+      // Map frontend field names to database field names
+      const userId = crewData.user_id || crewData.userId;
+      const experienceYears = crewData.experience_years || crewData.experience;
+      const teamSize = crewData.team_size || crewData.teamSize;
+      const hourlyRate = crewData.hourly_rate || crewData.hourlyRate;
+      
+      console.log('Mapped crew values:', {
+        userId, 
+        name: crewData.name,
+        description: crewData.description,
+        location: crewData.location,
+        experienceYears,
+        teamSize,
+        hourlyRate,
+        specializations,
+        images
+      });
+      
       const result = stmt.run(
-        crewData.user_id || crewData.userId,
+        userId,
         crewData.name,
         crewData.description,
         crewData.location,
-        crewData.experience_years || crewData.experienceYears,
-        crewData.team_size || crewData.teamSize,
-        crewData.hourly_rate || crewData.hourlyRate,
+        experienceYears,
+        teamSize,
+        hourlyRate,
         specializations,
         images,
         'pending',
