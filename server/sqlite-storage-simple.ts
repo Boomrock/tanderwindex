@@ -726,12 +726,12 @@ export class SimpleSQLiteStorage implements IStorage {
         reviewerId: review.reviewer_id,
         revieweeId: review.reviewee_id,
         createdAt: review.created_at,
-        reviewer: {
+        reviewer: review.username ? {
           username: review.username,
           fullName: review.first_name && review.last_name 
             ? `${review.first_name} ${review.last_name}` 
             : review.username
-        }
+        } : null
       }));
     } catch (error) {
       console.error('Error getting user reviews:', error);
@@ -758,12 +758,12 @@ export class SimpleSQLiteStorage implements IStorage {
         revieweeId: review.revieweeId,
         specialistId: review.specialistId,
         createdAt: review.createdAt,
-        reviewer: {
+        reviewer: review.username ? {
           id: review.reviewerId,
           username: review.username,
           firstName: review.first_name,
           lastName: review.last_name
-        }
+        } : null
       }));
     } catch (error) {
       console.error('Error getting specialist reviews:', error);
@@ -790,12 +790,12 @@ export class SimpleSQLiteStorage implements IStorage {
         revieweeId: review.revieweeId,
         crewId: review.crewId,
         createdAt: review.createdAt,
-        reviewer: {
+        reviewer: review.username ? {
           id: review.reviewerId,
           username: review.username,
           firstName: review.first_name,
           lastName: review.last_name
-        }
+        } : null
       }));
     } catch (error) {
       console.error('Error getting crew reviews:', error);

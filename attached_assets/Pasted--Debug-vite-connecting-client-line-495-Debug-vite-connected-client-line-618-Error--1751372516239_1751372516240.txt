@@ -1,0 +1,106 @@
+[Debug] [vite] connecting... (client, line 495)
+[Debug] [vite] connected. (client, line 618)
+[Error] Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>.
+a
+@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js:337:27
+div
+div
+_c9@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/components/ui/card.tsx:114:21
+div
+_c@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/components/ui/card.tsx:20:20
+a
+@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js:337:27
+div
+div
+Crews@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/pages/Crews.tsx:29:39
+Route@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js:323:20
+Switch@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js:379:25
+main
+div
+Router
+TooltipProviderProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-5AJU3CG7.js:38:52
+TooltipProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js:70:12
+AuthProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/lib/authContext.tsx:22:40
+App
+QueryClientProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js:2805:9
+ThemeProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/components/ui/theme-provider.tsx:25:11
+	printWarning (chunk-RPCDYKBN.js:521)
+	error (chunk-RPCDYKBN.js:505)
+	validateDOMNesting (chunk-RPCDYKBN.js:8256)
+	createInstance (chunk-RPCDYKBN.js:8328)
+	completeWork (chunk-RPCDYKBN.js:16290)
+	completeUnitOfWork (chunk-RPCDYKBN.js:19224)
+	performUnitOfWork (chunk-RPCDYKBN.js:19206)
+	workLoopSync (chunk-RPCDYKBN.js:19137)
+	renderRootSync (chunk-RPCDYKBN.js:19116)
+	performSyncWorkOnRoot (chunk-RPCDYKBN.js:18874)
+	flushSyncCallbacks (chunk-RPCDYKBN.js:9119)
+	(анонимная функция) (chunk-RPCDYKBN.js:18627)
+[Error] TypeError: undefined is not an object (evaluating 'review.reviewer.firstName')
+	(анонимная функция) (CrewDetail.tsx:430:201)
+	map
+	CrewDetail (CrewDetail.tsx:426:358)
+	renderWithHooks (chunk-RPCDYKBN.js:11548)
+	updateFunctionComponent (chunk-RPCDYKBN.js:14582)
+	callCallback2 (chunk-RPCDYKBN.js:3674)
+	dispatchEvent
+	invokeGuardedCallbackDev (chunk-RPCDYKBN.js:3699)
+	invokeGuardedCallback (chunk-RPCDYKBN.js:3733)
+	beginWork$1 (chunk-RPCDYKBN.js:19765)
+	performUnitOfWork (chunk-RPCDYKBN.js:19198)
+	workLoopSync (chunk-RPCDYKBN.js:19137)
+	renderRootSync (chunk-RPCDYKBN.js:19116)
+	performSyncWorkOnRoot (chunk-RPCDYKBN.js:18874)
+	flushSyncCallbacks (chunk-RPCDYKBN.js:9119)
+	(анонимная функция) (chunk-RPCDYKBN.js:18627)
+[Error] TypeError: undefined is not an object (evaluating 'review.reviewer.firstName')
+	(анонимная функция) (CrewDetail.tsx:430:201)
+	map
+	CrewDetail (CrewDetail.tsx:426:358)
+	renderWithHooks (chunk-RPCDYKBN.js:11548)
+	updateFunctionComponent (chunk-RPCDYKBN.js:14582)
+	callCallback2 (chunk-RPCDYKBN.js:3674)
+	dispatchEvent
+	invokeGuardedCallbackDev (chunk-RPCDYKBN.js:3699)
+	invokeGuardedCallback (chunk-RPCDYKBN.js:3733)
+	beginWork$1 (chunk-RPCDYKBN.js:19765)
+	performUnitOfWork (chunk-RPCDYKBN.js:19198)
+	workLoopSync (chunk-RPCDYKBN.js:19137)
+	renderRootSync (chunk-RPCDYKBN.js:19116)
+	recoverFromConcurrentError (chunk-RPCDYKBN.js:18736)
+	performSyncWorkOnRoot (chunk-RPCDYKBN.js:18879)
+	flushSyncCallbacks (chunk-RPCDYKBN.js:9119)
+	(анонимная функция) (chunk-RPCDYKBN.js:18627)
+[Error] The above error occurred in the <CrewDetail> component:
+
+CrewDetail@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/pages/CrewDetail.tsx:70:27
+Route@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js:323:20
+Switch@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js:379:25
+main
+div
+Router
+TooltipProviderProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-5AJU3CG7.js:38:52
+TooltipProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js:70:12
+AuthProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/lib/authContext.tsx:22:40
+App
+QueryClientProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js:2805:9
+ThemeProvider@https://b9422c3f-f5e0-4ab7-a2e6-eadca5b82231-00-34vt6uwq6em9.janeway.replit.dev/src/components/ui/theme-provider.tsx:25:11
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+	logCapturedError (chunk-RPCDYKBN.js:14032)
+	(анонимная функция) (chunk-RPCDYKBN.js:14052)
+	callCallback (chunk-RPCDYKBN.js:11248)
+	commitUpdateQueue (chunk-RPCDYKBN.js:11265)
+	commitLayoutEffectOnFiber (chunk-RPCDYKBN.js:17093)
+	commitLayoutMountEffects_complete (chunk-RPCDYKBN.js:17980)
+	commitLayoutEffects_begin (chunk-RPCDYKBN.js:17969)
+	commitLayoutEffects (chunk-RPCDYKBN.js:17920)
+	commitRootImpl (chunk-RPCDYKBN.js:19353)
+	commitRoot (chunk-RPCDYKBN.js:19277)
+	performSyncWorkOnRoot (chunk-RPCDYKBN.js:18895)
+	flushSyncCallbacks (chunk-RPCDYKBN.js:9119)
+	(анонимная функция) (chunk-RPCDYKBN.js:18627)
+[Error] TypeError: undefined is not an object (evaluating 'review.reviewer.firstName')
+	flushSyncCallbacks (chunk-RPCDYKBN.js:9129)
+	(анонимная функция) (chunk-RPCDYKBN.js:18627)

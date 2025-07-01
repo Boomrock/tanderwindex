@@ -263,9 +263,9 @@ export default function CrewDetail() {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
                             <span className="font-medium">
-                              {review.reviewer.firstName && review.reviewer.lastName 
+                              {review.reviewer?.firstName && review.reviewer?.lastName 
                                 ? `${review.reviewer.firstName} ${review.reviewer.lastName}` 
-                                : review.reviewer.username}
+                                : review.reviewer?.username || 'Пользователь'}
                             </span>
                             <StarRating rating={review.rating} />
                           </div>
