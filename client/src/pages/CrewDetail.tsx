@@ -114,6 +114,7 @@ export default function CrewDetail() {
       const response = await apiRequest("POST", "/api/reviews", {
         ...data,
         crewId: parseInt(id!),
+        revieweeId: crew?.user?.id,
       });
       return response.json();
     },
