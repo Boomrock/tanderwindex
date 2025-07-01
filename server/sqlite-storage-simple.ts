@@ -1203,6 +1203,8 @@ export class SimpleSQLiteStorage implements IStorage {
 
   async createCrew(crewData: any): Promise<any> { 
     try {
+      console.log('Creating crew with data:', crewData);
+      
       const stmt = this.db.prepare(`
         INSERT INTO crews (
           user_id, name, description, location, experience_years, 
@@ -1218,8 +1220,20 @@ export class SimpleSQLiteStorage implements IStorage {
       // Map frontend field names to database field names
       const userId = crewData.user_id || crewData.userId;
       const experienceYears = crewData.experience_years || crewData.experience;
-      const teamSize = crewData.team_size || crewData.teamSize;
-      const hourlyRate = crewData.hourly_rate || crewData.hourlyRate;
+      const teamSize = crewData.team_size || crewData.teamSize || crewData.memberCount;
+      const hourlyRate = crewData.hourly_rate || crewData.hourlyRate || crewData.dailyRate;
+      
+      console.log('Mapped values:', {
+        userId,
+        name: crewData.name,
+        description: crewData.description,
+        location: crewData.location,
+        experienceYears,
+        teamSize,
+        hourlyRate,
+        specializations,
+        images
+      });
       
       const result = stmt.run(
         userId,
