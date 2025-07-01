@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -55,6 +55,7 @@ const sortOptions = [
 
 export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [searchValue, setSearchValue] = useState(initialFilters?.search || '');
   const [filters, setFilters] = useState<CrewFilters>({
     search: initialFilters?.search || '',
     location: initialFilters?.location || '',
@@ -69,6 +70,17 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
     sortBy: initialFilters?.sortBy || 'rating',
     sortOrder: initialFilters?.sortOrder || 'desc'
   });
+
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      const updatedFilters = { ...filters, search: searchValue };
+      setFilters(updatedFilters);
+      onFiltersChange(updatedFilters);
+    }, 500); // 500ms delay
+
+    return () => clearTimeout(timeoutId);
+  }, [searchValue, filters, onFiltersChange]);
 
   const updateFilters = (newFilters: Partial<CrewFilters>) => {
     const updatedFilters = { ...filters, ...newFilters };
@@ -91,12 +103,13 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
       sortBy: 'rating',
       sortOrder: 'desc'
     };
+    setSearchValue('');
     setFilters(clearedFilters);
     onFiltersChange(clearedFilters);
   };
 
   const hasActiveFilters = () => {
-    return filters.search || filters.location || filters.specialization || 
+    return searchValue || filters.location || filters.specialization || 
            filters.minExperience > 0 || filters.maxExperience < 20 ||
            filters.minRate > 0 || filters.maxRate < 20000 || 
            filters.minTeamSize > 1 || filters.maxTeamSize < 50 ||
@@ -105,7 +118,7 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (filters.search) count++;
+    if (searchValue) count++;
     if (filters.location) count++;
     if (filters.specialization) count++;
     if (filters.minExperience > 0 || filters.maxExperience < 20) count++;
@@ -144,8 +157,8 @@ export default function CrewFilters({ onFiltersChange, initialFilters }: CrewFil
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Поиск по названию, описанию, специализации..."
-            value={filters.search}
-            onChange={(e) => updateFilters({ search: e.target.value })}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             className="pl-10"
           />
         </div>
