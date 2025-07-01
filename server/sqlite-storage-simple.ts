@@ -20,6 +20,7 @@ function ensureDateString(date: string | Date): string {
 
 export class SimpleSQLiteStorage implements IStorage {
   sessionStore: any;
+  private db: typeof sqliteDb;
 
   // Helper method to parse images from database
   private parseImages(images: any): string[] {
@@ -49,6 +50,7 @@ export class SimpleSQLiteStorage implements IStorage {
 
   constructor() {
     this.sessionStore = null; // Placeholder for session store
+    this.db = sqliteDb;
   }
 
   // User methods
