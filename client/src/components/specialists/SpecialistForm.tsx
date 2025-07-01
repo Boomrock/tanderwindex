@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +15,7 @@ import ImageUpload from '@/components/ui/image-upload';
 import { X, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
+import { apiRequest } from '@/lib/queryClient';
 
 const specialistSchema = z.object({
   title: z.string().min(10, 'Название должно содержать минимум 10 символов'),
@@ -80,6 +82,27 @@ export default function SpecialistForm() {
     },
   });
 
+  const createSpecialistMutation = useMutation({
+    mutationFn: async (specialistData: any) => {
+      const response = await apiRequest('POST', '/api/specialists', specialistData);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Анкета отправлена на модерацию',
+        description: 'После проверки администратором ваша анкета будет опубликована',
+      });
+      navigate('/specialists');
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Ошибка создания анкеты',
+        description: error.message || 'Произошла ошибка при создании анкеты',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const onSubmit = (data: SpecialistFormData) => {
     if (selectedServices.length === 0) {
       toast({
@@ -90,14 +113,15 @@ export default function SpecialistForm() {
       return;
     }
 
-    // Здесь можно добавить отправку данных с изображениями
-    console.log('Form data:', { ...data, services: selectedServices, images });
-    
-    toast({
-      title: 'Анкета отправлена на модерацию',
-      description: 'После проверки администратором ваша анкета будет опубликована',
-    });
-    navigate('/specialists');
+    const specialistData = {
+      ...data,
+      name: data.title, // API expects 'name' field
+      specializations: selectedServices, // Правильное поле для API
+      images,
+    };
+
+    console.log('Sending specialist data:', specialistData);
+    createSpecialistMutation.mutate(specialistData);
   };
 
   const addService = () => {
@@ -326,8 +350,9 @@ export default function SpecialistForm() {
               <Button
                 type="submit"
                 className="bg-green-600 hover:bg-green-700"
+                disabled={createSpecialistMutation.isPending}
               >
-                Отправить на модерацию
+                {createSpecialistMutation.isPending ? 'Отправка...' : 'Отправить на модерацию'}
               </Button>
             </div>
           </form>

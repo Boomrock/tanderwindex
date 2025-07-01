@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -14,6 +15,7 @@ import { X, Plus } from 'lucide-react';
 import ImageUpload from '@/components/ui/image-upload';
 import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
+import { apiRequest } from '@/lib/queryClient';
 
 const crewSchema = z.object({
   title: z.string().min(10, 'Название должно содержать минимум 10 символов'),
@@ -80,6 +82,27 @@ export default function CrewForm() {
       memberCount: 4,
       dailyRate: 20000,
       location: '',
+    },
+  });
+
+  const createCrewMutation = useMutation({
+    mutationFn: async (crewData: any) => {
+      const response = await apiRequest('POST', '/api/crews', crewData);
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Анкета бригады отправлена на модерацию',
+        description: 'После проверки администратором ваша анкета будет опубликована',
+      });
+      navigate('/crews');
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Ошибка создания анкеты бригады',
+        description: error.message || 'Произошла ошибка при создании анкеты',
+        variant: 'destructive',
+      });
     },
   });
 
