@@ -1329,13 +1329,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.post('/specialists', authMiddleware, async (req: Request, res: Response) => {
     try {
+      console.log('Creating specialist with data:', req.body);
       const specialistData = {
         ...req.body,
         userId: req.user.id,
-        services: JSON.stringify(req.body.services || []),
+        user_id: req.user.id,
+        specializations: req.body.specializations || [],
+        images: req.body.images || [],
         status: 'pending'
       };
+      console.log('Processed specialist data:', specialistData);
       const specialist = await storage.createSpecialist(specialistData);
+      console.log('Created specialist:', specialist);
       res.status(201).json(specialist);
     } catch (error) {
       console.error('Error creating specialist:', error);
@@ -1360,7 +1365,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const crewData = {
         ...req.body,
         userId: req.user.id,
-        services: JSON.stringify(req.body.services || []),
+        user_id: req.user.id,
+        specializations: req.body.specializations || [],
+        images: req.body.images || [],
         status: 'pending'
       };
       const crew = await storage.createCrew(crewData);
