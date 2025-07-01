@@ -72,7 +72,7 @@ export default function Specialists() {
               <CardHeader className="pb-3">
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={specialist.images?.[0]} />
+                    <AvatarImage src={specialist.images?.[0] ? `/api/files/${specialist.images[0]}` : undefined} />
                     <AvatarFallback>
                       <User className="h-6 w-6" />
                     </AvatarFallback>

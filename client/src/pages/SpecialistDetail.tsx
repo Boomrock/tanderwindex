@@ -248,7 +248,7 @@ export default function SpecialistDetail() {
                   <div className="flex flex-col md:flex-row gap-6">
                     <div className="flex-shrink-0">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src={specialist.images[0]} alt={specialist.name} />
+                        <AvatarImage src={specialist.images[0] ? `/api/files/${specialist.images[0]}` : undefined} alt={specialist.name} />
                         <AvatarFallback className="text-lg">
                           {specialist.name.charAt(0)}
                         </AvatarFallback>
@@ -442,32 +442,6 @@ export default function SpecialistDetail() {
 
             {/* Боковая панель */}
             <div className="space-y-6">
-              {/* Статистика */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Статистика</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Завершенных проектов</span>
-                    <span className="font-semibold">{specialist.user.completedProjects}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Рейтинг</span>
-                    <div className="flex items-center">
-                      <StarRating rating={specialist.user.rating} />
-                      <span className="ml-2 font-semibold">
-                        {specialist.user.rating.toFixed(1)}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Опыт работы</span>
-                    <span className="font-semibold">{specialist.experience_years} лет</span>
-                  </div>
-                </CardContent>
-              </Card>
-
               {/* Связаться */}
               <Card>
                 <CardHeader>
