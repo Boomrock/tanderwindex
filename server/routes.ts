@@ -116,8 +116,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // File download endpoint (requires authentication)
-  apiRouter.get('/files/:filename', authMiddleware, (req: Request, res: Response) => {
+  // File download endpoint (public access for images)
+  apiRouter.get('/files/:filename', (req: Request, res: Response) => {
     try {
       // Decode the filename parameter to handle URL-encoded names
       const filename = decodeURIComponent(req.params.filename);
