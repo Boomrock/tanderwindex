@@ -210,9 +210,9 @@ export default function CrewDetail() {
                 <div>
                   <h3 className="font-semibold mb-2">Специализации</h3>
                   <div className="flex flex-wrap gap-2">
-                    {crew.specializations.map((spec, index) => (
+                    {crew.specializations?.map((spec, index) => (
                       <Badge key={index} variant="secondary">{spec}</Badge>
-                    ))}
+                    )) || <span className="text-gray-500">Не указано</span>}
                   </div>
                 </div>
 
@@ -236,7 +236,7 @@ export default function CrewDetail() {
                   <div>
                     <h3 className="font-semibold mb-2">Фотографии работ</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {crew.images.map((image, index) => (
+                      {crew.images?.map((image, index) => (
                         <img
                           key={index}
                           src={`/api/files/${image}`}
