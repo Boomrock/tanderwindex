@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/authContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials } from "@/lib/utils";
 import towerLogo from "@assets/Снимок экрана 2025-07-04 в 11.49.23_1751655127229.png";
-import brandLogo from "@assets/Снимок экрана 2025-07-04 в 23.44.40_1751697922225.png";
+import brandLogo from "@assets/Снимок экрана 2025-07-04 в 23.48.12_1751698116123.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
