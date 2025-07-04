@@ -61,12 +61,12 @@ const Header = () => {
     : 0;
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-gray-100 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center space-x-4">
+            <Link href="/" className="flex items-center space-x-2">
               <img 
                 src={towerLogo} 
                 alt="Windexs-Строй Tower Logo" 
@@ -78,7 +78,7 @@ const Header = () => {
                   alt="Windexs Brand Logo" 
                   className="h-11 object-contain"
                 />
-                <span className="text-green-600 font-bold text-lg leading-none mt-0.5">Строй</span>
+                <span className="text-green-600 font-bold text-lg leading-none -mt-1">Строй</span>
               </div>
               <span className="font-bold text-lg text-green-600 sm:hidden">W-S</span>
             </Link>
