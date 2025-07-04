@@ -20,6 +20,7 @@ interface ChatBoxProps {
 
 export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxProps) {
   const [message, setMessage] = useState('');
+  const [processedMessageIds, setProcessedMessageIds] = useState<Set<number>>(new Set());
   const { user } = useAuth();
   const { toast } = useToast();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -58,12 +59,35 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
     },
   });
 
+  // Mark message as read mutation (temporarily disabled to fix infinite loop)
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: number) => {
+      console.log('Marking message as read:', messageId);
+      // Temporarily disabled to prevent infinite loop
+      return Promise.resolve({ id: messageId, isRead: true });
+    },
+    onSuccess: () => {
+      // Don't invalidate queries to prevent loops
+    }
+  });
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  // Reset processed messages when switching conversations
+  useEffect(() => {
+    setProcessedMessageIds(new Set());
+  }, [userId]);
+
+  // Function to mark unread messages as read (disabled temporarily)
+  const markUnreadAsRead = () => {
+    console.log('Mark unread as read called - disabled temporarily');
+    // Temporarily disabled to prevent infinite loop
+  };
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
@@ -189,6 +213,7 @@ export default function ChatBox({ userId, onBack, isMobile = false }: ChatBoxPro
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
+            onFocus={markUnreadAsRead}
             placeholder="Введите сообщение..."
             className="min-h-[44px] max-h-32 resize-none"
             disabled={sendMessageMutation.isPending}

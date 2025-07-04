@@ -951,10 +951,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Completely block this endpoint to stop infinite loops
-  apiRouter.put('/messages/:id/read', (req: Request, res: Response) => {
-    console.log('Blocked infinite loop attempt for message ID:', req.params.id);
-    res.status(429).json({ message: "Endpoint blocked due to infinite loop" });
+  apiRouter.put('/messages/:id/read', authMiddleware, async (req: Request, res: Response) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      if (isNaN(messageId)) {
+        return res.status(400).json({ message: "Invalid message ID" });
+      }
+      
+      const message = await storage.markMessageAsRead(messageId);
+      if (!message) {
+        return res.status(404).json({ message: "Message not found" });
+      }
+      
+      res.status(200).json(message);
+    } catch (error) {
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
   });
   
   // Review routes
