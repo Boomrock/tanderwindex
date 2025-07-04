@@ -63,20 +63,23 @@ const Header = () => {
   return (
     <header className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/" className="flex items-center space-x-3">
               <img 
                 src={towerLogo} 
                 alt="Windexs-Строй Tower Logo" 
-                className="h-8 w-8 object-contain"
+                className="h-12 w-12 object-contain"
               />
-              <img 
-                src={brandLogo} 
-                alt="Windexs Brand Logo" 
-                className="h-6 object-contain hidden sm:inline"
-              />
+              <div className="hidden sm:flex flex-col items-start">
+                <img 
+                  src={brandLogo} 
+                  alt="Windexs Brand Logo" 
+                  className="h-8 object-contain"
+                />
+                <span className="text-green-600 font-bold text-lg leading-none mt-1">Строй</span>
+              </div>
               <span className="font-bold text-lg text-green-600 sm:hidden">W-S</span>
             </Link>
           </div>

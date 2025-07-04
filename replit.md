@@ -225,6 +225,11 @@ The platform uses PostgreSQL with the following key entities:
   - Optimized image galleries with smaller heights on mobile (h-32 to h-24)
   - Enhanced card layouts to stack properly on small screens
   - Improved typography scaling for mobile devices
+- July 4, 2025. Updated header logo with custom brand images:
+  - Replaced text logo with tower icon and Windexs brand logo from user-provided images
+  - Added "Строй" text below Windexs logo creating vertical brand layout
+  - Increased logo sizes (tower: h-12, brand logo: h-8) and header height to h-20
+  - Maintained mobile responsiveness with simplified logo display on small screens
 
 ## User Preferences
 
