@@ -61,7 +61,7 @@ const Header = () => {
     : 0;
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="shadow-sm" style={{ backgroundColor: '#f7f7f7' }}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
