@@ -70,17 +70,16 @@ const Header = () => {
               <img 
                 src={towerLogo} 
                 alt="Windexs-Строй Tower Logo" 
-                className="h-20 w-20 object-contain"
+                className="h-16 w-16 sm:h-20 sm:w-20 object-contain"
               />
-              <div className="hidden sm:flex flex-col items-center">
+              <div className="flex flex-col items-center">
                 <img 
                   src={brandLogo} 
                   alt="Windexs Brand Logo" 
-                  className="h-9 object-contain"
+                  className="h-7 sm:h-9 object-contain"
                 />
-                <span className="text-green-600 font-bold text-lg leading-none mt-2">Строй</span>
+                <span className="text-green-600 font-bold text-sm sm:text-lg leading-none mt-1 sm:mt-2">Строй</span>
               </div>
-              <span className="font-bold text-lg text-green-600 sm:hidden">W-S</span>
             </Link>
           </div>
           
