@@ -194,30 +194,7 @@ const Header = () => {
                   </Link>
                 </div>
                 
-                {/* Mobile auth menu */}
-                <div className="md:hidden">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Menu className="h-6 w-6" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem asChild>
-                        <Link href="/login">
-                          <User className="mr-2 h-4 w-4" />
-                          Войти
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link href="/register">
-                          <PlusCircle className="mr-2 h-4 w-4" />
-                          Регистрация
-                        </Link>
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
+
               </>
             )}
             
@@ -255,6 +232,25 @@ const Header = () => {
               {link.label}
             </Link>
           ))}
+          
+          {!isAuthenticated && (
+            <>
+              <Link
+                href="/login"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Войти
+              </Link>
+              <Link
+                href="/register"
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary hover:bg-gray-100"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Регистрация
+              </Link>
+            </>
+          )}
           
           {isAuthenticated && (
             <>
