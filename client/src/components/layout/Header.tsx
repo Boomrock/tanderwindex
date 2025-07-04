@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/authContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials } from "@/lib/utils";
-import towerLogo from "@assets/telegram-cloud-photo-size-2-5418111831454643898-y_1751653477542.jpg";
-import brandLogo from "@assets/rectangle_logo-01_1751653730522.jpg";
+import towerLogo from "@assets/Снимок экрана 2025-07-04 в 11.49.23_1751655127229.png";
+import brandLogo from "@assets/Снимок экрана 2025-07-04 в 11.43.28_1751655129311.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,7 +61,7 @@ const Header = () => {
     : 0;
 
   return (
-    <header className="bg-gray-100 shadow-sm">
+    <header className="bg-green-500 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-24">
           {/* Logo */}
@@ -78,9 +78,9 @@ const Header = () => {
                   alt="Windexs Brand Logo" 
                   className="h-11 object-contain"
                 />
-                <span className="text-green-600 font-bold text-lg leading-none -mt-1">Строй</span>
+                <span className="text-white font-bold text-lg leading-none -mt-1">Строй</span>
               </div>
-              <span className="font-bold text-lg text-green-600 sm:hidden">W-S</span>
+              <span className="font-bold text-lg text-white sm:hidden">W-S</span>
             </Link>
           </div>
           
@@ -92,8 +92,8 @@ const Header = () => {
                 href={link.href}
                 className={`font-medium ${
                   location === link.href
-                    ? "text-primary"
-                    : "text-gray-700 hover:text-primary"
+                    ? "text-white"
+                    : "text-white/80 hover:text-white"
                 }`}
               >
                 {link.label}
@@ -106,7 +106,7 @@ const Header = () => {
             
             {isAuthenticated ? (
               <>
-                <Link href="/messages" className="relative hidden md:inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary">
+                <Link href="/messages" className="relative hidden md:inline-flex items-center text-sm font-medium text-white/80 hover:text-white">
                   <MessageCircle className="h-4 w-4 mr-1" />
                   Сообщения
                   {unreadMessagesCount > 0 && (
