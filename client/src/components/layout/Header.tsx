@@ -78,7 +78,7 @@ const Header = () => {
                   alt="Windexs Brand Logo" 
                   className="h-5 sm:h-8 object-contain"
                 />
-                <span className="text-green-600 font-bold text-sm sm:text-lg leading-none mt-1 sm:mt-2">Строй</span>
+                <span className="text-green-600 font-bold text-sm sm:text-lg leading-none -mt-1 sm:-mt-1">Строй</span>
               </div>
             </Link>
           </div>
