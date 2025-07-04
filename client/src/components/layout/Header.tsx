@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/authContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials } from "@/lib/utils";
 import towerLogo from "@assets/Снимок экрана 2025-07-04 в 11.49.23_1751655127229.png";
-import brandLogo from "@assets/Снимок экрана 2025-07-04 в 11.43.28_1751655129311.png";
+import brandLogo from "@assets/Снимок экрана 2025-07-04 в 23.44.40_1751697922225.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +76,7 @@ const Header = () => {
                 <img 
                   src={brandLogo} 
                   alt="Windexs Brand Logo" 
-                  className="h-7 sm:h-9 object-contain"
+                  className="h-8 sm:h-12 object-contain"
                 />
                 <span className="text-green-600 font-bold text-sm sm:text-lg leading-none mt-1 sm:mt-2">Строй</span>
               </div>
