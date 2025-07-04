@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/authContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getUserInitials } from "@/lib/utils";
+import towerLogo from "@assets/telegram-cloud-photo-size-2-5418111831454643898-y_1751653477542.jpg";
+import brandLogo from "@assets/rectangle_logo-01_1751653730522.jpg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,8 +55,9 @@ const Header = () => {
   });
 
   // Calculate unread messages count
-  const unreadMessagesCount = isAuthenticated && messages 
-    ? messages.filter((message: any) => !message.isRead && message.receiverId === user?.id).length 
+  const messagesArray = Array.isArray(messages) ? messages : [];
+  const unreadMessagesCount = isAuthenticated && messagesArray.length > 0
+    ? messagesArray.filter((message: any) => !message.isRead && message.receiverId === user?.id).length 
     : 0;
 
   return (
@@ -63,9 +66,17 @@ const Header = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="flex items-center space-x-1">
-              <Construction className="h-6 w-6 text-green-600" />
-              <span className="font-bold text-xl text-green-600 hidden sm:inline">Windexs-Строй</span>
+            <Link href="/" className="flex items-center space-x-2">
+              <img 
+                src={towerLogo} 
+                alt="Windexs-Строй Tower Logo" 
+                className="h-8 w-8 object-contain"
+              />
+              <img 
+                src={brandLogo} 
+                alt="Windexs Brand Logo" 
+                className="h-6 object-contain hidden sm:inline"
+              />
               <span className="font-bold text-lg text-green-600 sm:hidden">W-S</span>
             </Link>
           </div>
