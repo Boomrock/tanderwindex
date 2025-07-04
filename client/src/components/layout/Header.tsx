@@ -76,7 +76,7 @@ const Header = () => {
                 <img 
                   src={brandLogo} 
                   alt="Windexs Brand Logo" 
-                  className="h-6 sm:h-10 object-contain"
+                  className="h-5 sm:h-8 object-contain"
                 />
                 <span className="text-green-600 font-bold text-sm sm:text-lg leading-none mt-1 sm:mt-2">Строй</span>
               </div>
