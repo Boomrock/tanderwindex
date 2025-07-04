@@ -33,7 +33,7 @@ export default function Login() {
             <div className="flex justify-center mb-6">
               <Link href="/" className="flex items-center gap-2">
                 <Construction className="h-6 w-6 text-primary" />
-                <span className="font-bold text-xl text-primary">СтройТендер</span>
+                <span className="font-bold text-xl text-primary">Windexs-Строй</span>
               </Link>
             </div>
             <CardTitle className="text-2xl font-bold text-center">Вход</CardTitle>

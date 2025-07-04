@@ -182,14 +182,42 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link href="/login">
-                  <Button variant="link" className="text-primary">
-                    Войти
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button>Регистрация</Button>
-                </Link>
+                {/* Desktop auth buttons */}
+                <div className="hidden md:flex space-x-2">
+                  <Link href="/login">
+                    <Button variant="link" className="text-primary">
+                      Войти
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button>Регистрация</Button>
+                  </Link>
+                </div>
+                
+                {/* Mobile auth menu */}
+                <div className="md:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Menu className="h-6 w-6" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link href="/login">
+                          <User className="mr-2 h-4 w-4" />
+                          Войти
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/register">
+                          <PlusCircle className="mr-2 h-4 w-4" />
+                          Регистрация
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </>
             )}
             
