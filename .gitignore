@@ -4,3 +4,9 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+
+# Database files
+database.db
+data/construction-platform.db
+data/construction-platform.db-*
+uploads/*
